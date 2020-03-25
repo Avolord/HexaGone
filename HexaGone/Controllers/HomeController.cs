@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using HexaGone.Models;
 // Niklas hat nen Kommentar geschrieben
 //Felix hat nen Kommentar geschrieben und Niklas' Kommentar verbessert
+//Arvid hat den besten Kommentar geschrieben
+
 
 namespace HexaGone.Controllers
 {
