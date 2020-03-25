@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using HexaGone.Models;
 // Niklas hat nen kommentar geschrieben
+//Anton auch
 
 namespace HexaGone.Controllers
 {
