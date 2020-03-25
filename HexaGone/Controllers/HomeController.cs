@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using HexaGone.Models;
-// Niklas hat nen kommentar geschrieben
+// Niklas hat nen Kommentar geschrieben
+//Felix hat nen Kommentar geschrieben und Niklas' Kommentar verbessert
 
 namespace HexaGone.Controllers
 {
