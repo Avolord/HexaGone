@@ -10,6 +10,8 @@ using HexaGone.Models;
 //Anton auch
 // Niklas hat nen Kommentar geschrieben
 //Felix hat nen Kommentar geschrieben und Niklas' Kommentar verbessert
+//Arvid hat den besten Kommentar geschrieben
+
 
 namespace HexaGone.Controllers
 {
