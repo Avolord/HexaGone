@@ -6,12 +6,15 @@
     <title>@ViewData["Title"] - HexaGone</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/home/index.css" />
-    @RenderSection("Style", required: false)
 </head>
 <body>
     <header>
         <nav class="navbar navbar-light bg-light">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">Navbar</a>
+            <a class="navbar-brand" href="#">
+                <img src="~/images/placeholder_icon.png" width="30" height="30" class="d-inline-block align-top" alt="">
+                HexaGone
+            </a>
+           
         </nav>
     </header>
     <div class="container">
