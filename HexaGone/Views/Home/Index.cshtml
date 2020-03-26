@@ -1,8 +1,19 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@section Style{ 
+    <style>
+        .mid-screen{
+            position: absolute;
+            top:50%;
+            left:50%;
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        }
+    </style>
+}
+
+
+<div class="text-center mid-screen">
+    <input type="button" id="btnLogin" value="Login"/>
+
 </div>
