@@ -2,12 +2,19 @@
     background-color: rgb(40,40,40);
 }
 
-
-.mid-screen {
-    align-items: center;
-    width: 100%;
+.imgWithText {
+    border: solid 1px white;
+    margin-top: 3px;
+    margin-left: 3px;
+    margin-right: 3px;
+    float:left;
 }
 
+
+
+.divTextPic {
+    background-color:white;
+}
 .login-btn {
     height: 50%;
     width: 20%;
@@ -17,12 +24,22 @@
 
 }
 
-article {
+.articleWithoutPic {
     background-color: white;
     color: black;
     padding: 1em;
-    text-justify: newspaper;
+    text-align: justify;
+    margin-bottom:5%;
 
+}
+
+.articleWithPic {
+
+    padding: 3px;
+    padding-right: 1em;
+    padding-left: 1em;
+    margin: 0px;
+   
 }
 
 
