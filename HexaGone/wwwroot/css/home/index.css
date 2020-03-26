@@ -1,2 +1,25 @@
 ﻿body {
+    background-color: dimgrey;
 }
+
+
+.mid-screen {
+    align-items: center;
+    width: 100%;
+}
+
+.login-btn {
+    height: 50%;
+    width: 20%;
+    margin-top: 25%;
+    margin-bottom: 30%;
+    background-color: lightgray;
+
+}
+
+article {
+    background-color: white;
+    color: black;
+
+}
+
