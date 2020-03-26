@@ -1,5 +1,5 @@
 ﻿body {
-    background-color: dimgrey;
+    background-color: rgb(40,40,40);
 }
 
 
@@ -20,6 +20,9 @@
 article {
     background-color: white;
     color: black;
+    padding: 1em;
+    text-justify: newspaper;
 
 }
+
 
