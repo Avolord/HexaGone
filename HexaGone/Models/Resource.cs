@@ -16,7 +16,10 @@ namespace HexaGone.Models
         /// The name of the resource.
         /// </summary>
         public string Name { get; set; }
-
+        /// <summary>
+        /// The Stock of this Resource
+        /// </summary>
+        public int Stock { get; set; }
         //Static Attributes
 
         public const int resourceID_Gold = 0;
@@ -41,7 +44,8 @@ namespace HexaGone.Models
         /// 5 = Iron ;
         /// defaults to Gold
         /// </param>
-        public Resource(int _ResourceID)
+        /// <param name="_Stock">The stock of this Resource. Optional. Defaults to 0</param>
+        public Resource(int _ResourceID, int _Stock = 0)
         {
             ResourceID = _ResourceID;
 
@@ -78,6 +82,7 @@ namespace HexaGone.Models
                     break;
 
             }
+            Stock = _Stock;
         }
         //Functions
     }
