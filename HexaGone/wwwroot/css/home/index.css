@@ -1,28 +1,72 @@
 ﻿body {
-    background-color: rgb(40,40,40);
-}
-
-
-.mid-screen {
-    align-items: center;
-    width: 100%;
+    background-color: rgb(255, 255, 255);
+    font-family: 'Nunito', sans-serif;
 }
 
 .login-btn {
-    height: 50%;
-    width: 20%;
+    height: 60%;
+    width: 80%;
     margin-top: 25%;
     margin-bottom: 30%;
     background-color: lightgray;
-
 }
 
 article {
-    background-color: white;
-    color: black;
+    color: rgb(0, 0, 0);
     padding: 1em;
     text-justify: newspaper;
-
 }
 
+#profile_image {
+    margin-right: 2em;
+    margin-left: 1em;
+}
 
+.test_div {
+    margin-top: 4em;
+    display: table;
+}
+
+    .test_div::after {
+        clear: both;
+    }
+
+#test_image {
+}
+
+/* .navbar {
+	-webkit-box-shadow: 0px 2px 3px 0px rgba(255, 255, 255, 1);
+	-moz-box-shadow: 0px 2px 3px 0px rgba(255, 255, 255, 1);
+	box-shadow: 0px 2px 3px 0px rgba(255, 255, 255, 1);
+} */
+
+.nav-link,
+navbar-text {
+    transition: color 0.3s ease-in-out;
+}
+
+    .nav-link:hover {
+        color: orchid !important;
+    }
+
+    navbar-text:hover {
+        color: orchid !important;
+    }
+
+.navbar {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    background-color: rgba(61, 61, 61, 0.5);
+    -webkit-transition: all 0.6s ease-out;
+    -moz-transition: all 0.6s ease-out;
+    -o-transition: all 0.6s ease-out;
+    -ms-transition: all 0.6s ease-out;
+    transition: all 0.6s ease-out;
+}
+
+    .navbar.scrolled {
+        background-color: rgb(46, 46, 46); /* IE */
+        background-color: rgb(30, 30, 30); /* NON-IE */
+        padding-top: 0em;
+        padding-bottom: 0em;
+    }
