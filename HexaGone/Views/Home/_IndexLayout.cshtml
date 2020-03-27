@@ -10,7 +10,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar smart_scroll fixed-top navbar-expand-lg navbar-dark">
+        <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
             <a class="navbar-brand" href="#">
                 <img src="~/images/placeholder_icon.png" width="30" height="30" class="d-inline-block align-top" alt="">
                 HexaGone
@@ -29,7 +29,7 @@
                 </ul>
 
                 <form class="form-inline ml-auto">
-                    <button class="btn btn-outline-light" type="button" style="margin-right: 1em;">Login</button>
+                    <button class="btn btn-danger" id="navbar_login_btn" type="button">Login</button>
                 </form>
                 <span class="navbar-text" for="profile_image">
                     Guest
@@ -37,7 +37,7 @@
                 <img src="images/account.png" width="30" height="30" class="d-inline-block align-top" id="profile_image" alt="">
             </div>
         </nav>
-        <img src="~/images/bg.jpg" width="100%" style="position: relative; top:0; left:0; min-height: 50%; z-index: -1">
+        <img src="~/images/bg.jpg" id="background_image">
     </header>
     <div class="container">
         <main role="main" class="pb-3">
