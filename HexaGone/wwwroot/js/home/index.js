@@ -1,4 +1,5 @@
 ﻿let main_login_button_y;
+let login_form_shown = false;
 
 function checkScroll() {
     var startY = $('.navbar').height() * 2; //The point where the navbar changes in px
@@ -9,20 +10,25 @@ function checkScroll() {
         $('.navbar').removeClass("scrolled");
     }
 
-    if ($(window).scrollTop() > main_login_button_y) {
+    if ($(window).scrollTop() > main_login_button_y && login_form_shown === false) {
         $('#navbar_login_btn').stop(true, false);
         $('.login-btn').stop(true, false);
         $('#navbar_login_btn').fadeIn("slow");
         $('.login-btn').fadeOut("slow");
 
-    } else {
+    } else if(login_form_shown===false) {
         $('#navbar_login_btn').stop(true, false);
         $('.login-btn').stop(true, false);
         $('#navbar_login_btn').fadeOut("slow");
         $('.login-btn').fadeIn("slow");
     }
-}
+}    
 
+$('#btnLogin').on('click', function () {
+    login_form_shown = true;
+    $('#btnLogin').fadeOut('fast');
+    $('#divForm').fadeIn('fast');
+});
 
 $(function () {
     main_login_button_y = $('.login-btn').position().top;
