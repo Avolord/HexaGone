@@ -24,15 +24,7 @@
 
 #navbar_login_btn {
     margin-right: 1em;
-    /*visibility: hidden;*/
     display: none;
-        /*
-    opacity: 0;
-    transition: visibility 0s, opacity 0.5s ease-in-out;
-    -webkit-transition: visibility 0s, opacity 0.5s ease-in-out;
-    -moz-transition: visibility 0s, opacity 0.5s ease-in-out;
-    -o-transition: visibility 0s, opacity 0.5s ease-in-out;
-    -ms-transition: visibility 0s, opacity 0.5s ease-in-out;*/
 }
 
 #navbar_login_btn.set_display_block {
@@ -43,7 +35,6 @@
 article {
     color: rgb(0, 0, 0);
     padding: 1em;
-    text-justify: newspaper;
 }
 
 #profile_image {
@@ -63,24 +54,18 @@ article {
 #test_image {
 }
 
-/* .navbar {
-	-webkit-box-shadow: 0px 2px 3px 0px rgba(255, 255, 255, 1);
-	-moz-box-shadow: 0px 2px 3px 0px rgba(255, 255, 255, 1);
-	box-shadow: 0px 2px 3px 0px rgba(255, 255, 255, 1);
-} */
-
 .nav-link,
 navbar-text {
     transition: color 0.3s ease-in-out;
 }
 
-    .nav-link:hover {
-        color: orchid !important;
-    }
+.nav-link:hover {
+    color: orchid !important;
+}
 
-    navbar-text:hover {
-        color: orchid !important;
-    }
+.navbar-text:hover {
+    color: orchid !important;
+}
 
 .navbar {
     padding-top: 1em;
