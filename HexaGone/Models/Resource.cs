@@ -48,8 +48,9 @@ namespace HexaGone.Models
         public Resource(int _ResourceID, int _Stock = 0)
         {
             ResourceID = _ResourceID;
+            Stock = _Stock;
 
-            switch(ResourceID)
+            switch (ResourceID)
             {
                 //Gold
                 case resourceID_Gold:
@@ -82,7 +83,21 @@ namespace HexaGone.Models
                     break;
 
             }
-            Stock = _Stock;
+        }
+
+        public static List<Resource> createStock(int _Gold, int _Wood, int _Food, int _Stone, int _Copper, int _Iron)
+        {
+            List<Resource> list = new List<Resource>();
+
+            list.Add(new Resource(0, _Gold));
+            list.Add(new Resource(1, _Wood));
+            list.Add(new Resource(2, _Food));
+            list.Add(new Resource(3, _Stone));
+            list.Add(new Resource(4, _Copper));
+            list.Add(new Resource(5, _Iron));
+
+
+            return list;
         }
         //Functions
     }
