@@ -4,7 +4,18 @@
 
 
 <div class="text-center mid-screen">
-    <input class="login-btn btn btn-danger" type="button" id="btnLogin" value="Login"/>
+    <button class="login-btn btn btn-danger" id="btnLogin" >Login</button>
+    <div id="divForm" class="shadow">
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginInputMail" id="loginLabel" style="margin-bottom: 1em">Login:</label>
+                <input id="loginInputMail" type="text" class="form-control loginInputText" placeholder="Email or Username" />
+                <input type="text" class="form-control loginInputText" placeholder="Password" />
+                <button class="btn btn-danger" id="btnFormLogin"> Login </button>
+                <button class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
+            </div>
+        </form>
+    </div>
     <article class="articleWithoutPic">
         <b>Lorem ipsum</b><br />
         <span>dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</span>
