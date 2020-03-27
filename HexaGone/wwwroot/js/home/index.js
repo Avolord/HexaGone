@@ -40,6 +40,12 @@ $(function () {
     }
 });
 
-$(function () {
-    dhfgjkdsfhk
-});
+function scroll_to_top_and_show_form() {
+    $("html, body").animate({ scrollTop: 0 }, "slow");
+    login_form_shown = true;
+    $('#btnLogin').fadeOut('fast');
+    $('#divForm').fadeIn('fast');
+    $('#navbar_login_btn').stop(true, false);
+    $('#navbar_login_btn').fadeOut("slow");
+}
+
