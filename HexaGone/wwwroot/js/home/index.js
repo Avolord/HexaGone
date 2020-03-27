@@ -10,14 +10,14 @@ function checkScroll() {
     }
 
     if ($(window).scrollTop() > main_login_button_y) {
-        $('#navbar_login_btn').clearQueue();
-        $('.login-btn').clearQueue();
+        $('#navbar_login_btn').stop(true, false);
+        $('.login-btn').stop(true, false);
         $('#navbar_login_btn').fadeIn("slow");
         $('.login-btn').fadeOut("slow");
 
     } else {
-        $('#navbar_login_btn').clearQueue();
-        $('.login-btn').clearQueue();
+        $('#navbar_login_btn').stop(true, false);
+        $('.login-btn').stop(true, false);
         $('#navbar_login_btn').fadeOut("slow");
         $('.login-btn').fadeIn("slow");
     }
