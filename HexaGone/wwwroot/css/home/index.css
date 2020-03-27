@@ -6,8 +6,8 @@
 .login-btn {
     position: absolute;
     z-index: 4;
-    height: 10%;
     width: 30%;
+    height: auto;
     margin-top: -40%;
     margin-left: -15%;
     font-size: 1.5em;
