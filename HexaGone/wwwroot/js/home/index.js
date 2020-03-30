@@ -6,8 +6,10 @@ function checkScroll() {
 
     if ($(window).scrollTop() > startY) {
         $('.navbar').addClass("scrolled");
+        $('#navbar_user_profile').addClass("scrolled");
     } else {
         $('.navbar').removeClass("scrolled");
+        $('#navbar_user_profile').removeClass("scrolled");
     }
 
     if ($(window).scrollTop() > main_login_button_y && login_form_shown === false) {
