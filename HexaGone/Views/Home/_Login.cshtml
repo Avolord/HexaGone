@@ -1,12 +1,12 @@
 ﻿@model HexaGone.Models.UserModel
 
-<form id="loginForm">
-    <div class="form-group">
+<form id="loginForm" method="post">
+    <div class="form-group" id="LoginDiv">
         <label for="loginInputMail" id="loginLabel" style="margin-bottom: 1em">Login:</label>
         @*<input id="loginInputMail" type="text" class="form-control loginInputText" placeholder="Email or Username" />*@
 
-        @if (Model.IsLogin)
-        {
+        @*@if (Model.IsLogin)
+        {*@
             @Html.TextBoxFor(model => model.LoginModel.Username, new { @class = "form-control loginInputText", @placeholder = "Username or Email" })
             @if (Model.LoginModel.Username.Contains("@"))
             {
@@ -17,38 +17,56 @@
             {
                 Model.LoginModel.Email = null;
             }
-            @Html.TextBoxFor(model => model.LoginModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password" })
-            <button asp-controller="Home" asp-action="Index" class="btn btn-danger" id="btnFormLogin"> Login </button>
-            <button onclick="ChangeToRegistration()" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
-        }
-        else
+            @Html.TextBoxFor(model => model.LoginModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password", @type = "password" })
+            <button type="submit" asp-controller="Home" asp-action="Index" class="btn btn-danger" id="btnFormLogin"> Login </button>
+            <button type="button" onclick="ChangeToRegistration()" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
+        @*}*@
+        @*else
         {
             @Html.TextBoxFor(model => model.RegistrationModel.Username, new { @class = "form-control loginInputText", @placeholder = "Username" })
-            @Html.TextBoxFor(model => model.RegistrationModel.Email, new { @class = "form-control loginInputText", @placeholder = "Email" })
-            @Html.TextBoxFor(model => model.RegistrationModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password" })
-            @Html.TextBoxFor(model => model.RegistrationModel.RepeatPassword, new { @class = "form-control loginInputText", @placeholder = "Repeat Password" })
+            @Html.TextBoxFor(model => model.RegistrationModel.Email, new { @class = "form-control loginInputText", @placeholder = "Email", @type = "email" })
+            @Html.TextBoxFor(model => model.RegistrationModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password", @type = "password" })
+            @Html.TextBoxFor(model => model.RegistrationModel.RepeatPassword, new { @class = "form-control loginInputText", @placeholder = "Repeat Password", @type = "password" })
             <button onclick="ChangeToLogin()" class="btn btn-danger" id="btnFormLogin"> Login </button>
-            <button asp-controller="Home" asp-action="Index" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
-        }
+            <button type="submit" asp-controller="Home" asp-action="Index" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
+        }*@
 
         @*<input type="text" class="form-control loginInputText" placeholder="Password" />*@
 
     </div>
 </form>
 
-<script>
+<form id="registrationForm" method="post">
+    <div class="form-group" id="LoginDiv">
+        <label for="loginInputMail" id="loginLabel" style="margin-bottom: 1em">Registration:</label>
+        @Html.TextBoxFor(model => model.RegistrationModel.Username, new { @class = "form-control loginInputText", @placeholder = "Username" })
+        @Html.TextBoxFor(model => model.RegistrationModel.Email, new { @class = "form-control loginInputText", @placeholder = "Email", @type = "email" })
+        @Html.TextBoxFor(model => model.RegistrationModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password", @type = "password" })
+        @Html.TextBoxFor(model => model.RegistrationModel.RepeatPassword, new { @class = "form-control loginInputText", @placeholder = "Repeat Password", @type = "password" })
+        <button type="button" onclick="ChangeToLogin()" class="btn btn-danger" id="btnFormLogin"> Back </button>
+        <button type="submit" asp-controller="Home" asp-action="Index" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
+
+    </div>
+</form>
+
+<script type="text/javascript">
     function ChangeToRegistration()
     {
         @{
             Model.IsLogin = false;
-            Model.RegistrationModel = new RegistrationUserModel();
         }
+        //$('#LoginDiv').load(document.URL + ' #LoginDiv');
+        $('#loginForm').css( 'display', 'none' );
+        $('#registrationForm').css( 'display', 'block' );
     }
     function ChangeToLogin()
     {
         @{
-            Model.IsLogin = !false;
+            Model.IsLogin = true;
         }
+        //$('#LoginDiv').load(document.URL + ' #LoginDiv');
+        $('#registrationForm').css( 'display', 'none' );
+        $('#loginForm').css( 'display', 'block' );
     }
 
 

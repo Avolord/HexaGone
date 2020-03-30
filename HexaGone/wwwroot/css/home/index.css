@@ -140,3 +140,11 @@ navbar-text:hover {
 	padding-top: 0em;
 	padding-bottom: 0em;
 }
+
+#loginForm {
+	display: block;
+}
+
+#registrationForm {
+	display: none;
+}

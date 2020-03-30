@@ -26,7 +26,8 @@ namespace HexaGone.Controllers
         [HttpPost]
         public IActionResult Index(HexaGone.Models.UserModel user)
         {
-            return Content(user.LoginModel.Password);
+           
+            return Content("blubb");
         }
 
         public IActionResult Privacy()
