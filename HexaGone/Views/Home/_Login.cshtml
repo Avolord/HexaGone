@@ -1,0 +1,37 @@
+﻿@model HexaGone.Models.UserModel
+
+<form id="loginForm">
+    <div class="form-group">
+        <label for="loginInputMail" id="loginLabel" style="margin-bottom: 1em">Login:</label>
+        @*<input id="loginInputMail" type="text" class="form-control loginInputText" placeholder="Email or Username" />*@
+
+        @if (Model.IsLogin)
+        {
+            @Html.TextBoxFor(model => model.LoginModel.Username, new { @class = "form-control loginInputText", @placeholder = "Username or Email" })
+            @if (Model.LoginModel.Username.Contains("@"))
+            {
+                Model.LoginModel.Email = Model.LoginModel.Username;
+                Model.LoginModel.Username = null;
+            }
+            else
+            {
+                Model.LoginModel.Email = null;
+            }
+            @Html.TextBoxFor(model => model.LoginModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password" })
+            <button asp-controller="Home" asp-action="Index" class="btn btn-danger" id="btnFormLogin"> Login </button>
+            <button onclick="ChangeToRegistration()" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
+        }
+        else
+        {
+            @Html.TextBoxFor(model => model.RegistrationModel.Username, new { @class = "form-control loginInputText", @placeholder = "Username" })
+            @Html.TextBoxFor(model => model.RegistrationModel.Email, new { @class = "form-control loginInputText", @placeholder = "Email" })
+            @Html.TextBoxFor(model => model.RegistrationModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password" })
+            @Html.TextBoxFor(model => model.RegistrationModel.RepeatPassword, new { @class = "form-control loginInputText", @placeholder = "Repeat Password" })
+            <button onclick="ChangeToLogin()" class="btn btn-danger" id="btnFormLogin"> Login </button>
+            <button asp-controller="Home" asp-action="Index" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
+        }
+
+        @*<input type="text" class="form-control loginInputText" placeholder="Password" />*@
+
+    </div>
+</form>

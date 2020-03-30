@@ -20,7 +20,13 @@ namespace HexaGone.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View(new UserModel());
+        }
+
+        [HttpPost]
+        public IActionResult Index(HexaGone.Models.UserModel user)
+        {
+            return Content(user.LoginModel.Password);
         }
 
         public IActionResult Privacy()
