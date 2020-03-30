@@ -35,3 +35,21 @@
 
     </div>
 </form>
+
+<script>
+    function ChangeToRegistration()
+    {
+        @{
+            Model.IsLogin = false;
+            Model.RegistrationModel = new RegistrationUserModel();
+        }
+    }
+    function ChangeToLogin()
+    {
+        @{
+            Model.IsLogin = !false;
+        }
+    }
+
+
+</script>
