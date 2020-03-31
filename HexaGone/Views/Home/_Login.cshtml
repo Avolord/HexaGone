@@ -1,5 +1,7 @@
 ﻿@model HexaGone.Models.UserModel
 
+
+
 <form id="loginForm" method="post" style="display:block">
     <div class="form-group" id="LoginDiv">
         <label for="loginInputMail" id="loginLabel" style="margin-bottom: 1em">Login:</label>
@@ -15,6 +17,7 @@
             Model.LoginModel.Email = null;
         }
         @Html.TextBoxFor(model => model.LoginModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password", @type = "password", @required = "true" })
+        @Model.IsLogin
         <button type="submit" asp-controller="Home" asp-action="Index" class="btn btn-danger" id="btnFormLogin"> Login </button>
         <button type="button" onclick="ChangeToRegistration()" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
     </div>

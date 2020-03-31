@@ -23,20 +23,17 @@ namespace HexaGone.Controllers
             return View(new UserModel());
         }
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult Index(HexaGone.Models.UserModel user)
         {
             if (ModelState.IsValid)
-            {
                 if (user.IsLogin)
                     return Content(user.LoginModel.Password);
                 else
                     return Content(user.RegistrationModel.Password);
-            }
             else
-            {
-                return View(user);
-            }
+                return View();
+
         }
 
         public IActionResult Privacy()
