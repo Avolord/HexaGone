@@ -5,26 +5,15 @@
 
 
 <div class="text-center mid-screen">
-    @*<button class="login-btn btn btn-danger" id="btnLogin">Login</button>*@
     <div id="divForm" class="shadow">
         @{
-            if (Model.LoginModel == null && Model.RegistrationModel == null)
-            {
-                Model.LoginModel = new LoginUserModel();
-                Model.RegistrationModel = new RegistrationUserModel();
-                Model.IsLogin = true;
-                Model.LoginModel.Username = "";
-                Model.LoginModel.Email = "";
-                Model.LoginModel.Password = "";
-            } else if(Model.LoginModel != null)
-            {
-                Model.IsLogin = true;
-            }else if(Model.RegistrationModel != null)
-            {
-                Model.IsLogin = false;
-            }
-
+            Model.LoginModel = new LoginUserModel();
+            Model.RegistrationModel = new RegistrationUserModel();
+            Model.LoginModel.Username = "";
+            Model.LoginModel.Email = "";
+            Model.LoginModel.Password = "";
         }
+
         @await Html.PartialAsync("_Login", Model)
 
     </div>

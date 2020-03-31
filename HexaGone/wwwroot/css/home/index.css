@@ -148,3 +148,7 @@ navbar-text:hover {
 #registrationForm {
 	display: none;
 }
+
+#isLoginTextBox {
+	display: none;
+}

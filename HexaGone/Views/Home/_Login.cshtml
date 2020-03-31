@@ -1,7 +1,5 @@
 ﻿@model HexaGone.Models.UserModel
 
-
-
 <form id="loginForm" method="post" style="display:block">
     <div class="form-group" id="LoginDiv">
         <label for="loginInputMail" id="loginLabel" style="margin-bottom: 1em">Login:</label>
@@ -10,16 +8,18 @@
         @if (Model.LoginModel.Username.Contains("@"))
         {
             Model.LoginModel.Email = Model.LoginModel.Username;
-            Model.LoginModel.Username = null;
+            Model.LoginModel.Username = "";
         }
         else
         {
-            Model.LoginModel.Email = null;
+            Model.LoginModel.Email = "";
         }
         @Html.TextBoxFor(model => model.LoginModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password", @type = "password", @required = "true" })
-        @Model.IsLogin
-        <button type="submit" asp-controller="Home" asp-action="Index" class="btn btn-danger" id="btnFormLogin"> Login </button>
+        @Html.TextBoxFor(model => model.isLogin, "true", new { @id = "isLoginTextBox"})
+        <button type="submit" onclick="SubmitLogin()" asp-controller="Home" asp-action="Index" class="btn btn-danger" id="btnFormLogin"> Login </button>
         <button type="button" onclick="ChangeToRegistration()" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
+        
+        
     </div>
 </form>
 
@@ -30,31 +30,28 @@
         @Html.TextBoxFor(model => model.RegistrationModel.Email, new { @class = "form-control loginInputText", @placeholder = "Email", @type = "email", @required = "true" })
         @Html.TextBoxFor(model => model.RegistrationModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password", @type = "password", @required = "true" })
         @Html.TextBoxFor(model => model.RegistrationModel.RepeatPassword, new { @class = "form-control loginInputText", @placeholder = "Repeat Password", @type = "password", @required = "true" })
+        @Html.TextBoxFor(model => model.isLogin, "false", new { @id = "isLoginTextBox" })
         <button type="button" onclick="ChangeToLogin()" class="btn btn-danger" id="btnFormLogin"> Back </button>
         <button type="submit" asp-controller="Home" asp-action="Index" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
-
     </div>
 </form>
 
 <script type="text/javascript">
     function ChangeToRegistration()
     {
-        @{
-            Model.IsLogin = false;
-        }
-        //$('#LoginDiv').load(document.URL + ' #LoginDiv');
+
         $('#loginForm').css( 'display', 'none' );
         $('#registrationForm').css( 'display', 'block' );
     }
     function ChangeToLogin()
     {
-        @{
-            Model.IsLogin = true;
-        }
-        //$('#LoginDiv').load(document.URL + ' #LoginDiv');
         $('#registrationForm').css( 'display', 'none' );
         $('#loginForm').css( 'display', 'block' );
     }
 
+    function SubmitLogin()
+    {
+    }
 
 </script>
+ 
