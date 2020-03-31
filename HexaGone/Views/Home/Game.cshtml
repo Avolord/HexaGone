@@ -1,6 +1,64 @@
-﻿
+﻿@model HexaGone.Models.Hexmap
 @{
     Layout = "_GameLayout";
 }
+<label id="test1"></label>
+<canvas id="hexmap"></canvas>
 
-<canvas id="canvas"></canvas>
+@section Scripts{
+    <script>
+        var canvas;
+
+        var hexHeight,
+            hexRadius,
+            hexRectangleHeight,
+            hexRectangleWidth,
+            hexagonAngle,
+            sideLength,
+            boardWidth,
+            boardHeight;
+        var textures;
+
+
+
+        function game_variables() {
+            canvas = document.getElementById('hexmap');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            hexagonAngle = 0.523598776; // 30 degrees in radians
+            sideLength = @Model.hexSideLength;
+            boardWidth = @Model.width;
+            boardHeight = @Model.height;
+
+            textures = [];
+
+
+            for (var i = 0; i < boardWidth; i++) {
+                textures[i] = [];
+            }
+
+            @for(int i = 0; i < Model.width; i++)
+            {
+                for(int j = 0; j < Model.height; j++)
+                {
+                    <text>
+            textures[@i][@j] = @Model.texture_index[i][j];
+                    </text>
+                }
+            }
+
+
+
+            //===
+            // Array-Tests
+            @*@{ 
+                for(int i = 0; i < Model.v.Length; i++)
+                {
+                    <text>textures[@i] = @Model.v[i];</text>
+                }
+            }*@
+            //===
+    }
+    </script>
+}
