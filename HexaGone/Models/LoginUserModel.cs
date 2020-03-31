@@ -16,5 +16,6 @@ namespace HexaGone.Models
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
     }
 }

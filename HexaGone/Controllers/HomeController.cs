@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using HexaGone.Models;
+using System.Net;
 
 namespace HexaGone.Controllers
 {
@@ -20,22 +21,30 @@ namespace HexaGone.Controllers
 
         public IActionResult Index()
         {
-            return View(new UserModel());
+            return View(new UserModel() { isLogin = "true" }); 
         }
 
         [HttpPost]
         public IActionResult Index(HexaGone.Models.UserModel user)
         {
+            if (user.isLogin == "false")
+            {
+                user.LoginModel = null;
+            }
             if (ModelState.IsValid)
             {
-                if (user.IsLogin)
+                if (user.isLogin == "true")
+                {
                     return Content(user.LoginModel.Password);
+                }
                 else
+                {
                     return Content(user.RegistrationModel.Password);
+                }
             }
             else
             {
-                return View(user);
+                return View(new UserModel() { isLogin = "true" });
             }
         }
 

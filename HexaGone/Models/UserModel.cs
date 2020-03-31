@@ -9,7 +9,11 @@ namespace HexaGone.Models
     {
         public LoginUserModel LoginModel { get; set; }
         public RegistrationUserModel RegistrationModel { get; set; }
-        public bool IsLogin { get; set; }
+        public bool LoginIsValid { get; set; }
+        public bool RegistrationIsValid { get; set; }
+
+        public string isLogin { get; set; }
+
 
     }
 }
