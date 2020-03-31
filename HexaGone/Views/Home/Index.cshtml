@@ -5,24 +5,25 @@
 
 
 <div class="text-center mid-screen">
-    <button class="login-btn btn btn-danger" id="btnLogin">Login</button>
+    @*<button class="login-btn btn btn-danger" id="btnLogin">Login</button>*@
     <div id="divForm" class="shadow">
-        @*<form id="loginForm">
-                <div class="form-group">
-                    <label for="loginInputMail" id="loginLabel" style="margin-bottom: 1em">Login:</label>
-                    <input id="loginInputMail" type="text" class="form-control loginInputText" placeholder="Email or Username" />
-                    <input type="text" class="form-control loginInputText" placeholder="Password" />
-                    <button class="btn btn-danger" id="btnFormLogin"> Login </button>
-                    <button class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
-                </div>
-            </form>*@
         @{
-            Model.LoginModel = new LoginUserModel();
-            Model.RegistrationModel = new RegistrationUserModel();
-            Model.IsLogin = true;
-            Model.LoginModel.Username = "";
-            Model.LoginModel.Email = "";
-            Model.LoginModel.Password = "";
+            if (Model.LoginModel == null && Model.RegistrationModel == null)
+            {
+                Model.LoginModel = new LoginUserModel();
+                Model.RegistrationModel = new RegistrationUserModel();
+                Model.IsLogin = true;
+                Model.LoginModel.Username = "";
+                Model.LoginModel.Email = "";
+                Model.LoginModel.Password = "";
+            } else if(Model.LoginModel != null)
+            {
+                Model.IsLogin = true;
+            }else if(Model.RegistrationModel != null)
+            {
+                Model.IsLogin = false;
+            }
+
         }
         @await Html.PartialAsync("_Login", Model)
 

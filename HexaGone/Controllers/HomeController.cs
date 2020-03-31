@@ -26,8 +26,17 @@ namespace HexaGone.Controllers
         [HttpPost]
         public IActionResult Index(HexaGone.Models.UserModel user)
         {
-           
-            return Content("blubb");
+            if (ModelState.IsValid)
+            {
+                if (user.IsLogin)
+                    return Content(user.LoginModel.Password);
+                else
+                    return Content(user.RegistrationModel.Password);
+            }
+            else
+            {
+                return View(user);
+            }
         }
 
         public IActionResult Privacy()
