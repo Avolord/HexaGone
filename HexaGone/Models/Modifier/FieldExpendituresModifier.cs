@@ -44,6 +44,7 @@ namespace HexaGone.Models.Modifier
                     Name = "EXAMPLE MODIFIER. SHOULD NOT BE INGAME. SORRY.";
                     Value = 0;
                     Additive = true;
+
                     break;
 
                 //No case - Do nothing

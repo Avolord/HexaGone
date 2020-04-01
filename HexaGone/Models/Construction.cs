@@ -8,7 +8,7 @@ namespace HexaGone.Models
     public class Construction
     {
         /// <summary>
-        /// Name of The Construction
+        /// Name of the Construction type
         /// </summary>
         public string Name { get; set; }
         /// <summary>
@@ -22,13 +22,9 @@ namespace HexaGone.Models
         /// <summary>
         /// The Cost of the Construction
         /// </summary>
-        public List<Resource> Cost { get; set; }
+        public ResourceList Cost { get; set; }
         /// <summary>
-        /// The Influence of the Construction
-        /// </summary>
-        public int Influence { get; set; }
-        /// <summary>
-        /// The Defenseive Value of the Construction
+        /// The Defensive Value of the Construction
         /// </summary>
         public int Defense { get; set; }
         /// <summary>
