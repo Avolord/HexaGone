@@ -32,15 +32,12 @@ namespace HexaGone.Controllers
         {
             Models.Hexmap hexmap = new Models.Hexmap();
 
+            //===
             // Ausfüllen:
             hexmap.hexSideLength = 30;
             hexmap.width = 8;
             hexmap.height = 4;
-
-            //===
-            // Array-Tests
-            //hexmap.v[0] = 10;
-            //hexmap.v[1] = 20;
+            hexmap.isPointy = false;
             //===
 
             hexmap.texture_index = new int[hexmap.width][];
@@ -54,13 +51,11 @@ namespace HexaGone.Controllers
             {
                 for (int j = 0; j < hexmap.height; j++)
                 {
-                    hexmap.texture_index[i][j] = 1;
+                    hexmap.texture_index[i][j] = j;
                 }
             }
 
-            hexmap.hexWidth = (float)Math.Sqrt(3) * hexmap.hexSideLength;
-            hexmap.hexHeight = 2 * hexmap.hexSideLength;
-            hexmap.hexes = new Models.Hex[hexmap.width, hexmap.height];
+            hexmap.calculate();
 
             return View("Game", hexmap);
         }
