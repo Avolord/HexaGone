@@ -22,12 +22,12 @@ namespace HexaGone.Models
         public int Amount { get; set; }
         //Static Attributes
 
-        public const int resourceID_Gold = 0;
-        public const int resourceID_Wood = 1;
-        public const int resourceID_Food = 2;
-        public const int resourceID_Stone = 3;
-        public const int resourceID_Copper = 4;
-        public const int resourceID_Iron = 5;
+        public const int resourceIdGold = 0;
+        public const int resourceIdWood = 1;
+        public const int resourceIdFood = 2;
+        public const int resourceIdStone = 3;
+        public const int resourceIdCopper = 4;
+        public const int resourceIdIron = 5;
 
 
         //Constructor
@@ -35,7 +35,7 @@ namespace HexaGone.Models
         /// <summary>
         /// Constructs a Resource from a _ResourceID. Currently supports IDs ranging from 0-5.
         /// </summary>
-        /// <param name="_ResourceID">
+        /// <param name="resourceID">
         /// 0 = Gold ;
         /// 1 = Wood ;
         /// 2 = Food ;
@@ -44,61 +44,47 @@ namespace HexaGone.Models
         /// 5 = Iron ;
         /// defaults to Gold
         /// </param>
-        /// <param name="_Amount">The amount of this Resource. Optional. Defaults to 0</param>
-        public Resource(int _ResourceID, int _Amount = 0)
+        /// <param name="amount">The amount of this Resource. Optional. Defaults to 0</param>
+        public Resource(int resourceID, int amount = 0)
         {
-            ResourceID = _ResourceID;
-            Amount = _Amount;
+            ResourceID = resourceID;
+            Amount = amount;
 
             switch (ResourceID)
             {
                 //Gold
-                case resourceID_Gold:
+                case resourceIdGold:
                     Name = "Gold";
                     break;
                 //Wood
-                case resourceID_Wood:
+                case resourceIdWood:
                     Name = "Wood";
                     break;
                 //Food
-                case resourceID_Food:
+                case resourceIdFood:
                     Name = "Food";
                     break;
                 //Stone
-                case resourceID_Stone:
+                case resourceIdStone:
                     Name = "Stone";
                     break;
                 //Copper
-                case resourceID_Copper:
+                case resourceIdCopper:
                     Name = "Copper";
                     break;
                 //Iron
-                case resourceID_Iron:
+                case resourceIdIron:
                     Name = "Iron";
                     break;
                 //Default (in this case Gold)
                 default:
-                    ResourceID = resourceID_Gold;
+                    ResourceID = resourceIdGold;
                     Name = "Gold";
                     break;
 
             }
         }
 
-        public static List<Resource> createStock(int _Gold, int _Wood, int _Food, int _Stone, int _Copper, int _Iron)
-        {
-            List<Resource> list = new List<Resource>();
-
-            list.Add(new Resource(0, _Gold));
-            list.Add(new Resource(1, _Wood));
-            list.Add(new Resource(2, _Food));
-            list.Add(new Resource(3, _Stone));
-            list.Add(new Resource(4, _Copper));
-            list.Add(new Resource(5, _Iron));
-
-
-            return list;
-        }
         //Functions
     }
 }

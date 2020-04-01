@@ -99,16 +99,16 @@ namespace HexaGone.Models
         /// <summary>
                 /// Constructs a City from Parent Field
                 /// </summary>
-                /// <param name="_Parent">The Parrent Field</param>
-                /// <param name="_Influence">The influence size of the city. Optional. Defaults to 20.</param>
-                /// <param name="_Population">The Population of a city. Optional. Defaults to 1000.</param>
-                /// <param name="_Resources">The Resource stock of the city. Optional. Defaults to 0.</param>
-        public City(Field _Parent, int _Influence = StartingInfluence, int _Population = StartingPopulation, ResourceList _Resources = null)
+                /// <param name="parent">The Parrent Field</param>
+                /// <param name="influence">The influence size of the city. Optional. Defaults to 20.</param>
+                /// <param name="population">The Population of a city. Optional. Defaults to 1000.</param>
+                /// <param name="resources">The Resource stock of the city. Optional. Defaults to 0.</param>
+        public City(Field parent, int influence = StartingInfluence, int population = StartingPopulation, ResourceList resources = null)
         {
-            ParentField = _Parent;
+            ParentField = parent;
             CityID = CreateUniqueCityID();
-            Influence = _Influence;
-            Population = _Population;
+            Influence = influence;
+            Population = population;
             Jobs = StartingJobs;
             Name = "City";
             NeedsField = true;
@@ -119,9 +119,9 @@ namespace HexaGone.Models
             CityBuildings = new List<CityBuilding>();
             FieldBuildings = new List<FieldBuilding>();
 
-            if(_Resources != null)
+            if(resources != null)
             {
-                Resources = _Resources;
+                Resources = resources;
             }
             else
             {

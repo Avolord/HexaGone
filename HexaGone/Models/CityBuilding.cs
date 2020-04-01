@@ -40,12 +40,12 @@ namespace HexaGone.Models
         /// <summary>
         /// Constructs a CityBuilding from Parent City and BuildingID.
         /// </summary>
-        /// <param name="_ParentCity">The Parrent City</param>
-        public CityBuilding (City _ParentCity, int _BuildingID)
+        /// <param name="parentCity">The Parrent City</param>
+        public CityBuilding (City parentCity, int buildingID)
         {
             ID = CreateUniqueCityBuildingID();
-            BuildingID = _BuildingID;
-            ParentCity = _ParentCity;
+            BuildingID = buildingID;
+            ParentCity = parentCity;
             NeedsField = false;
 
             switch(BuildingID)

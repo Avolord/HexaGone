@@ -33,7 +33,7 @@ namespace HexaGone.Models
         /// <summary>
         /// A List of terrains this building can be build on.
         /// </summary>
-        public List<Terrain> LegalTerrains { get; set; }
+        public List<Terrain> LegalTerrains { get; }
 
         //Constants
 
@@ -44,13 +44,13 @@ namespace HexaGone.Models
         /// <summary>
         /// Constructs a FieldBuilding from Parent City and BuildingID.
         /// </summary>
-        /// <param name="_ParentCity">The Parrent City</param>
-        public FieldBuilding(City _ParentCity, Field _ParentField, int _BuildingID)
+        /// <param name="parentCity">The Parrent City</param>
+        public FieldBuilding(City parentCity, Field parentField, int buildingID)
         {
             ID = CreateUniqueFieldBuildingID();
-            BuildingID = _BuildingID;
-            ParentField = _ParentField;
-            ParentCity = _ParentCity;
+            BuildingID = buildingID;
+            ParentField = parentField;
+            ParentCity = parentCity;
             NeedsField = true;
             LegalTerrains = new List<Terrain>();
 
