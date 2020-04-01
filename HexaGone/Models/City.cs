@@ -43,16 +43,16 @@ namespace HexaGone.Models
         /// <summary>
         /// A List of Fields that belong to the city.
         /// </summary>
-        public List<Field> Fields { get; set; }
+        public List<Field> Fields { get; }
         /// <summary>
         /// A List of Buildings built in the city.
         /// </summary>
-        public List<CityBuilding> CityBuildings { get; set; }
+        public List<CityBuilding> CityBuildings { get; }
         //Are those even necessary with the List of Fields?
         /// <summary>
         /// A List of FieldBuildings built in the influence area of the city.
         /// </summary>
-        public List<FieldBuilding> FieldBuildings { get; set; }
+        public List<FieldBuilding> FieldBuildings { get; }
 
         //Constants
 
@@ -113,6 +113,12 @@ namespace HexaGone.Models
             Name = "City";
             NeedsField = true;
             Cost = StandardCityCost;
+            
+            //Initialise Lists
+            Fields = new List<Field>();
+            CityBuildings = new List<CityBuilding>();
+            FieldBuildings = new List<FieldBuilding>();
+
             if(_Resources != null)
             {
                 Resources = _Resources;

@@ -42,7 +42,7 @@ namespace HexaGone.Models
         /// <summary>
         /// A list of the available resources on this Field.
         /// </summary>
-        public List<int> FieldResources { get; set; }
+        public List<int> FieldResources { get; }
         //TO ADD: Streets
         /// <summary>
         /// The factor of the speed at which entities can pass through the terrain.
@@ -51,7 +51,7 @@ namespace HexaGone.Models
         /// <summary>
         /// A List of all MovementRateModifiers affecting this field. Is sorted by the Additive boolean value. First all Additive modifiers and then all !Additive ones.
         /// </summary>
-        public List<Modifier.FieldMovementRateModifier> MovementRateModifiers { get; set; }
+        public List<Modifier.FieldMovementRateModifier> MovementRateModifiers { get; }
         /// <summary>
         /// The factor of the visibility. The higher, the better an entity can see into and through the field.
         /// </summary>
@@ -59,7 +59,7 @@ namespace HexaGone.Models
         /// <summary>
         /// A List of all VisibilityModifiers affecting this field. Is sorted by the Additive boolean value. First all Additive modifiers and then all !Additive ones.
         /// </summary>
-        public List<Modifier.FieldVisibilityModifier> VisibilityModifiers { get; set; }
+        public List<Modifier.FieldVisibilityModifier> VisibilityModifiers { get; }
         /// <summary>
         /// The factor of the food/gold expenditures for resting armies.
         /// </summary>
@@ -67,7 +67,7 @@ namespace HexaGone.Models
         /// <summary>
         /// A List of all ExpendituresModifiers affecting this field. Is sorted by the Additive boolean value. First all Additive modifiers and then all !Additive ones.
         /// </summary>
-        public List<Modifier.FieldExpendituresModifier> ExpendituresModifiers { get; set; }
+        public List<Modifier.FieldExpendituresModifier> ExpendituresModifiers { get; }
 
 
         //Constructor
