@@ -1,233 +1,130 @@
-﻿(function () {
-    game_variables();
-    var off_directions = [
-        [[+1, 0], [0, -1], [-1, -1],
-        [-1, 0], [-1, +1], [0, +1]],
-        [[+1, 0], [+1, -1], [0, -1],
-        [-1, 0], [0, +1], [+1, +1]],
-    ];
+﻿//Kais functions
 
-    //===
-    // Test
-    document.getElementById("test1").innerHTML = textures;
-    //===
+let canvas = document.getElementById('hexmap');
+let ctx = canvas.getContext('2d');
+ctx.fillStyle = 'red';
+ctx.font = '20px Arial';
 
-    hexHeight = Math.sin(hexagonAngle) * sideLength;
-    hexRadius = Math.cos(hexagonAngle) * sideLength;
-    hexRectangleHeight = sideLength + 2 * hexHeight;
-    hexRectangleWidth = 2 * hexRadius;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-    if (canvas.getContext) {
-        var ctx = canvas.getContext('2d');
+console.log(canvas.width, canvas.height);
 
-        ctx.fillStyle = "#000000";
-        ctx.strokeStyle = "#CCCCCC";
-        ctx.lineWidth = 3;
+canvas.addEventListener('mousemove', function (event) {
+    myFunction(event);
+});
 
-        drawBoard(ctx, boardWidth, boardHeight);
+function myFunction(e) {
+    var x = e.clientX;
+    var y = e.clientY;
+    var coor = 'Coordinates: (' + x + ',' + y + ')';
+    $('#info_bar_global_resources div#gold span.info_bar_data_value').html('x: ' + x);
+    $('#info_bar_global_resources div#silver span.info_bar_data_value').html('y: ' + y);
 
-        canvas.addEventListener("mousemove", function (eventInfo) {
-            var x,
-                y,
-                hexX,
-                hexY,
+    // ctx.fillText('Banane', x, y);
+    // ctx.fillRect(x, y, 10, 10);
+}
 
-                x = eventInfo.offsetX || eventInfo.layerX;
-            y = eventInfo.offsetY || eventInfo.layerY;
+$('#test_button').on('click', function () {
+    //$('.stat_bar').fadeToggle('fast');
+    $('#info_bar_local_resources').slideToggle();
+    info_bar_local_resources_active = !info_bar_local_resources_active;
+});
 
-            hexY = Math.floor(y / (hexHeight + sideLength));
-            hexX = Math.floor((x - (hexY % 2) * hexRadius) / hexRectangleWidth);
+let user_is_ready = false;
 
-
-            //===
-            // Compare original Hexagon(hexX, hexY) with two neighbors.
-            // The Hexagon with the shortest distance to the cursor is the correct one.
-
-            var p = off_to_pixel(hexX, hexY);
-            var d = distance(p[0], p[1], x, y);
-
-            var n2 = off_neighbor(hexX, hexY, 2);
-            var p2 = off_to_pixel(n2[0], n2[1]);
-            var d2 = distance(p2[0], p2[1], x, y);
-
-            var n1 = off_neighbor(hexX, hexY, 1);
-            var p1 = off_to_pixel(n1[0], n1[1]);
-            var d1 = distance(p1[0], p1[1], x, y)
-
-
-            if (d2 < d && d2 < d1) {
-                hexX = n2[0];
-                hexY = n2[1];
-            }
-            else if (d1 < d) {
-                hexX = n1[0];
-                hexY = n1[1];
-            }
-            //===
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBoard(ctx, boardWidth, boardHeight);
-
-            // Check if the mouse's coords are on the board
-            if (hexX >= 0 && hexX < boardWidth) {
-                if (hexY >= 0 && hexY < boardHeight) {
-                    ctx.fillStyle = "#000000";
-                    drawHexagon(ctx, hexX, hexY, true);
-                }
-            }
-
-
-        });
+$('.game_ready_button').on('click', function () {
+    if (user_is_ready) {
+        $(this).removeClass('btn-success');
+        $(this).addClass('btn-danger');
+        $('.game_ready_button h2').html('Not Ready!');
+    } else {
+        $(this).removeClass('btn-danger');
+        $(this).addClass('btn-success');
+        $('.game_ready_button h2').html('Ready!');
     }
 
-    function drawBoard(canvasContext, width, height) {
-        var i,
-            j;
+    user_is_ready = !user_is_ready;
+});
 
-        for (i = 0; i < width; ++i) {
-            for (j = 0; j < height; ++j) {
-                drawHexagon(
-                    ctx,
-                    i,
-                    j,
-                    false
-                );
-            }
+$('.action_list_delete_button').on('click', function () {
+    $(this).parent().remove();
+});
+
+$(function () {
+    $('#info_bar_local_resources').slideUp(0);
+    info_bar_local_resources_active = false;
+    $('.burger_menu_container').addClass('toggle_burger_menu');
+});
+
+let dragged;
+let id;
+let index;
+let indexDrop;
+let list;
+
+$('.action_list').on('dragstart', ({ target }) => {
+    dragged = target;
+    id = target.id;
+    list = target.parentNode.children;
+    for (let i = 0; i < list.length; i += 1) {
+        if (list[i] === dragged) {
+            index = i;
         }
     }
+});
 
-    function drawHexagon(canvasContext, x, y, fill) {
-        var fill = fill || false;
+$('.action_list').on('dragover', (event) => {
+    event.preventDefault();
+});
 
-        x = x * hexRectangleWidth + ((y % 2) * hexRadius);
-        y = y * (sideLength + hexHeight);
+$('.action_list').on('drag', (event) => { });
 
-        canvasContext.beginPath();
-        canvasContext.moveTo(x + hexRadius, y);
-        canvasContext.lineTo(x + hexRectangleWidth, y + hexHeight);
-        canvasContext.lineTo(x + hexRectangleWidth, y + hexHeight + sideLength);
-        canvasContext.lineTo(x + hexRadius, y + hexRectangleHeight);
-        canvasContext.lineTo(x, y + sideLength + hexHeight);
-        canvasContext.lineTo(x, y + hexHeight);
-        canvasContext.closePath();
-
-        if (fill) {
-            canvasContext.fill();
+$('.action_list').on('drop', ({ target }) => {
+    if ($(target).hasClass('action_list_item') && target.id !== id) {
+        dragged.remove(dragged);
+        for (let i = 0; i < list.length; i += 1) {
+            if (list[i] === target) {
+                indexDrop = i;
+            }
+        }
+        //console.log(index, indexDrop);
+        if (index > indexDrop) {
+            target.before(dragged);
         } else {
-            canvasContext.stroke();
+            target.after(dragged);
         }
     }
+});
 
-    function pixel_to_axial(x, y) {
-        // set pixel coordinates to the middle of the hexagon
-        //x = x + hexRadius;
-        //y = y + sideLength;
+let menu_bar_active = true;
+let menu_bar_height_max = 0;
 
-        var q = (Math.sqrt(3) / 3 * x - 1 / 3 * y) / sideLength;
-        var r = (2. / 3 * y) / sideLength;
+function toggle_menu_bar(burger_menu) {
+    console.log(1);
+    $(burger_menu).toggleClass('toggle_burger_menu');
 
-        var axial = axial_round(q, r)
+    if (menu_bar_active) {
+        menu_bar_height_max = $('.menu_bar').height();
 
-        return [axial[0], axial[1]];
+        $('.menu_bar_header div.menu_bar_title').css('visibility', 'hidden');
+        $('.menu_bar').animate({ height: '50px', width: '80px', borderBottomRightRadius: '25px' }, 500, function () {
+            $('.menu_bar').children().hide();
+            $('.menu_bar_header div.menu_bar_title').hide();
+            $('.menu_bar_header').show();
+        });
+    } else {
+        $('.menu_bar').children().show();
+        $('.menu_bar_header div.menu_bar_title').show();
+        $('.menu_bar_header div.menu_bar_title').css('visibility', 'visible');
+        $('.menu_bar').animate(
+            { height: menu_bar_height_max, width: '25%', borderBottomRightRadius: '0px' },
+            500,
+            function () {
+                $(this).height('auto');
+            }
+        );
     }
 
-    function axial_to_pixel(q, r) {
-        var x = sideLength * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
-        var y = sideLength * (3. / 2 * r);
-
-        // set pixel coordinates to the middle of the hexagon
-        x = Math.round(x + hexRadius);
-        y = Math.round(y + sideLength);
-
-        return [x, y];
-    }
-
-    function off_to_pixel(x, y) {
-        var axial = off_to_axial(x, y);
-        var pixel = axial_to_pixel(axial[0], axial[1]);
-        return [pixel[0], pixel[1]];
-    }
-
-    function cube_round(x, y, z) {
-        var rx = Math.round(x);
-        var ry = Math.round(y);
-        var rz = Math.round(z);
-
-        var x_diff = Math.abs(rx - x);
-        var y_diff = Math.abs(ry - y);
-        var z_diff = Math.abs(rz - z);
-
-        if (x_diff > y_diff && x_diff > z_diff) {
-            rx = -ry - rz;
-        }
-        else if (y_diff > z_diff) {
-            ry = -rx - rz;
-        }
-        else {
-            rz = -rx - ry;
-        }
-
-        return [rx, ry, rz];
-    }
-
-    function axial_round(x, y) {
-
-        var cube = axial_to_cube(x, y);
-        var rCube = cube_round(cube[0], cube[1], cube[2]);
-        var axial = cube_to_axial(rCube[0], rCube[1], rCube[2])
-
-        return [axial[0], axial[1]];
-    }
-
-    function axial_to_cube(x, z) {
-
-        var y = -x - z;
-
-        return [x, y, z];
-    }
-
-    function cube_to_axial(x, y, z) {
-
-        return [x, z];
-    }
-
-    function off_to_cube(col, row) {
-        var x = col - (row - (row & 1)) / 2;
-        var z = row;
-        var y = -x - z;
-        return [x, y, z];
-    }
-
-    function cube_to_off(x, y, z) {
-        var col = x + (z - (z & 1)) / 2;
-        var row = z;
-        return [col, row];
-    }
-
-    function off_to_axial(row, col) {
-        var cube = off_to_cube(row, col);
-        var axial = cube_to_axial(cube[0], cube[1], cube[2])
-        return [axial[0], axial[1]];
-    }
-
-    function axial_to_off(p, r) {
-        var cube = axial_to_cube(p, r);
-        var off = cube_to_off(cube[0], cube[1], cube[2]);
-        return [off[0], off[1]];
-    }
-
-    function distance(x1, y1, x2, y2) {
-        return Math.round(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))
-    }
-
-    function axial_neighbor(p, r, direction) {
-        var dir = axial_directions[direction];
-        return [p + dir[0], r + dir[1]];
-    }
-
-    function off_neighbor(col, row, direction) {
-        var parity = row & 1;
-        var dir = off_directions[parity][direction];
-        return [col + dir[0], row + dir[1]];
-    }
-})();
+    menu_bar_active = !menu_bar_active;
+}

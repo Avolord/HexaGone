@@ -34,8 +34,8 @@ namespace HexaGone.Controllers
 
             // Ausfüllen:
             hexmap.hexSideLength = 30;
-            hexmap.width = 8;
-            hexmap.height = 4;
+            hexmap.width = 50;
+            hexmap.height = 40;
 
             //===
             // Array-Tests
