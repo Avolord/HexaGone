@@ -32,7 +32,7 @@
         @Html.TextBoxFor(model => model.RegistrationModel.RepeatPassword, new { @class = "form-control loginInputText", @placeholder = "Repeat Password", @type = "password", @required = "true" })
         @Html.TextBoxFor(model => model.isLogin, "false", new { @id = "isLoginTextBox" })
         <button type="button" onclick="ChangeToLogin()" class="btn btn-danger" id="btnFormLogin"> Back </button>
-        <button type="submit" asp-controller="Home" asp-action="Index" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
+        <button type="submit" asp-controller="Home" asp-action="Register" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
     </div>
 </form>
 

@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using HexaGone.Models;
 using System.Net;
+using System.Data;
+using Dapper;
+using MySql.Data.MySqlClient;
+using Dapper.Contrib;
+using Dapper.Contrib.Extensions;
 
 namespace HexaGone.Controllers
 {
@@ -57,6 +62,20 @@ namespace HexaGone.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        [HttpPost]
+        public IActionResult Register(HexaGone.Models.UserModel user)
+        {
+            using (IDbConnection db = new MySqlConnection(Models.Dapper.connectionString))
+            {
+                
+                string sqlQuery = "Insert Into User (Email, Username, Password) Values(@Email, @Username, @Password)";
+                user.RegistrationModel.Password = Hash.GetMD5Hash(user.RegistrationModel.Password);
+                
+                int rowsAffected = db.Execute(sqlQuery, user.RegistrationModel);
+
+            }
+            return Content("true");
         }
     }
 }
