@@ -28,9 +28,41 @@ namespace HexaGone.Controllers
             return View();
         }
 
-        public IActionResult Game() 
+        public IActionResult Game()
         {
-            return View();
+            Models.Hexmap hexmap = new Models.Hexmap();
+
+            // Ausfüllen:
+            hexmap.hexSideLength = 30;
+            hexmap.width = 8;
+            hexmap.height = 4;
+
+            //===
+            // Array-Tests
+            //hexmap.v[0] = 10;
+            //hexmap.v[1] = 20;
+            //===
+
+            hexmap.texture_index = new int[hexmap.width][];
+
+            for (int i = 0; i < hexmap.width; i++)
+            {
+                hexmap.texture_index[i] = new int[hexmap.height];
+            }
+
+            for (int i = 0; i < hexmap.width; i++)
+            {
+                for (int j = 0; j < hexmap.height; j++)
+                {
+                    hexmap.texture_index[i][j] = 1;
+                }
+            }
+
+            hexmap.hexWidth = (float)Math.Sqrt(3) * hexmap.hexSideLength;
+            hexmap.hexHeight = 2 * hexmap.hexSideLength;
+            hexmap.hexes = new Models.Hex[hexmap.width, hexmap.height];
+
+            return View("Game", hexmap);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

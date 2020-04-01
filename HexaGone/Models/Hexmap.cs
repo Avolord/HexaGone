@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HexagonalGrid.Models
+namespace HexaGone.Models
 {
     public class Hexmap
     {
@@ -16,5 +16,12 @@ namespace HexagonalGrid.Models
         public float hexSideLength { get; set; }
 
         public Hex[,] hexes { get; set; }
+        public int[][] texture_index { get; set; }
+
+
+        //===
+        // Array-Tests
+        public int[] v = new int[2];
+        //===
     }
 }
