@@ -7,21 +7,28 @@ namespace HexaGone.Models
 {
     public class Hexmap
     {
+        public bool isPointy;
         public int width { get; set; }
         public int height { get; set; }
 
         public float hexWidth { get; set; }
         public float hexHeight { get; set; }
-
         public float hexSideLength { get; set; }
-
-        public Hex[,] hexes { get; set; }
+        
         public int[][] texture_index { get; set; }
 
 
-        //===
-        // Array-Tests
-        public int[] v = new int[2];
-        //===
+        public void calculate()
+        {
+            if (isPointy)
+            {
+                hexWidth = (float)Math.Sqrt(3) * hexSideLength;
+                hexHeight = 2 * hexSideLength;
+            }
+            else
+            {
+
+            }
+        }
     }
 }
