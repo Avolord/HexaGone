@@ -2,13 +2,17 @@
 @{
     Layout = "_GameLayout";
 }
-<label id="test1"></label>
 <canvas id="hexmap"></canvas>
+<label id="test1" style="position:absolute; top:0px; left:500px"></label>
+<label id="test2" style="position:absolute; top:15px; left:500px"></label>
+<label id="test3" style="position:absolute; top:45px; left:500px"></label>
+<label id="test4" style="position:absolute; top:60px; left:500px"></label>
 
 @section Scripts{
     <script>
         var canvas;
-
+        var hexmapStyle;
+        
         var hexHeight,
             hexRadius,
             hexRectangleHeight,
@@ -17,11 +21,22 @@
             sideLength,
             boardWidth,
             boardHeight;
+        var offDirections;
         var textures;
 
 
+        function gameVariables() {
+            @if(Model.isPointy)
+            {
+                <text>hexmapStyle = "pointy";</text>
+            }
+            else
+            {
+                <text>hexmapStyle = "flat";</text>
+            }
+        }
 
-        function game_variables() {
+        function gameVariables_f() {
             canvas = document.getElementById('hexmap');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -31,8 +46,19 @@
             boardWidth = @Model.width;
             boardHeight = @Model.height;
 
-            textures = [];
+            offDirections = [
+                [[+1, 0], [+1, -1], [0, -1],
+                [-1, -1], [-1, 0], [0, +1]],
+                [[+1, +1], [+1, 0], [0, -1],
+                [-1, 0], [-1, +1], [0, +1]],
+            ];
 
+            hexHeight = Math.sin(hexagonAngle) * sideLength;
+            hexRadius = Math.cos(hexagonAngle) * sideLength;
+            hexRectangleWidth = sideLength + 2 * hexHeight;
+            hexRectangleHeight = 2 * hexRadius;
+
+            textures = [];
 
             for (var i = 0; i < boardWidth; i++) {
                 textures[i] = [];
@@ -42,23 +68,48 @@
             {
                 for(int j = 0; j < Model.height; j++)
                 {
-                    <text>
-            textures[@i][@j] = @Model.texture_index[i][j];
-                    </text>
+                    <text>textures[@i][@j] = @Model.texture_index[i][j];</text>
                 }
             }
+        }
+        
+
+        function gameVariables_p() {
+            canvas = document.getElementById('hexmap');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            hexagonAngle = 0.523598776; // 30 degrees in radians
+            sideLength = @Model.hexSideLength;
+            boardWidth = @Model.width;
+            boardHeight = @Model.height;
+
+            offDirections = [
+                [[+1, 0], [0, -1], [-1, -1],
+                [-1, 0], [-1, +1], [0, +1]],
+                [[+1, 0], [+1, -1], [0, -1],
+                [-1, 0], [0, +1], [+1, +1]],
+            ];
+
+            hexHeight = Math.sin(hexagonAngle) * sideLength;
+            hexRadius = Math.cos(hexagonAngle) * sideLength;
+            hexRectangleHeight = sideLength + 2 * hexHeight;
+            hexRectangleWidth = 2 * hexRadius;
 
 
+            textures = [];
 
-            //===
-            // Array-Tests
-            @*@{ 
-                for(int i = 0; i < Model.v.Length; i++)
+            for (var i = 0; i < boardWidth; i++) {
+                textures[i] = [];
+            }
+
+            @for(int i = 0; i < Model.width; i++)
+            {
+                for(int j = 0; j < Model.height; j++)
                 {
-                    <text>textures[@i] = @Model.v[i];</text>
+                    <text>textures[@i][@j] = @Model.texture_index[i][j];</text>
                 }
-            }*@
-            //===
-    }
+            }
+        }
     </script>
 }
