@@ -30,8 +30,7 @@ namespace HexaGone.Models
             if ( Username != null && Username.Length < 4 && !Username.Contains("@"))
             {
                 return "Username must be at least 4 characters long";
-            }
-            
+            }            
             if (Email != null && !(Email.Contains("@") && Email.Contains(".") && Email.Length > 7))
             {
                 return "Not an Email";
@@ -40,7 +39,19 @@ namespace HexaGone.Models
             {
                 return "Password to short";
             }
-            
+            if (Username != null && !SqlHelper.IsStringValid(Username))
+            {
+                return "Username not allowed";
+            }
+            if (!SqlHelper.IsStringValid(Password))
+            {
+                return "Password not allowed";
+            }
+            if (Email != null && !SqlHelper.IsStringValid(Email))
+            {
+                return "Email not allowed";
+            }
+
             return "true";
         }
     }

@@ -52,12 +52,33 @@ namespace HexaGone.Models
             }
             if (Password.Length < 2)
             {
-                return "Password to short";
+                return "Password too short";
             }
             if (RepeatPassword != Password)
             {
                 return "Passwords are not equal";
             }
+            if (Username.Length > 15)
+            {
+                return "Username must be less than 15 characters long";
+            }
+            if (Password.Length > 12)
+            {
+                return "Password too long";
+            }
+            if (!SqlHelper.IsStringValid(Username) )
+            {
+                return "Username not allowed";
+            }
+            if (!SqlHelper.IsStringValid(Password))
+            {
+                return "Password not allowed";
+            }
+            if (!SqlHelper.IsStringValid(Email))
+            {
+                return "Email not allowed";
+            }
+
             return "true";
         }
 
