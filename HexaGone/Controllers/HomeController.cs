@@ -34,9 +34,9 @@ namespace HexaGone.Controllers
 
             //===
             // Ausfüllen:
-            hexmap.hexSideLength = 128;
-            hexmap.width = 16;
-            hexmap.height = 8;
+            hexmap.hexSideLength = 25;
+            hexmap.width = 50;
+            hexmap.height = 20;
             hexmap.isPointy = false;
             //===
 
@@ -51,7 +51,8 @@ namespace HexaGone.Controllers
             {
                 for (int j = 0; j < hexmap.height; j++)
                 {
-                    hexmap.texture_index[i][j] = 0;
+                    Random rand = new Random();
+                    hexmap.texture_index[i][j] = rand.Next(0, 40);
                 }
             }
 
