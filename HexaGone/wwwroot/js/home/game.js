@@ -64,8 +64,8 @@
                 // Check if the mouse's coords are on the board
                 if (hexX >= 0 && hexX < boardWidth) {
                     if (hexY >= 0 && hexY < boardHeight) {
-                        ctx.fillStyle = "#ffffff";
-                        ctx.globalAlpha = 0.5;
+                        ctx.fillStyle = "#000";
+                        ctx.globalAlpha = 1.0;
                         drawHexagon_p(ctx, hexX, hexY, true);
                         ctx.globalAlpha = 1.0;
                     }
@@ -82,7 +82,7 @@
             var ctx = canvas.getContext('2d');
 
             ctx.fillStyle = "#CCCCCC";
-            ctx.strokeStyle = "#ffffff";
+            ctx.strokeStyle = "#000";
             ctx.lineWidth = 2;
 
             //drawBoard_f(ctx, boardWidth, boardHeight);
@@ -138,10 +138,10 @@
                 // Check if the mouse's coords are on the board
                 if (hexX >= 0 && hexX < boardWidth) {
                     if (hexY >= 0 && hexY < boardHeight) {
-                        ctx.fillStyle = "#ffffff";
-                        ctx.globalAlpha = 0.5;
+                        //ctx.fillStyle = "black";
+                        //ctx.globalAlpha = 1.0;
                         drawHexagon_f(ctx, hexX, hexY, false);
-                        ctx.globalAlpha = 1.0;
+                        //ctx.globalAlpha = 1.0;
                     }
                 }
             });
@@ -162,15 +162,15 @@
 
     function drawTexture(canvasContext, image, col, row, textureIndex) {
         pixelCol = col * (sideLength + hexHeight) - col * 0;
-        pixelRow = (row - 1) * hexRectangleHeight + ((col % 2) * hexRadius) - row * 0;
+        pixelRow = (row - 1) * hexRectangleHeight_s + ((col % 2) * hexRadius) - row * hexRectangleHeight * 1.0 / 15.0;
 
-        var imgHeight = hexRectangleHeight * 2;
+        var imgHeight = hexRectangleHeight_s * 2;
         var imgWidth = hexRectangleWidth;
         var tileX = textureIndex * 128;
 
+        canvasContext.drawImage(image, tileX, 0, 128, 240, pixelCol, pixelRow, imgWidth, imgHeight);
 
-        //canvasContext.drawImage(image, tileX, 0, 128, 240, pixelCol, pixelRow - 16, imgWidth + 1, imgHeight + 32);
-        canvasContext.drawImage(image, tileX, 0, 128, 240, pixelCol, pixelRow - 16 * (sideLength / 100.0), imgWidth + 1, imgHeight + 32 * (sideLength / 100.0));
+        //console.log("Row:" + row + ", Column: " + col + ", ImageStartX: " + pixelCol + ", ImageStartY: " + pixelRow);
     }
 
     function drawTextureBoard(canvasContext, image, width, height) {

@@ -16,7 +16,9 @@
         
         var hexHeight,
             hexRadius,
+            hexRadius_s,
             hexRectangleHeight,
+            hexRectangleHeight_s,
             hexRectangleWidth,
             hexagonAngle,
             sideLength,
@@ -58,9 +60,11 @@
             ];
 
             hexHeight = Math.sin(hexagonAngle) * sideLength;
-            hexRadius = Math.cos(hexagonAngle) * sideLength;
+            hexRadius = Math.cos(hexagonAngle) * sideLength * 14.0 / 15.0;
+            hexRadius_s = Math.cos(hexagonAngle) * sideLength;
             hexRectangleWidth = sideLength + 2 * hexHeight;
             hexRectangleHeight = 2 * hexRadius;
+            hexRectangleHeight_s = 2 * hexRadius_s;
 
             textures = [];
 
