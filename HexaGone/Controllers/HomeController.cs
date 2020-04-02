@@ -51,7 +51,7 @@ namespace HexaGone.Controllers
             {
                 for (int j = 0; j < hexmap.height; j++)
                 {
-                    hexmap.texture_index[i][j] = j;
+                    hexmap.texture_index[i][j] = 2;
                 }
             }
 
