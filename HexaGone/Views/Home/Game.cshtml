@@ -2,6 +2,7 @@
 @{
     Layout = "_GameLayout";
 }
+<img id="tilesheet" src="~/images/tilesheet.png" hidden/>
 <canvas id="hexmap"></canvas>
 <label id="test1" style="position:absolute; top:0px; left:500px"></label>
 <label id="test2" style="position:absolute; top:15px; left:500px"></label>
@@ -23,6 +24,7 @@
             boardHeight;
         var offDirections;
         var textures;
+        var img;
 
 
         function gameVariables() {
@@ -34,6 +36,8 @@
             {
                 <text>hexmapStyle = "flat";</text>
             }
+
+            img = document.getElementById("tilesheet");
         }
 
         function gameVariables_f() {

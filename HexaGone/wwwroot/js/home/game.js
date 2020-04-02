@@ -4,7 +4,7 @@
 
     //===
     // Test
-    //document.getElementById("test1").innerHTML = "hello";
+    //document.getElementById("test1").innerHTML = img.naturalHeight;
     //===
 
     if (hexmapStyle == "pointy") {
@@ -82,11 +82,11 @@
             var ctx = canvas.getContext('2d');
 
             ctx.fillStyle = "#CCCCCC";
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 2;
 
-            drawBoard_f(ctx, boardWidth, boardHeight);
-
+            //drawBoard_f(ctx, boardWidth, boardHeight);
+            drawTextureBoard(ctx, img, boardWidth, boardHeight);
 
             canvas.addEventListener("mousemove", function (eventInfo) {
                 var x,
@@ -101,7 +101,8 @@
                 hexY = Math.floor((y - (hexX % 2) * hexRadius) / hexRectangleHeight);
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawBoard_f(ctx, boardWidth, boardHeight);
+                //drawBoard_f(ctx, boardWidth, boardHeight);
+                drawTextureBoard(ctx, img, boardWidth, boardHeight);
 
                 //===
                 // Compare original Hexagon(hexX, hexY) with its neighbors.
@@ -139,7 +140,7 @@
                     if (hexY >= 0 && hexY < boardHeight) {
                         ctx.fillStyle = "#ffffff";
                         ctx.globalAlpha = 0.5;
-                        drawHexagon_f(ctx, hexX, hexY, true);
+                        drawHexagon_f(ctx, hexX, hexY, false);
                         ctx.globalAlpha = 1.0;
                     }
                 }
@@ -157,6 +158,28 @@
     // Functions:
     function distance(x1, y1, x2, y2) {
         return Math.round(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))
+    }
+
+    function drawTexture(canvasContext, image, col, row, textureIndex) {
+        pixelCol = col * (sideLength + hexHeight) - col * 0;
+        pixelRow = (row - 1) * hexRectangleHeight + ((col % 2) * hexRadius) - row * 0;
+
+        var imgHeight = hexRectangleHeight * 2;
+        var imgWidth = hexRectangleWidth;
+        var tileX = textureIndex * 128;
+        
+        canvasContext.drawImage(image, tileX, 0, 128, 248, pixelCol, pixelRow, imgWidth, imgHeight);
+    }
+
+    function drawTextureBoard(canvasContext, image, width, height) {
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j += 2) {
+                drawTexture(canvasContext, image, j, i, textures[j][i]);
+            }
+            for (var j = 1; j < width; j += 2) {
+                drawTexture(canvasContext, image, j, i, textures[j][i]);
+            }
+        }
     }
     //=====
 
@@ -265,7 +288,7 @@
     function drawBoard_f(canvasContext, width, height) {
         for (var i = 0; i < width; i++) {
             for (var j = 0; j < height; j++) {
-                drawColoredHex_f(canvasContext, i, j, textures[i][j]);
+                drawHexagon_f(canvasContext, i, j, false);
             }
         }
     }
@@ -295,8 +318,8 @@
     function drawHexagon_f(canvasContext, col, row, fill) {
         var fill = fill || false;
         
-        col = col * (sideLength + hexHeight);
-        row = row * hexRectangleHeight + ((col % 2) * hexRadius);
+        col = col * (sideLength + hexHeight) - col * 0;
+        row = row * hexRectangleHeight + ((col % 2) * hexRadius) - row * 0;
 
         canvasContext.beginPath();
         canvasContext.moveTo(col + hexHeight, row);
