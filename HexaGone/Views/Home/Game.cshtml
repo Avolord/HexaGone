@@ -47,6 +47,7 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
+            //This is confusing because everyone knows that a hexagon has an inner angle of 120° at each corner.
             hexagonAngle = 0.523598776; // 30 degrees in radians
             sideLength = @Model.hexSideLength;
             boardWidth = @Model.width;
@@ -59,10 +60,33 @@
                 [-1, 0], [-1, +1], [0, +1]],
             ];
 
-            hexHeight = Math.sin(hexagonAngle) * sideLength;
+            /*
+             * From Wikipedia can be deduced that:
+             * 
+             * [I changed the order of the variable-names because i think that it fits better like this]
+             * 
+             * (the outer-circle-radius) hexRadius = sideLength;
+             * (the inner-circle-radius) hexHeight = sqrt(3) / 2.0 * sideLength;
+             * (the inner angle) hexagonAngle = 120° or 2.094395
+             * (the height of the hexagon) hexRectangleHeight = 2 * hexHeight;
+             * 
+             * Source (German): https://de.wikipedia.org/wiki/Sechseck;
+             * Source (English): https://en.wikipedia.org/wiki/Hexagon;
+             */
+
+            /*
+             * I am sorry but where the fuck to these calculations come from?!
+             * In my opinion they are utterly confusing and inadequate!
+             * Please refer to the wikipedia articles that i have included for a
+             * reference as to why i think that these formulas are sh**t.
+             * 
+             * ~Avolord
+             */
+
+            hexHeight = Math.sin(hexagonAngle) * sideLength; // this is equal to (sideLength / 2) [sin(30°) = 0.5]
             hexRadius = Math.cos(hexagonAngle) * sideLength * 14.0 / 15.0;
             hexRadius_s = Math.cos(hexagonAngle) * sideLength;
-            hexRectangleWidth = sideLength + 2 * hexHeight;
+            hexRectangleWidth = sideLength + 2 * hexHeight; //wtf this is should literally just be (2 * sideLength)
             hexRectangleHeight = 2 * hexRadius;
             hexRectangleHeight_s = 2 * hexRadius_s;
 
