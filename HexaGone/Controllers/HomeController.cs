@@ -66,16 +66,104 @@ namespace HexaGone.Controllers
         [HttpPost]
         public IActionResult Register(HexaGone.Models.UserModel user)
         {
+            if (ModelState.IsValid)
+            {
+                using (IDbConnection db = new MySqlConnection(Models.Dapper.connectionString))
+                {
+                    user.RegistrationModel.Email = user.RegistrationModel.Email.ToLower();
+                    string sqlQuery = "Select * From User Where Username = \"" + user.RegistrationModel.Username + "\"";
+                    string sqlQuery2 = "Select * From User Where Email =  \"" + user.RegistrationModel.Email + "\"";
+                    List<LoginUserModel> witzigerName = new List<LoginUserModel>();
+                
+                        try
+                        {
+                            witzigerName = db.Query<LoginUserModel>(sqlQuery).ToList();
+                        }
+                        finally
+                        {
+                        }
+                        if (witzigerName.Count == 0)
+                        {
+                            try
+                            {
+                                witzigerName = db.Query<LoginUserModel>(sqlQuery2).ToList();
+                            }
+                            finally
+                            {
+                            }
+                        }
+                        if (witzigerName.Count != 0)
+                        {
+                            return Content("false");
+                        }
+                        else
+                        {
+                        }
+
+                        sqlQuery = "Insert Into User (Email, Username, Password) Values(@Email, @Username, @Password)";
+                        user.RegistrationModel.Password = Hash.GetMD5Hash(user.RegistrationModel.Password);
+                        
+                        int rowsAffected = db.Execute(sqlQuery, user.RegistrationModel);
+               
+                }
+            }
+            else
+            {
+                return View(user);
+            }
+
+        }
+        [HttpPost]
+        public IActionResult Login(HexaGone.Models.UserModel user)
+        {
             using (IDbConnection db = new MySqlConnection(Models.Dapper.connectionString))
             {
+                if(user.LoginModel.Username.Contains("@"))
+                {
+                    user.LoginModel.Email = user.LoginModel.Username.ToLower();
+                }
+
+                user.LoginModel.Password = Hash.GetMD5Hash(user.LoginModel.Password);
                 
-                string sqlQuery = "Insert Into User (Email, Username, Password) Values(@Email, @Username, @Password)";
-                user.RegistrationModel.Password = Hash.GetMD5Hash(user.RegistrationModel.Password);
-                
-                int rowsAffected = db.Execute(sqlQuery, user.RegistrationModel);
+                string sqlQuery = "Select * From User Where Username = \""+user.LoginModel.Username+"\"";
+                string sqlQuery2 = "Select * From User Where Email =  \"" + user.LoginModel.Email + "\"";
+                List<LoginUserModel> witzigerName = new List<LoginUserModel>();
+
+                try
+                {
+                    witzigerName = db.Query<LoginUserModel>(sqlQuery).ToList();
+                }
+                finally
+                {
+                }
+                if(witzigerName.Count == 0)
+                {
+                    try
+                    {
+                        witzigerName = db.Query<LoginUserModel>(sqlQuery2).ToList();
+                    }
+                    finally
+                    {
+                    }
+                }
+                if(witzigerName.Count == 0)
+                {
+                    return Content("false");
+                }
+                else
+                {
+                    foreach(var Item in witzigerName)
+                    {
+                        if(user.LoginModel.Password == Item.Password)
+                        {
+                            return Content("true");
+                        }
+                    }
+                }
+
 
             }
-            return Content("true");
+            return Content("false");
         }
     }
 }

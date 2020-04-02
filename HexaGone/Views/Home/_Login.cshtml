@@ -15,8 +15,10 @@
             Model.LoginModel.Email = "";
         }
         @Html.TextBoxFor(model => model.LoginModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password", @type = "password", @required = "true" })
+        @Html.ValidationMessageFor(model => model.LoginModel.Password)
         @Html.TextBoxFor(model => model.isLogin, "true", new { @id = "isLoginTextBox"})
-        <button type="submit" onclick="SubmitLogin()" asp-controller="Home" asp-action="Index" class="btn btn-danger" id="btnFormLogin"> Login </button>
+
+        <button type="submit" onclick="SubmitLogin()" asp-controller="Home" asp-action="Login" class="btn btn-danger" id="btnFormLogin"> Login </button>
         <button type="button" onclick="ChangeToRegistration()" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
         
         
@@ -27,9 +29,13 @@
     <div class="form-group" id="LoginDiv">
         <label for="loginInputMail" id="loginLabel" style="margin-bottom: 1em">Registration:</label>
         @Html.TextBoxFor(model => model.RegistrationModel.Username, new { @class = "form-control loginInputText", @placeholder = "Username", @required = "true" })
+        @Html.ValidationMessageFor(model => model.RegistrationModel.Username)
         @Html.TextBoxFor(model => model.RegistrationModel.Email, new { @class = "form-control loginInputText", @placeholder = "Email", @type = "email", @required = "true" })
+        @Html.ValidationMessageFor(model => model.RegistrationModel.Email)
         @Html.TextBoxFor(model => model.RegistrationModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password", @type = "password", @required = "true" })
+        @Html.ValidationMessageFor(model => model.RegistrationModel.Password)
         @Html.TextBoxFor(model => model.RegistrationModel.RepeatPassword, new { @class = "form-control loginInputText", @placeholder = "Repeat Password", @type = "password", @required = "true" })
+        @Html.ValidationMessageFor(model => model.RegistrationModel.RepeatPassword)
         @Html.TextBoxFor(model => model.isLogin, "false", new { @id = "isLoginTextBox" })
         <button type="button" onclick="ChangeToLogin()" class="btn btn-danger" id="btnFormLogin"> Back </button>
         <button type="submit" asp-controller="Home" asp-action="Register" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
