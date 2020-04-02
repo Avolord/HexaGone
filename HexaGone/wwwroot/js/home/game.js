@@ -167,8 +167,10 @@
         var imgHeight = hexRectangleHeight * 2;
         var imgWidth = hexRectangleWidth;
         var tileX = textureIndex * 128;
-        
-        canvasContext.drawImage(image, tileX, 0, 128, 248, pixelCol, pixelRow, imgWidth, imgHeight);
+
+
+        //canvasContext.drawImage(image, tileX, 0, 128, 240, pixelCol, pixelRow - 16, imgWidth + 1, imgHeight + 32);
+        canvasContext.drawImage(image, tileX, 0, 128, 240, pixelCol, pixelRow - 16 * (sideLength / 100.0), imgWidth + 1, imgHeight + 32 * (sideLength / 100.0));
     }
 
     function drawTextureBoard(canvasContext, image, width, height) {
@@ -318,9 +320,9 @@
     function drawHexagon_f(canvasContext, col, row, fill) {
         var fill = fill || false;
         
-        col = col * (sideLength + hexHeight) - col * 0;
         row = row * hexRectangleHeight + ((col % 2) * hexRadius) - row * 0;
-
+        col = col * (sideLength + hexHeight) - col * 0;
+   
         canvasContext.beginPath();
         canvasContext.moveTo(col + hexHeight, row);
         canvasContext.lineTo(col + hexHeight + sideLength, row);
