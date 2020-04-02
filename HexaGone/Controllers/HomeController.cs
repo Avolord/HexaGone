@@ -34,9 +34,9 @@ namespace HexaGone.Controllers
 
             //===
             // Ausfüllen:
-            hexmap.hexSideLength = 30;
-            hexmap.width = 8;
-            hexmap.height = 4;
+            hexmap.hexSideLength = 128;
+            hexmap.width = 16;
+            hexmap.height = 8;
             hexmap.isPointy = false;
             //===
 
@@ -51,7 +51,7 @@ namespace HexaGone.Controllers
             {
                 for (int j = 0; j < hexmap.height; j++)
                 {
-                    hexmap.texture_index[i][j] = 2;
+                    hexmap.texture_index[i][j] = 0;
                 }
             }
 

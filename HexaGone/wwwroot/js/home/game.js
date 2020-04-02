@@ -161,8 +161,8 @@
     }
 
     function drawTexture(canvasContext, image, col, row, textureIndex) {
-        pixelCol = col * (sideLength + hexHeight) - col * 0;
-        pixelRow = (row - 1) * hexRectangleHeight + ((col % 2) * hexRadius) - row * 0;
+        pixelCol = col * (sideLength + hexHeight)- col * (0 * sideLength);
+        pixelRow = (row - 1) * hexRectangleHeight + ((col % 2) * hexRadius) - row * (0.18 * sideLength);
 
         var imgHeight = hexRectangleHeight * 2;
         var imgWidth = hexRectangleWidth;
@@ -317,9 +317,10 @@
 
     function drawHexagon_f(canvasContext, col, row, fill) {
         var fill = fill || false;
+
+        row = row * hexRectangleHeight + ((col % 2) * hexRadius) - row * (0.125 * sideLength);
+        col = col * (sideLength + hexHeight) - col * (0.0625 * sideLength);
         
-        col = col * (sideLength + hexHeight) - col * 0;
-        row = row * hexRectangleHeight + ((col % 2) * hexRadius) - row * 0;
 
         canvasContext.beginPath();
         canvasContext.moveTo(col + hexHeight, row);
