@@ -17,21 +17,31 @@ namespace HexaGone.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public bool IsValid()
+        public string IsValid()
         {
-            if(Username.Length < 4)
+            if(Password == null)
             {
-                return false;
+                return "Please enter a password";
             }
-            if(!(Email.Contains("@") && Email.Contains(".") && Email.Length > 7))
+            if(Email  == null && Username == null)
             {
-                return false;
+                return "Please enter Email or Username";
+            }
+            if ( Username != null && Username.Length < 4 && !Username.Contains("@"))
+            {
+                return "Username must be at least 4 characters long";
+            }
+            
+            if (Email != null && !(Email.Contains("@") && Email.Contains(".") && Email.Length > 7))
+            {
+                return "Not an Email";
             }
             if(Password.Length < 2)
             {
-                return false;
+                return "Password to short";
             }
-            return true;
+            
+            return "true";
         }
     }
 }

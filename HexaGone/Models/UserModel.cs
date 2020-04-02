@@ -12,7 +12,29 @@ namespace HexaGone.Models
         public bool LoginIsValid { get; set; }
         public bool RegistrationIsValid { get; set; }
 
+        public bool stayLoggedIn { get; set; }
+
         public string isLogin { get; set; }
+
+        public string errorMessage { get; set; }
+        
+
+        public bool isValid()
+        {
+            if(isLogin == "true")
+            {
+                if (LoginModel.IsValid() == "true")
+                    return true;
+            }
+            else
+            {
+                if(RegistrationModel.IsValid() == "true")
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
 
     }

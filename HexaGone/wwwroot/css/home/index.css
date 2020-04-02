@@ -26,6 +26,10 @@
 #loginLabel{
 	font-size: 2em;
 }
+
+#stayLoggedInLabel{
+	font-size: 1em;
+}
 .loginInputText{
 	margin-bottom: 1em;
 }
@@ -56,6 +60,14 @@
 	min-width: 290px;
 }
 
+#div-Error{
+	z-index: 1000;
+	margin: 0px;
+	padding: 0px;
+	margin-bottom: 1px;
+	margin-top: -5px;
+	color: brown !important;
+}
 
 #navbar_login_btn {
 	display: none;

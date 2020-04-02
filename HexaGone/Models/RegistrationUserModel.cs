@@ -22,5 +22,44 @@ namespace HexaGone.Models
         [DataType(DataType.Password)]
         public string RepeatPassword { get; set; }
 
+
+
+        public string IsValid()
+        {
+            if (Password == null)
+            {
+                return "Please enter a password";
+            }
+            if (RepeatPassword == null)
+            {
+                return "Please enter a password";
+            }
+            if (Email == null)
+            {
+                return "Please enter Email";
+            }
+            if(Username == null)
+            {
+                return "Please enter Username";
+            }
+            if (Username.Length < 4)
+            {
+                return "Username must be at least 4 characters long";
+            }
+            if (!(Email.Contains("@") && Email.Contains(".") && Email.Length > 7))
+            {
+                return "Not an Email";
+            }
+            if (Password.Length < 2)
+            {
+                return "Password to short";
+            }
+            if (RepeatPassword != Password)
+            {
+                return "Passwords are not equal";
+            }
+            return "true";
+        }
+
     }
 }

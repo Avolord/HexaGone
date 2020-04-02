@@ -12,6 +12,8 @@ using Dapper;
 using MySql.Data.MySqlClient;
 using Dapper.Contrib;
 using Dapper.Contrib.Extensions;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Http;
 
 namespace HexaGone.Controllers
 {
@@ -26,7 +28,12 @@ namespace HexaGone.Controllers
 
         public IActionResult Index()
         {
-            return View(new UserModel() { isLogin = "true" }); 
+            if (HttpContext.Request.Cookies.ContainsKey("stayLoggedIn"))
+            {
+                var userId = HttpContext.Request.Cookies["stayLoggedIn"];
+                return Content(userId.ToString());
+            }
+                return View(new UserModel() { isLogin = "true", errorMessage = "" }) ; 
         }
 
         [HttpPost]
@@ -66,8 +73,10 @@ namespace HexaGone.Controllers
         [HttpPost]
         public IActionResult Register(HexaGone.Models.UserModel user)
         {
-            if (ModelState.IsValid)
+            user.isLogin = "false";
+            if (user.isValid())
             {
+                user.errorMessage = "";
                 using (IDbConnection db = new MySqlConnection(Models.Dapper.connectionString))
                 {
                     user.RegistrationModel.Email = user.RegistrationModel.Email.ToLower();
@@ -78,6 +87,10 @@ namespace HexaGone.Controllers
                         try
                         {
                             witzigerName = db.Query<LoginUserModel>(sqlQuery).ToList();
+                            if(witzigerName.Count != 0)
+                            {
+                                user.errorMessage = "Username already exists";
+                            }
                         }
                         finally
                         {
@@ -87,6 +100,10 @@ namespace HexaGone.Controllers
                             try
                             {
                                 witzigerName = db.Query<LoginUserModel>(sqlQuery2).ToList();
+                                if(witzigerName.Count != 0)
+                                {
+                                    user.errorMessage = "Email already exists";
+                                }
                             }
                             finally
                             {
@@ -94,7 +111,9 @@ namespace HexaGone.Controllers
                         }
                         if (witzigerName.Count != 0)
                         {
-                            return Content("false");
+                            user.isLogin = "false";
+                            
+                            return View("Index", user);
                         }
                         else
                         {
@@ -104,66 +123,123 @@ namespace HexaGone.Controllers
                         user.RegistrationModel.Password = Hash.GetMD5Hash(user.RegistrationModel.Password);
                         
                         int rowsAffected = db.Execute(sqlQuery, user.RegistrationModel);
+                    user.isLogin = "false";
+                    return View("Index",user);
                
                 }
             }
             else
             {
-                return View(user);
+                user.isLogin = "false";
+                user.errorMessage = user.RegistrationModel.IsValid();
+                
+                return View("Index",user);
             }
 
         }
         [HttpPost]
         public IActionResult Login(HexaGone.Models.UserModel user)
         {
-            using (IDbConnection db = new MySqlConnection(Models.Dapper.connectionString))
+            user.isLogin = "true";
+            if (user.isValid())
             {
-                if(user.LoginModel.Username.Contains("@"))
+                user.errorMessage = "";
+                using (IDbConnection db = new MySqlConnection(Models.Dapper.connectionString))
                 {
-                    user.LoginModel.Email = user.LoginModel.Username.ToLower();
-                }
+                    if (user.LoginModel.Username.Contains("@"))
+                    {
+                        user.LoginModel.Email = user.LoginModel.Username.ToLower();
+                    }
 
-                user.LoginModel.Password = Hash.GetMD5Hash(user.LoginModel.Password);
-                
-                string sqlQuery = "Select * From User Where Username = \""+user.LoginModel.Username+"\"";
-                string sqlQuery2 = "Select * From User Where Email =  \"" + user.LoginModel.Email + "\"";
-                List<LoginUserModel> witzigerName = new List<LoginUserModel>();
+                    user.LoginModel.Password = Hash.GetMD5Hash(user.LoginModel.Password);
 
-                try
-                {
-                    witzigerName = db.Query<LoginUserModel>(sqlQuery).ToList();
-                }
-                finally
-                {
-                }
-                if(witzigerName.Count == 0)
-                {
+                    string sqlQuery = "Select * From User Where Username = \"" + user.LoginModel.Username + "\"";
+                    string sqlQuery2 = "Select * From User Where Email =  \"" + user.LoginModel.Email + "\"";
+                    List<LoginUserModel> witzigerName = new List<LoginUserModel>();
+                    bool currentUserName = false;
+                    bool currentUserMail = false;
+                    int indexOfUserInList = -1;
                     try
                     {
-                        witzigerName = db.Query<LoginUserModel>(sqlQuery2).ToList();
+                        witzigerName = db.Query<LoginUserModel>(sqlQuery).ToList();
+                        if(witzigerName.Count == 0)
+                        {
+                            user.errorMessage = "User doesn't exists";
+                        }
+                        else
+                        {
+                            currentUserName = true;
+                        }
+
                     }
                     finally
                     {
                     }
-                }
-                if(witzigerName.Count == 0)
-                {
-                    return Content("false");
-                }
-                else
-                {
-                    foreach(var Item in witzigerName)
+                    if (witzigerName.Count == 0)
                     {
-                        if(user.LoginModel.Password == Item.Password)
+                        try
                         {
-                            return Content("true");
+                            witzigerName = db.Query<LoginUserModel>(sqlQuery2).ToList();
+                            if(witzigerName.Count == 0 && user.LoginModel.Username.Contains("@"))
+                            {
+                                user.errorMessage = "Email doesn't exists";
+                            }
+                            else if(witzigerName.Count != 0)
+                            {
+                                currentUserMail = false;
+                            }
+                        }
+                        finally
+                        {
                         }
                     }
+                    if (witzigerName.Count == 0)
+                    {
+                        user.isLogin = "true";
+                        return View("Index",user);
+                    }
+                    else
+                    {
+                        for (int i = 0; i<witzigerName.Count; i++) 
+                        {
+                            var Item = witzigerName[i];
+                            if (user.LoginModel.Password == Item.Password)
+                            {
+                                user.isLogin = "true";
+                                if(user.stayLoggedIn)
+                                {
+                                    if (currentUserName == true)
+                                    {
+                                        sqlQuery = "Select UserID From User Where Username = \"" + user.LoginModel.Username + "\"";
+                                    }
+                                    else
+                                    {
+                                        sqlQuery = "Select UserID From User Where Email = \"" + user.LoginModel.Email + "\"";
+                                    }
+                                    CookieOptions stayLoggedIn = new CookieOptions();
+                                    stayLoggedIn.Expires = new DateTimeOffset(DateTime.Now.AddSeconds(100));
+                                    List<int> userId = new List<int>();
+                                    userId = db.Query<int>(sqlQuery).ToList();
+                                    user.errorMessage = "";
+                                    HttpContext.Response.Cookies.Append("stayLoggedIn", userId[0].ToString(), stayLoggedIn);
+                                }
+                               
+                                return View("Index",user);
+                            }
+                        }
+                    }
+
                 }
-
-
+                user.isLogin = "true";
+                user.errorMessage = "Password is incorrect";
+                return View("Index", user);
             }
-            return Content("false");
+            else
+            {
+                user.isLogin = "true";
+                user.errorMessage = user.LoginModel.IsValid();
+                return View("Index",user);
+            }
         }
     }
 }
