@@ -16,8 +16,8 @@
             ctx.imageSmoothingEnabled = false;
 
             ctx.fillStyle = "#CCCCCC";
-            ctx.strokeStyle = "#000";
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 4;
 
             //drawBoard_f(ctx, boardWidth, boardHeight);
             drawTextureBoard(ctx, img, boardWidth, boardHeight);
@@ -31,10 +31,13 @@
                 x = eventInfo.offsetX || eventInfo.layerX;
                 y = eventInfo.offsetY || eventInfo.layerY;
 
+                x = (x - offsetX) / scaleX;
+                y = (y - offsetY) / scaleY;
+
                 hexX = Math.floor(x / (1.5 * sideLength));
                 hexY = Math.floor((y - (hexX % 2) * hexInnerRadius) / hexRectangleHeight);
 
-                ctx.clearRect(-canvasOriginX, -canvasOriginY, canvas.width, canvas.height);
+                clearBoard();
                 //drawBoard_f(ctx, boardWidth, boardHeight);
                 drawTextureBoard(ctx, img, boardWidth, boardHeight);
 
@@ -62,15 +65,32 @@
                 }
                 //===
 
+                
+                
+
                 // Check if the mouse's coords are on the board
-                if (hexX >= 0 && hexX < boardWidth) {
-                    if (hexY >= 0 && hexY < boardHeight) {
-                        //ctx.fillStyle = "black";
-                        //ctx.globalAlpha = 1.0;
-                        drawHexagon_f(ctx, hexX, hexY, false);
-                        //ctx.globalAlpha = 1.0;
-                    }
+                if (hexX >= 0 && hexX < boardWidth && hexY >= 0 && hexY < boardHeight) {
+                    markedTileX = hexX;
+                    markedTileY = hexY;
+
+                    //drawHexagon_f(ctx, hexX, hexY, false);
                 }
+                else {
+                    markedTileX = -1;
+                    markedTileY = -1;
+                }
+            });
+            
+            canvas.addEventListener("wheel", function (eventInfo) {
+                var scrollDirection = eventInfo.deltaY;
+                scaleX = scaleX * (1 -scrollDirection / 1000);
+                scaleY = scaleY * (1 - scrollDirection / 1000);
+
+                ctx.scale(1 - scrollDirection / 1000, 1 - scrollDirection / 1000);
+                clearBoard();
+                drawTextureBoard(ctx, img, boardWidth, boardHeight);
+                console.log(scaleX, scaleY);
+                document.getElementById("test1").innerHTML = canvas.height;
             });
         }
     }
@@ -78,11 +98,19 @@
 
     //=====
     // Functions:
+
+    function clearBoard() {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+    }
+
     function distance(x1, y1, x2, y2) {
         return Math.round(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))
     }
 
-    function drawTexture(canvasContext, image, col, row, textureIndex) {
+    function drawTexture(image, col, row, textureIndex, marked) {
         pixelCol = col * 1.5 * sideLength;
         pixelRow = (row - 1) * hexRectangleHeight + ((col % 2) * hexInnerRadius);
 
@@ -90,18 +118,35 @@
         var imgWidth = hexRectangleWidth;
         var tileX = textureIndex * 128 / 4;
 
-        canvasContext.drawImage(image, tileX, 0, 128 / 4, 232 / 4, pixelCol, pixelRow, imgWidth, imgHeight);
+        if (marked == true) {
+            //drawHexagon_f(ctx, col, row + 1, false);
+            ctx.beginPath();
+            ctx.moveTo(pixelCol + 0.5 * sideLength, pixelRow + hexRectangleHeight);
+            ctx.lineTo(pixelCol + 1.5 * sideLength, pixelRow + hexRectangleHeight);
+            ctx.lineTo(pixelCol + hexRectangleWidth, pixelRow + hexRectangleHeight + hexInnerRadius);
+            ctx.lineTo(pixelCol + 1.5 * sideLength, pixelRow + hexRectangleHeight + hexRectangleHeight);
+            ctx.lineTo(pixelCol + 0.5 * sideLength, pixelRow + hexRectangleHeight + hexRectangleHeight);
+            ctx.lineTo(pixelCol, pixelRow + hexRectangleHeight + hexInnerRadius);
+            ctx.closePath();
+            ctx.stroke();
 
+
+            ctx.globalAlpha = 0.5;
+        }
+        ctx.drawImage(image, tileX, 0, 128 / 4, 232 / 4, pixelCol, pixelRow, imgWidth, imgHeight);
+
+        ctx.globalAlpha = 1;
         //console.log("Row:" + row + ", Column: " + col + ", ImageStartX: " + pixelCol + ", ImageStartY: " + pixelRow);
     }
 
     function drawTextureBoard(canvasContext, image, width, height) {
         for (var i = 0; i < height; i++) {
+            
             for (var j = 0; j < width; j += 2) {
-                drawTexture(canvasContext, image, j, i, textures[j][i]);
+                drawTexture(image, j, i, textures[j][i], (i == markedTileY && j == markedTileX));
             }
             for (var j = 1; j < width; j += 2) {
-                drawTexture(canvasContext, image, j, i, textures[j][i]);
+                drawTexture(image, j, i, textures[j][i], (i == markedTileY && j == markedTileX));
             }
         }
     }
@@ -239,9 +284,11 @@ canvas.onmousemove = function (e) {
     // 0  1  dy
     // 0  0  1
 
-    ctx.setTransform(1, 0, 0, 1,
+    ctx.setTransform(scaleX, 0, 0, scaleY,
         x - startCoords[0], y - startCoords[1]);
 
-    canvasOriginX = (x - startCoords[0]);
-    canvasOriginY = (y - startCoords[1]);
+    offsetX = x - startCoords[0];
+    offsetY = y - startCoords[1];
+
+
 }
