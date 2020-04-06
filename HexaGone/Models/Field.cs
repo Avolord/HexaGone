@@ -18,7 +18,7 @@ namespace HexaGone.Models
         /// <summary>
         /// The coordinates on the Map. Are given at initialisation.
         /// </summary>
-        public int[] Coordinates { get; set; }
+        public List<int> Coordinates { get; }
         /// <summary>
         /// The Terrain at this Field. Is given at initialisation.
         /// </summary>
@@ -42,7 +42,7 @@ namespace HexaGone.Models
         /// <summary>
         /// A list of the available resources on this Field.
         /// </summary>
-        public List<int> FieldResources { get; set; }
+        public List<int> FieldResources { get; }
         //TO ADD: Streets
         /// <summary>
         /// The factor of the speed at which entities can pass through the terrain.
@@ -51,7 +51,7 @@ namespace HexaGone.Models
         /// <summary>
         /// A List of all MovementRateModifiers affecting this field. Is sorted by the Additive boolean value. First all Additive modifiers and then all !Additive ones.
         /// </summary>
-        public List<Modifier.FieldMovementRateModifier> MovementRateModifiers { get; set; }
+        public List<Modifier.FieldMovementRateModifier> MovementRateModifiers { get; }
         /// <summary>
         /// The factor of the visibility. The higher, the better an entity can see into and through the field.
         /// </summary>
@@ -59,7 +59,7 @@ namespace HexaGone.Models
         /// <summary>
         /// A List of all VisibilityModifiers affecting this field. Is sorted by the Additive boolean value. First all Additive modifiers and then all !Additive ones.
         /// </summary>
-        public List<Modifier.FieldVisibilityModifier> VisibilityModifiers { get; set; }
+        public List<Modifier.FieldVisibilityModifier> VisibilityModifiers { get; }
         /// <summary>
         /// The factor of the food/gold expenditures for resting armies.
         /// </summary>
@@ -67,23 +67,26 @@ namespace HexaGone.Models
         /// <summary>
         /// A List of all ExpendituresModifiers affecting this field. Is sorted by the Additive boolean value. First all Additive modifiers and then all !Additive ones.
         /// </summary>
-        public List<Modifier.FieldExpendituresModifier> ExpendituresModifiers { get; set; }
+        public List<Modifier.FieldExpendituresModifier> ExpendituresModifiers { get; }
 
 
         //Constructor
         /// <summary>
         /// Constructs a Field from its coordinates, its Terrain and optionally from a height.
         /// </summary>
-        /// <param name="_MapX">The X-Coordinate of the Field</param>
-        /// <param name="_MapY">The Y-Coordinate of the Field</param>
-        /// <param name="_FieldTerrainID">The TerrainID. For the constant IDs look at Terrain.terrainID_{Terrain}</param>
-        /// <param name="_Height">The Height of this Field. Optional. Defaults to 0.</param>
-        public Field(int _MapX, int _MapY, int _FieldTerrainID, int _Height = 0)
+        /// <param name="mapX">The X-Coordinate of the Field</param>
+        /// <param name="mapY">The Y-Coordinate of the Field</param>
+        /// <param name="fieldTerrainID">The TerrainID. For the constant IDs look at Terrain.terrainID_{Terrain}</param>
+        /// <param name="height">The Height of this Field. Optional. Defaults to 0.</param>
+        public Field(int mapX, int mapY, int fieldTerrainID, int height = 0)
         {
             FieldID = CreateUniqueFieldID();
-            Coordinates = new int[2] { _MapX, _MapY };
-            FieldTerrain = new Terrain(_FieldTerrainID);
-            Height = _Height;
+            Coordinates = new List<int>()
+            {   mapX,
+                mapY
+            };
+            FieldTerrain = new Terrain(fieldTerrainID);
+            Height = height;
             ParentEmpire = null;
             ParentCity = null;
 
@@ -135,30 +138,30 @@ namespace HexaGone.Models
         /// <summary>
         /// Adds the FieldMovementRateModifier to the MovementRateModifiers List. Replaces another modifier with the same ID. Sorts the new Entry: First alls additive, then all multiplicative modifiers. Calculates the new MovementRate value for the Field.
         /// </summary>
-        /// <param name="_MovementRateModifier">The modifier to add to the list.</param>
-        public void AddMovementRateModifier(Modifier.FieldMovementRateModifier _MovementRateModifier)
+        /// <param name="movementRateModifier">The modifier to add to the list.</param>
+        private void AddMovementRateModifier(Modifier.FieldMovementRateModifier movementRateModifier)
         {
             bool ModIsInserted = false;
             double movementRate = 1;
             for(int i = 0; i < MovementRateModifiers.Count; i++)
             {
                 //Is there a modifier with the same ID? Replace it.
-                if(_MovementRateModifier.ModifierID == MovementRateModifiers[i].ModifierID)
+                if(movementRateModifier.ModifierID == MovementRateModifiers[i].ModifierID)
                 {
                     MovementRateModifiers.RemoveAt(i);
-                    MovementRateModifiers.Insert(i, _MovementRateModifier);
+                    MovementRateModifiers.Insert(i, movementRateModifier);
                     ModIsInserted = true;
                 }
                 //Insert the additive modifier at the end of all the additive modifiers, if there was no duplicate.
-                if(!ModIsInserted && _MovementRateModifier.Additive && !MovementRateModifiers[i].Additive)
+                if(!ModIsInserted && movementRateModifier.Additive && !MovementRateModifiers[i].Additive)
                 {
-                    MovementRateModifiers.Insert(i, _MovementRateModifier);
+                    MovementRateModifiers.Insert(i, movementRateModifier);
                     ModIsInserted = true;
                 }
                 //Insert the modifier, when the end of the list is reached and it wasn't inserted already.
                 if(!ModIsInserted && i == MovementRateModifiers.Count-1)
                 {
-                    MovementRateModifiers.Add(_MovementRateModifier);
+                    MovementRateModifiers.Add(movementRateModifier);
                     ModIsInserted = true;
                 }
 
@@ -178,11 +181,11 @@ namespace HexaGone.Models
         /// <summary>
         /// Adds a MovementRateModifier to the MovementModifiers List by ID.
         /// </summary>
-        /// <param name="_ModifierID"></param>
-        /// <param name="_Value"></param>
-        public void AddMovementRateModifier(int _ModifierID, double _Value = 1)
+        /// <param name="modifierID"></param>
+        /// <param name="value"></param>
+        public void AddMovementRateModifier(int modifierID, double value = 1)
         {
-            Modifier.FieldMovementRateModifier movementRateModifier = new Modifier.FieldMovementRateModifier(this, _ModifierID, _Value);
+            Modifier.FieldMovementRateModifier movementRateModifier = new Modifier.FieldMovementRateModifier(this, modifierID, value);
             AddMovementRateModifier(movementRateModifier);
         }
         /// <summary>
@@ -211,30 +214,30 @@ namespace HexaGone.Models
         /// <summary>
         /// Adds the FieldMovementRateModifier to the MovementRateModifiers List. Replaces another modifier with the same ID. Sorts the new Entry: First alls additive, then all multiplicative modifiers. Calculates the new Expenditures value for the Field.
         /// </summary>
-        /// <param name="_ExpendituresModifier">The modifier to add to the list.</param>
-        public void AddExpendituresModifier(Modifier.FieldExpendituresModifier _ExpendituresModifier)
+        /// <param name="expendituresModifier">The modifier to add to the list.</param>
+        private void AddExpendituresModifier(Modifier.FieldExpendituresModifier expendituresModifier)
         {
             bool ModIsInserted = false;
             double expenditures = 1;
             for (int i = 0; i < ExpendituresModifiers.Count; i++)
             {
                 //Is there a modifier with the same ID? Replace it.
-                if (_ExpendituresModifier.ModifierID == ExpendituresModifiers[i].ModifierID)
+                if (expendituresModifier.ModifierID == ExpendituresModifiers[i].ModifierID)
                 {
                     ExpendituresModifiers.RemoveAt(i);
-                    ExpendituresModifiers.Insert(i, _ExpendituresModifier);
+                    ExpendituresModifiers.Insert(i, expendituresModifier);
                     ModIsInserted = true;
                 }
                 //Insert the additive modifier at the end of all the additive modifiers, if there was no duplicate.
-                if (!ModIsInserted && _ExpendituresModifier.Additive && !ExpendituresModifiers[i].Additive)
+                if (!ModIsInserted && expendituresModifier.Additive && !ExpendituresModifiers[i].Additive)
                 {
-                    ExpendituresModifiers.Insert(i, _ExpendituresModifier);
+                    ExpendituresModifiers.Insert(i, expendituresModifier);
                     ModIsInserted = true;
                 }
                 //Insert the modifier, when the end of the list is reached and it wasn't inserted already.
                 if (!ModIsInserted && i == ExpendituresModifiers.Count - 1)
                 {
-                    ExpendituresModifiers.Add(_ExpendituresModifier);
+                    ExpendituresModifiers.Add(expendituresModifier);
                     ModIsInserted = true;
                 }
 
@@ -254,11 +257,11 @@ namespace HexaGone.Models
         /// <summary>
         /// Adds a FieldExpendituresModifier to the ExpendituresModifiers List by ID.
         /// </summary>
-        /// <param name="_ModifierID"></param>
-        /// <param name="_Value"></param>
-        public void AddExpendituresModifier(int _ModifierID, double _Value = 1)
+        /// <param name="modifierID"></param>
+        /// <param name="value"></param>
+        public void AddExpendituresModifier(int modifierID, double value = 1)
         {
-            Modifier.FieldExpendituresModifier expendituresModifier = new Modifier.FieldExpendituresModifier(this, _ModifierID, _Value);
+            Modifier.FieldExpendituresModifier expendituresModifier = new Modifier.FieldExpendituresModifier(this, modifierID, value);
             AddExpendituresModifier(expendituresModifier);
         }
         /// <summary>
@@ -288,30 +291,30 @@ namespace HexaGone.Models
         /// <summary>
         /// Adds the FieldVisibilityModifier to the VisibilityModifiers List. Replaces another modifier with the same ID. Sorts the new Entry: First alls additive, then all multiplicative modifiers. Calculates the new Visibility value for the Field.
         /// </summary>
-        /// <param name="_VisibilityModifier">The modifier to add to the list.</param>
-        public void AddVisibilityModifier(Modifier.FieldVisibilityModifier _VisibilityModifier)
+        /// <param name="visibilityModifier">The modifier to add to the list.</param>
+        private void AddVisibilityModifier(Modifier.FieldVisibilityModifier visibilityModifier)
         {
             bool ModIsInserted = false;
             double visibility = 1;
             for (int i = 0; i < VisibilityModifiers.Count; i++)
             {
                 //Is there a modifier with the same ID? Replace it.
-                if (_VisibilityModifier.ModifierID == VisibilityModifiers[i].ModifierID)
+                if (visibilityModifier.ModifierID == VisibilityModifiers[i].ModifierID)
                 {
                     VisibilityModifiers.RemoveAt(i);
-                    VisibilityModifiers.Insert(i, _VisibilityModifier);
+                    VisibilityModifiers.Insert(i, visibilityModifier);
                     ModIsInserted = true;
                 }
                 //Insert the additive modifier at the end of all the additive modifiers, if there was no duplicate.
-                if (!ModIsInserted && _VisibilityModifier.Additive && !VisibilityModifiers[i].Additive)
+                if (!ModIsInserted && visibilityModifier.Additive && !VisibilityModifiers[i].Additive)
                 {
-                    VisibilityModifiers.Insert(i, _VisibilityModifier);
+                    VisibilityModifiers.Insert(i, visibilityModifier);
                     ModIsInserted = true;
                 }
                 //Insert the modifier, when the end of the list is reached and it wasn't inserted already.
                 if (!ModIsInserted && i == VisibilityModifiers.Count - 1)
                 {
-                    VisibilityModifiers.Add(_VisibilityModifier);
+                    VisibilityModifiers.Add(visibilityModifier);
                     ModIsInserted = true;
                 }
 
@@ -331,11 +334,11 @@ namespace HexaGone.Models
         /// <summary>
         /// Adds a VisibilityModifier to the VisibilityModifiers List by ID.
         /// </summary>
-        /// <param name="_ModifierID"></param>
-        /// <param name="_Value"></param>
-        public void AddVisibilityModifier(int _ModifierID, double _Value = 1)
+        /// <param name="modifierID"></param>
+        /// <param name="value"></param>
+        public void AddVisibilityModifier(int modifierID, double value = 1)
         {
-            Modifier.FieldVisibilityModifier visibilityModifier = new Modifier.FieldVisibilityModifier(this, _ModifierID, _Value);
+            Modifier.FieldVisibilityModifier visibilityModifier = new Modifier.FieldVisibilityModifier(this, modifierID, value);
             AddVisibilityModifier(visibilityModifier);
         }
         /// <summary>

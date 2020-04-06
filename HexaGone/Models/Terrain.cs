@@ -39,21 +39,22 @@ namespace HexaGone.Models
         /// <summary>
         /// A List of the standard available Resources on a piece of Terrain.
         /// </summary>
-        public List<int> TerrainResources { get; set; }
+        public List<int> TerrainResources { get; }
 
         //Constants 
-        public const int terrainID_Water = 0;
-        public const int terrainID_Plains = 1;
-        public const int terrainID_Forest = 2;
-        public const int terrainID_Mountains = 3;
-        public const int terrainID_Desert = 4;
+        public const int terrainIdWater = 0;
+        public const int terrainIdPlains = 1;
+        public const int terrainIdForest = 2;
+        public const int terrainIdMountains = 3;
+        public const int terrainIdDesert = 4;
+        
 
         //Constructor
 
         /// <summary>
         /// Constructs a Terrain from a _TerrainID. Currently supports IDs ranging from 0-4. 
         /// </summary>
-        /// <param name="_TerrainID">
+        /// <param name="terrainID">
         /// For the constant IDs look at Terrain.terrainID_{Terrain}
         /// 0 = Water ;
         /// 1 = Plains ;
@@ -62,50 +63,50 @@ namespace HexaGone.Models
         /// 4 = Desert ;
         /// defaults to Water
         /// </param>
-        public Terrain(int _TerrainID)
+        public Terrain(int terrainID)
         {
-            TerrainID = _TerrainID;
+            TerrainID = terrainID;
             IsLand = true;
             TerrainResources = new List<int>();
 
             switch(TerrainID)
             {
                 //Water
-                case terrainID_Water:
+                case terrainIdWater:
                     Name = "Water";
                     BaseMovementRate = 1;
                     BaseVisibility = 2;
                     BaseExpenditures = 1;
                     IsLand = false;
-                    TerrainResources.Add(Resource.resourceID_Food);
+                    TerrainResources.Add(Resource.resourceIdFood);
                     break;
                 //Plains
-                case terrainID_Plains:
+                case terrainIdPlains:
                     Name = "Plains";
                     BaseMovementRate = 1;
                     BaseVisibility = 1.5;
                     BaseExpenditures = 1;
-                    TerrainResources.Add(Resource.resourceID_Food);
+                    TerrainResources.Add(Resource.resourceIdFood);
                     break;
                 //Forest
-                case terrainID_Forest:
+                case terrainIdForest:
                     Name = "Forest";
                     BaseMovementRate = 0.8;
                     BaseVisibility = 0.25;
                     BaseExpenditures = 1.2;
-                    TerrainResources.Add(Resource.resourceID_Food);
-                    TerrainResources.Add(Resource.resourceID_Wood);
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
                     break;
                 //Mountains
-                case terrainID_Mountains:
+                case terrainIdMountains:
                     Name = "Mountains";
                     BaseMovementRate = 0.5;
                     BaseVisibility = 0.75;
                     BaseExpenditures = 1.2;
-                    TerrainResources.Add(Resource.resourceID_Stone);
+                    TerrainResources.Add(Resource.resourceIdStone);
                     break;
                 //Desert
-                case terrainID_Desert:
+                case terrainIdDesert:
                     Name = "Desert";
                     BaseMovementRate = 0.8;
                     BaseVisibility = 1.5;
@@ -114,13 +115,13 @@ namespace HexaGone.Models
 
                 //Default (in this case Water)
                 default:
-                    TerrainID = terrainID_Water;
+                    TerrainID = terrainIdWater;
                     Name = "Water";
                     BaseMovementRate = 1;
                     BaseVisibility = 2;
                     BaseExpenditures = 1;
                     IsLand = false;
-                    TerrainResources.Add(Resource.resourceID_Food);
+                    TerrainResources.Add(Resource.resourceIdFood);
                     break;
             }
         }
