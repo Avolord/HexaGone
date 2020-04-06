@@ -43,8 +43,8 @@ namespace HexaGone.Models
             Population = _Population;
             Jobs = 100;
             Name = "City";
-            Cost = setCost();
-            if(_Resources != null)
+            Cost = Resource.createStock(1000, 5000, 100, 5000, 0, 0);
+            if (_Resources != null)
             {
                 Resources = _Resources;
             }
@@ -58,29 +58,6 @@ namespace HexaGone.Models
         {
             //TO ADD: Everything.
             return 0;
-        }
-        
-        private Resource[] CreateResource()
-        {
-            Resource[] stock = new Resource[6];
-            stock[0] = new Resource(0, 100);
-            for (int i = 1; i<5; i++)
-            {
-                stock[i] = new Resource(i, 1000);
-            }
-            return stock;
-        }
-
-        private Resource[] setCost()
-        {
-            Resource[] cost = new Resource[6];
-            cost[0] = new Resource(0, 1000);
-            cost[1] = new Resource(0, 1000);
-            cost[2] = new Resource(0, 1000);
-            cost[3] = new Resource(0, 1000);
-            cost[4] = new Resource(0, 1000);
-            cost[5] = new Resource(0, 1000);
-            return cost;
         }
     }
 }
