@@ -1,0 +1,20 @@
+﻿body {
+}
+
+#hexmap {
+    z-index: 2;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    border: 2px solid black;
+}
+
+footer {
+    position: fixed;
+<<<<<<< HEAD
+    bottom: 0;
+=======
+    top: 0px;
+    bottom: 0px;
+>>>>>>> e08c74575c8fc0b584d66ed96b8b3dbcca05068c
+}
