@@ -34,7 +34,7 @@
                 hexX = Math.floor(x / (1.5 * sideLength));
                 hexY = Math.floor((y - (hexX % 2) * hexInnerRadius) / hexRectangleHeight);
 
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(-canvasOriginX, -canvasOriginY, canvas.width, canvas.height);
                 //drawBoard_f(ctx, boardWidth, boardHeight);
                 drawTextureBoard(ctx, img, boardWidth, boardHeight);
 
@@ -242,6 +242,6 @@ canvas.onmousemove = function (e) {
     ctx.setTransform(1, 0, 0, 1,
         x - startCoords[0], y - startCoords[1]);
 
-    render(); // render to show changes
-
+    canvasOriginX = (x - startCoords[0]);
+    canvasOriginY = (y - startCoords[1]);
 }

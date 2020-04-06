@@ -22,6 +22,7 @@
         var offDirections;
         var textures;
         var img;
+        var canvasOriginX, canvasOriginY;
 
 
         function gameVariables() {
@@ -35,6 +36,8 @@
             }
 
             img = document.getElementById("tilesheet");
+            canvasOriginX = 0;
+            canvasOriginY = 0;
         }
 
         function gameVariables_f() {
