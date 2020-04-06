@@ -129,9 +129,9 @@ namespace HexaGone.Models
         /// </summary>
         public void FillFieldModifiersFromTerrainModifiers()
         {
-            AddMovementRateModifier(Modifier.FieldMovementRateModifier.modifier_Terrain);
-            AddExpendituresModifier(Modifier.FieldExpendituresModifier.modifier_Terrain);
-            AddVisibilityModifier(Modifier.FieldVisibilityModifier.modifier_Terrain);
+            AddMovementRateModifier(Modifier.FieldMovementRateModifier.modifierTerrain);
+            AddExpendituresModifier(Modifier.FieldExpendituresModifier.modifierTerrain);
+            AddVisibilityModifier(Modifier.FieldVisibilityModifier.modifierTerrain);
         }
 
 

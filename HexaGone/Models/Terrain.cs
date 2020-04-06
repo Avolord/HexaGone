@@ -47,6 +47,11 @@ namespace HexaGone.Models
         public const int terrainIdForest = 2;
         public const int terrainIdMountains = 3;
         public const int terrainIdDesert = 4;
+
+        /// <summary>
+        /// The amount of defined terrains. If you add a terrain at the top and in the constructor in the switch-case statement, increase this number by 1.
+        /// </summary>
+        public const int amountTerrains = 5;
         
 
         //Constructor
