@@ -37,35 +37,15 @@ namespace HexaGone.Controllers
 
         public IActionResult Game()
         {
-            Models.Hexmap hexmap = new Models.Hexmap();
+            Models.Map map = new Map(Map.mapModeTinyIslands, 20, 30);
 
             //===
             // Ausfüllen:
-            hexmap.hexSideLength = 30;
-            hexmap.width = 20;
-            hexmap.height = 30;
-            hexmap.isPointy = false;
+            map.HexSideLength = 30;
             //===
 
-            hexmap.texture_index = new int[hexmap.width][];
 
-            for (int i = 0; i < hexmap.width; i++)
-            {
-                hexmap.texture_index[i] = new int[hexmap.height];
-            }
-
-            for (int i = 0; i < hexmap.width; i++)
-            {
-                for (int j = 0; j < hexmap.height; j++)
-                {
-                    Random rand = new Random();
-                    hexmap.texture_index[i][j] = rand.Next(0, 30);
-                }
-            }
-
-            hexmap.calculate();
-
-            return View("Game", hexmap);
+            return View("Game", map);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

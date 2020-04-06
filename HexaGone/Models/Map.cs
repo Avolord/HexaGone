@@ -11,6 +11,8 @@ namespace HexaGone.Models
         public List<List<Field>> Fields { get; }
         public int Width { get; }
         public int Height { get; }
+        public bool IsPointy { get; }
+        public int HexSideLength { get; set; }
 
         //Constants
 
@@ -32,6 +34,9 @@ namespace HexaGone.Models
             //Set Width and Height
             Width = width;
             Height = height;
+            IsPointy = false;
+            HexSideLength = 30;
+            Fields = new List<List<Field>>();
 
             //Generate the Map
             MapgeneratorSwitcher(mapMode);
