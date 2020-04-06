@@ -4,6 +4,7 @@
 }
 <img id="tilesheet" src="~/images/tilesheet2.png" hidden/>
 <canvas id="hexmap"></canvas>
+<label id="test1" style="position:absolute; left:1000px; top:50px">teeest</label>
 
 @section Scripts{
     <script>
@@ -22,6 +23,12 @@
         var offDirections;
         var textures;
         var img;
+        var offsetX;
+        var offsetY;
+        var scaleX;
+        var scaleY;
+        var markedTileX;
+        var markedTileY;
 
 
         function gameVariables() {
@@ -35,6 +42,13 @@
             }
 
             img = document.getElementById("tilesheet");
+
+            offsetX = 0;
+            offsetY = 0;
+            scaleX = 1;
+            scaleY = 1;
+            markedTileX = -1;
+            markedTileY = -1;
         }
 
         function gameVariables_f() {
