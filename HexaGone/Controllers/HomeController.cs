@@ -31,7 +31,7 @@ namespace HexaGone.Controllers
             if (HttpContext.Request.Cookies.ContainsKey("stayLoggedIn"))
             {
                 var userId = HttpContext.Request.Cookies["stayLoggedIn"];
-                return Content(userId.ToString());
+                return View("LogedInIndex");
             }
                 return View(new UserModel() { isLogin = "true", errorMessage = "" }) ; 
         }
@@ -257,7 +257,7 @@ namespace HexaGone.Controllers
                                     HttpContext.Response.Cookies.Append("stayLoggedIn", userId[0].ToString(), stayLoggedIn);
                                 }
                                
-                                return View("Index",user);
+                                return View("LogedInIndex",user);
                             }
                         }
                     }
