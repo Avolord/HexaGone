@@ -2,25 +2,20 @@
 @{
     Layout = "_GameLayout";
 }
-<img id="tilesheet" src="~/images/tilesheet.png" hidden/>
+<img id="tilesheet" src="~/images/tilesheet2.png" hidden/>
 <canvas id="hexmap"></canvas>
-<label id="test1" style="position:absolute; top:0px; left:500px"></label>
-<label id="test2" style="position:absolute; top:15px; left:500px"></label>
-<label id="test3" style="position:absolute; top:45px; left:500px"></label>
-<label id="test4" style="position:absolute; top:60px; left:500px"></label>
 
 @section Scripts{
     <script>
         var canvas;
+        var ctx;
         var hexmapStyle;
-        
-        var hexHeight,
-            hexRadius,
-            hexRadius_s,
+
+        var hexInnerRadius;
+
+        var hexOuterRadius,
             hexRectangleHeight,
-            hexRectangleHeight_s,
             hexRectangleWidth,
-            hexagonAngle,
             sideLength,
             boardWidth,
             boardHeight;
@@ -46,13 +41,18 @@
             canvas = document.getElementById('hexmap');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            ctx = canvas.getContext('2d');
 
-            //This is confusing because everyone knows that a hexagon has an inner angle of 120° at each corner.
-            hexagonAngle = 0.523598776; // 30 degrees in radians
+            //the length of each side of the hexagon
             sideLength = @Model.hexSideLength;
+
+            //the amount of columns
             boardWidth = @Model.width;
+
+            //the amount of rows
             boardHeight = @Model.height;
 
+            //The offset positions of the neighboring hexagons
             offDirections = [
                 [[+1, 0], [+1, -1], [0, -1],
                 [-1, -1], [-1, 0], [0, +1]],
@@ -60,42 +60,23 @@
                 [-1, 0], [-1, +1], [0, +1]],
             ];
 
-            /*
-             * From Wikipedia can be deduced that:
-             * 
-             * [I changed the order of the variable-names because i think that it fits better like this]
-             * 
-             * (the outer-circle-radius) hexRadius = sideLength;
-             * (the inner-circle-radius) hexHeight = sqrt(3) / 2.0 * sideLength;
-             * (the inner angle) hexagonAngle = 120° or 2.094395
-             * (the height of the hexagon) hexRectangleHeight = 2 * hexHeight;
-             * 
-             * Source (German): https://de.wikipedia.org/wiki/Sechseck;
-             * Source (English): https://en.wikipedia.org/wiki/Hexagon;
-             */
+            //The Inner radius of the hexagon
+            hexInnerRadius = Math.sqrt(3) / 2.0 * sideLength;
 
-            /*
-             * I am sorry but where the fuck to these calculations come from?!
-             * In my opinion they are utterly confusing and inadequate!
-             * Please refer to the wikipedia articles that i have included for a
-             * reference as to why i think that these formulas are sh**t.
-             * 
-             * ~Avolord
-             */
+            //The outer radius of the hexagon
+            hexOuterRadius = sideLength;
 
-            hexHeight = Math.sin(hexagonAngle) * sideLength; // this is equal to (sideLength / 2) [sin(30°) = 0.5]
-            hexRadius = Math.cos(hexagonAngle) * sideLength * 14.0 / 15.0;
-            hexRadius_s = Math.cos(hexagonAngle) * sideLength;
-            hexRectangleWidth = sideLength + 2 * hexHeight; //wtf this is should literally just be (2 * sideLength)
-            hexRectangleHeight = 2 * hexRadius;
-            hexRectangleHeight_s = 2 * hexRadius_s;
+            //The width of the hexagon (corner to corner)
+            hexRectangleWidth = sideLength * 2;
 
+            //The height of the hexagon (edge to edge)
+            hexRectangleHeight = hexInnerRadius * 2;
+
+            //an array with the indexes of the textures
             textures = [];
-
             for (var i = 0; i < boardWidth; i++) {
                 textures[i] = [];
             }
-
             @for(int i = 0; i < Model.width; i++)
             {
                 for(int j = 0; j < Model.height; j++)

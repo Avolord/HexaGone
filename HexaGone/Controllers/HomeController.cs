@@ -34,7 +34,7 @@ namespace HexaGone.Controllers
 
             //===
             // Ausfüllen:
-            hexmap.hexSideLength = 50;
+            hexmap.hexSideLength = 30;
             hexmap.width = 20;
             hexmap.height = 30;
             hexmap.isPointy = false;
@@ -52,7 +52,7 @@ namespace HexaGone.Controllers
                 for (int j = 0; j < hexmap.height; j++)
                 {
                     Random rand = new Random();
-                    hexmap.texture_index[i][j] = rand.Next(0, 7);
+                    hexmap.texture_index[i][j] = rand.Next(0, 30);
                 }
             }
 

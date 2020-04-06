@@ -13,7 +13,7 @@
         gameVariables_f();
 
         if (canvas.getContext) {
-            var ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = false;
 
             ctx.fillStyle = "#CCCCCC";
             ctx.strokeStyle = "#000";
@@ -31,8 +31,8 @@
                 x = eventInfo.offsetX || eventInfo.layerX;
                 y = eventInfo.offsetY || eventInfo.layerY;
 
-                hexX = Math.floor(x / (hexHeight + sideLength));
-                hexY = Math.floor((y - (hexX % 2) * hexRadius) / hexRectangleHeight);
+                hexX = Math.floor(x / (1.5 * sideLength));
+                hexY = Math.floor((y - (hexX % 2) * hexInnerRadius) / hexRectangleHeight);
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 //drawBoard_f(ctx, boardWidth, boardHeight);
@@ -51,13 +51,6 @@
                 var n4 = offNeighbor_f(hexX, hexY, 4);
                 var p4 = offToPixel_f(n4[0], n4[1]);
                 var d4 = distance(p4[0], p4[1], x, y)
-
-
-                document.getElementById("test1").innerHTML = x;
-                document.getElementById("test2").innerHTML = y;
-                document.getElementById("test3").innerHTML = "test";
-                document.getElementById("test4").innerHTML = "test";
-
 
                 if (d3 < d && d3 < d4) {
                     hexX = n3[0];
@@ -82,11 +75,6 @@
         }
     }
 
-    
-    
-    
-    
-
 
     //=====
     // Functions:
@@ -95,14 +83,14 @@
     }
 
     function drawTexture(canvasContext, image, col, row, textureIndex) {
-        pixelCol = col * (sideLength + hexHeight) - col * 0;
-        pixelRow = (row - 1) * hexRectangleHeight_s + ((col % 2) * hexRadius) - row * hexRectangleHeight * 1.0 / 15.0;
+        pixelCol = col * 1.5 * sideLength;
+        pixelRow = (row - 1) * hexRectangleHeight + ((col % 2) * hexInnerRadius);
 
-        var imgHeight = hexRectangleHeight_s * 2;
+        var imgHeight = hexRectangleHeight * 2 + (1.0 / 15.0 * hexRectangleHeight);
         var imgWidth = hexRectangleWidth;
-        var tileX = textureIndex * 128;
+        var tileX = textureIndex * 128 / 4;
 
-        canvasContext.drawImage(image, tileX, 0, 128, 240, pixelCol, pixelRow, imgWidth, imgHeight);
+        canvasContext.drawImage(image, tileX, 0, 128 / 4, 232 / 4, pixelCol, pixelRow, imgWidth, imgHeight);
 
         //console.log("Row:" + row + ", Column: " + col + ", ImageStartX: " + pixelCol + ", ImageStartY: " + pixelRow);
     }
@@ -155,16 +143,16 @@
     function drawHexagon_f(canvasContext, col, row, fill) {
         var fill = fill || false;
         
-        row = row * hexRectangleHeight + ((col % 2) * hexRadius) - row * 0;
-        col = col * (sideLength + hexHeight) - col * 0;
+        pixelRow = row * hexRectangleHeight + ((col % 2) * hexInnerRadius);
+        pixelCol = col * 1.5 * sideLength;
    
         canvasContext.beginPath();
-        canvasContext.moveTo(col + hexHeight, row);
-        canvasContext.lineTo(col + hexHeight + sideLength, row);
-        canvasContext.lineTo(col + hexRectangleWidth, row + hexRadius);
-        canvasContext.lineTo(col + hexHeight + sideLength, row + hexRectangleHeight);
-        canvasContext.lineTo(col + hexHeight, row + hexRectangleHeight);
-        canvasContext.lineTo(col, row + hexRadius);
+        canvasContext.moveTo(pixelCol + 0.5 * sideLength, pixelRow);
+        canvasContext.lineTo(pixelCol + 1.5 * sideLength, pixelRow);
+        canvasContext.lineTo(pixelCol + hexRectangleWidth, pixelRow + hexInnerRadius);
+        canvasContext.lineTo(pixelCol + 1.5 * sideLength, pixelRow + hexRectangleHeight);
+        canvasContext.lineTo(pixelCol + 0.5 * sideLength, pixelRow + hexRectangleHeight);
+        canvasContext.lineTo(pixelCol, pixelRow + hexInnerRadius);
         canvasContext.closePath();
 
         if (fill) {
@@ -199,7 +187,7 @@
 
         //set pixel coordinates to the middle of the hexagon
         x = Math.round(x + sideLength);
-        y = Math.round(y + hexRadius);
+        y = Math.round(y + hexInnerRadius);
         return [x, y];
     }
 
@@ -216,3 +204,44 @@
     }
     //=====
 })();
+
+
+var isDown = false; // whether mouse is pressed
+var startCoords = []; // 'grab' coordinates when pressing mouse
+var last = [0, 0]; // previous coordinates of mouse release
+
+canvas.onmousedown = function (e) {
+    isDown = true;
+
+    startCoords = [
+        e.offsetX - last[0], // set start coordinates
+        e.offsetY - last[1]
+    ];
+};
+
+canvas.onmouseup = function (e) {
+    isDown = false;
+
+    last = [
+        e.offsetX - startCoords[0], // set last coordinates
+        e.offsetY - startCoords[1]
+    ];
+};
+
+canvas.onmousemove = function (e) {
+    if (!isDown) return; // don't pan if mouse is not pressed
+
+    var x = e.offsetX;
+    var y = e.offsetY;
+
+    // set the canvas' transformation matrix by setting the amount of movement:
+    // 1  0  dx
+    // 0  1  dy
+    // 0  0  1
+
+    ctx.setTransform(1, 0, 0, 1,
+        x - startCoords[0], y - startCoords[1]);
+
+    render(); // render to show changes
+
+}
