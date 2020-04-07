@@ -10,7 +10,11 @@
 <div id="pageTitleText" class="text-center"><span style="-webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none;">HexaGone</span></div>
+    user-select: none;">HexaGone</span>
+</div>
+<div id="divForm" style="display: none">
+    @await Html.PartialAsync("_userForm", @Model)
+</div>
 <div class="text-center mid-screen">
 
     <article class="articleWithoutPic">
@@ -49,7 +53,7 @@
         <form class="form-inline ml-auto">
             <button class="btn btn-danger" id="navbar_login_btn" type="button" onclick="scroll_to_top_and_show_form()">Login</button>
         </form>
-        <div id="navbar_user_profile">
+        <div onclick="showForm()" id="navbar_user_profile">
             <span id="user" class="navbar-text" for="profile_image" style="color: white;">
                 @Model.userName
             </span>
@@ -57,3 +61,9 @@
         </div>
     </div>
 }
+
+<script>
+    function showForm() {
+        $('#divForm').css("display","block");
+    }
+</script>
