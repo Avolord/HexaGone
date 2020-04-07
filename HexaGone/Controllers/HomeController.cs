@@ -28,16 +28,32 @@ namespace HexaGone.Controllers
 
         public IActionResult Index()
         {
-            if (HttpContext.Request.Cookies.ContainsKey("stayLoggedIn"))
+            string sessionData = HttpContext.Session.GetString("userKeyData");
+            if (sessionData != null && sessionData.Length > 0)
+            {
+                UserModel currentUser = new UserModel();
+                currentUser.readSessionCookieData(sessionData);
+                return View("LogedInIndex", currentUser);
+            }
+            else if (HttpContext.Request.Cookies.ContainsKey("stayLoggedIn"))
             {
                 var userId = HttpContext.Request.Cookies["stayLoggedIn"];
-                return View("LogedInIndex");
+                List<UserModel> userLoaded = new List<UserModel>();
+                string sqlQueryUserId = "Select * From User Where UserID = \"" + userId + "\"";
+                using (IDbConnection db = new MySqlConnection(Models.Dapper.connectionString))
+                {
+                    userLoaded = db.Query<UserModel>(sqlQueryUserId).ToList();
+                }
+                HttpContext.Session.SetString("userKeyData", userLoaded[0].createSessionString());
+                return View("LogedInIndex", userLoaded[0]);
             }
-                return View(new UserModel() { isLogin = "true", errorMessage = "" }) ; 
+           
+            return View(new UserLoginHelperModel() { isLogin = "true", errorMessage = "" });
+            
         }
 
         [HttpPost]
-        public IActionResult Index(HexaGone.Models.UserModel user)
+        public IActionResult Index(HexaGone.Models.UserLoginHelperModel user)
         {
             if (user.isLogin == "false")
             {
@@ -56,7 +72,7 @@ namespace HexaGone.Controllers
             }
             else
             {
-                return View(new UserModel() { isLogin = "true" });
+                return View(new UserLoginHelperModel() { isLogin = "true" });
             }
         }
 
@@ -67,35 +83,43 @@ namespace HexaGone.Controllers
 
         public IActionResult Game()
         {
-            Models.Hexmap hexmap = new Models.Hexmap();
-
-            //===
-            // Ausfüllen:
-            hexmap.hexSideLength = 30;
-            hexmap.width = 20;
-            hexmap.height = 30;
-            hexmap.isPointy = false;
-            //===
-
-            hexmap.texture_index = new int[hexmap.width][];
-
-            for (int i = 0; i < hexmap.width; i++)
+            string sessionData = HttpContext.Session.GetString("userKeyData");
+            if (sessionData != null && sessionData.Length > 0 || HttpContext.Request.Cookies.ContainsKey("stayLoggedIn"))
             {
-                hexmap.texture_index[i] = new int[hexmap.height];
-            }
+                Models.Hexmap hexmap = new Models.Hexmap();
 
-            for (int i = 0; i < hexmap.width; i++)
-            {
-                for (int j = 0; j < hexmap.height; j++)
+                //===
+                // Ausfüllen:
+                hexmap.hexSideLength = 30;
+                hexmap.width = 20;
+                hexmap.height = 30;
+                hexmap.isPointy = false;
+                //===
+
+                hexmap.texture_index = new int[hexmap.width][];
+
+                for (int i = 0; i < hexmap.width; i++)
                 {
-                    Random rand = new Random();
-                    hexmap.texture_index[i][j] = rand.Next(0, 30);
+                    hexmap.texture_index[i] = new int[hexmap.height];
                 }
+
+                for (int i = 0; i < hexmap.width; i++)
+                {
+                    for (int j = 0; j < hexmap.height; j++)
+                    {
+                        Random rand = new Random();
+                        hexmap.texture_index[i][j] = rand.Next(0, 30);
+                    }
+                }
+
+                hexmap.calculate();
+
+                return View("Game", hexmap);
             }
-
-            hexmap.calculate();
-
-            return View("Game", hexmap);
+            else
+            {
+                return View("Index",new UserLoginHelperModel() { isLogin = "true", errorMessage = "Please login to visit the Game page" });
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -104,7 +128,7 @@ namespace HexaGone.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
         [HttpPost]
-        public IActionResult Register(HexaGone.Models.UserModel user)
+        public IActionResult Register(HexaGone.Models.UserLoginHelperModel user)
         {
             user.isLogin = "false";
             if (user.isValid())
@@ -171,7 +195,7 @@ namespace HexaGone.Controllers
 
         }
         [HttpPost]
-        public IActionResult Login(HexaGone.Models.UserModel user)
+        public IActionResult Login(HexaGone.Models.UserLoginHelperModel user)
         {
             user.isLogin = "true";
             if (user.isValid())
@@ -186,15 +210,14 @@ namespace HexaGone.Controllers
 
                     user.LoginModel.Password = Hash.GetMD5Hash(user.LoginModel.Password);
 
-                    string sqlQuery = "Select * From User Where Username = \"" + user.LoginModel.Username + "\"";
-                    string sqlQuery2 = "Select * From User Where Email =  \"" + user.LoginModel.Email + "\"";
+                    string sqlQueryUsername = "Select * From User Where Username = \"" + user.LoginModel.Username + "\"";
+                    string sqlQueryEmail = "Select * From User Where Email =  \"" + user.LoginModel.Email + "\"";
                     List<LoginUserModel> witzigerName = new List<LoginUserModel>();
                     bool currentUserName = false;
                     bool currentUserMail = false;
-                    int indexOfUserInList = -1;
                     try
                     {
-                        witzigerName = db.Query<LoginUserModel>(sqlQuery).ToList();
+                        witzigerName = db.Query<LoginUserModel>(sqlQueryUsername).ToList();
                         if(witzigerName.Count == 0)
                         {
                             user.errorMessage = "User doesn't exists";
@@ -212,14 +235,15 @@ namespace HexaGone.Controllers
                     {
                         try
                         {
-                            witzigerName = db.Query<LoginUserModel>(sqlQuery2).ToList();
+                            witzigerName = db.Query<LoginUserModel>(sqlQueryEmail).ToList();
                             if(witzigerName.Count == 0 && user.LoginModel.Username.Contains("@"))
                             {
                                 user.errorMessage = "Email doesn't exists";
                             }
-                            else if(witzigerName.Count != 0)
+                            else if(witzigerName.Count != 0 && user.LoginModel.Username.Contains("@"))
                             {
-                                currentUserMail = false;
+                                currentUserMail = true;
+                                currentUserName = false;
                             }
                         }
                         finally
@@ -239,25 +263,24 @@ namespace HexaGone.Controllers
                             if (user.LoginModel.Password == Item.Password)
                             {
                                 user.isLogin = "true";
-                                if(user.stayLoggedIn)
+                                string sqlQuery = "";
+                                List<UserModel> userLoaded = new List<UserModel>();
+                                if (currentUserName)
+                                    sqlQuery = "Select * From User Where Username = \"" + user.LoginModel.Username + "\"";
+                                else if (currentUserMail)
+                                    sqlQuery = "Select * From User Where Email = \"" + user.LoginModel.Email + "\"";
+                                userLoaded = db.Query<UserModel>(sqlQuery).ToList();
+                                HttpContext.Session.SetString("userKeyData", userLoaded[0].createSessionString());
+                                if (user.stayLoggedIn)
                                 {
-                                    if (currentUserName == true)
-                                    {
-                                        sqlQuery = "Select UserID From User Where Username = \"" + user.LoginModel.Username + "\"";
-                                    }
-                                    else
-                                    {
-                                        sqlQuery = "Select UserID From User Where Email = \"" + user.LoginModel.Email + "\"";
-                                    }
                                     CookieOptions stayLoggedIn = new CookieOptions();
                                     stayLoggedIn.Expires = new DateTimeOffset(DateTime.Now.AddSeconds(100));
-                                    List<int> userId = new List<int>();
-                                    userId = db.Query<int>(sqlQuery).ToList();
                                     user.errorMessage = "";
-                                    HttpContext.Response.Cookies.Append("stayLoggedIn", userId[0].ToString(), stayLoggedIn);
+
+                                    HttpContext.Response.Cookies.Append("stayLoggedIn", userLoaded[0].userId.ToString(), stayLoggedIn);
                                 }
-                               
-                                return View("LogedInIndex",user);
+
+                                return View("LogedInIndex", userLoaded[0]);
                             }
                         }
                     }
