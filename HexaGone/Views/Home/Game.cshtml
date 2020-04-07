@@ -4,98 +4,124 @@
 }
 <img id="tilesheet" src="~/images/tilesheet2.png" hidden/>
 <canvas id="hexmap"></canvas>
-<label id="test1" style="position:absolute; left:1000px; top:50px">teeest</label>
 
 @section Scripts{
     <script>
+        // variable that represents the canvas
         var canvas;
-        var ctx;
-        var hexmapStyle;
 
+        // variable for the canvas context
+        var ctx;
+
+        // radius of the inner circle of a hexagon (edge-to-edge)
         var hexInnerRadius;
 
-        var hexOuterRadius,
-            hexRectangleHeight,
-            hexRectangleWidth,
-            sideLength,
-            boardWidth,
-            boardHeight;
-        var offDirections;
-        var textures;
-        var img;
+        // radius of the outer circle of a hexagon (corner-to-corner)
+        var hexOuterRadius;
+
+        // height of a hexagon (edge-to-edge)
+        var hexRectangleHeight;
+
+        // width of a hexagon (corner-to-corner)
+        var hexRectangleWidth;
+
+        // sidelength of a hexagon
+        var sideLength;
+
+        // amount of columns on the board
+        var mapWidth;
+
+        // amount of rows on the board
+        var mapHeight;
+
+        // the relative positions of neighboring hexagons to a hexagon in offset-coordinates
+        var offsetDirections;
+
+        // two-dimensional array that contains the information about the map
+        var mapData;
+
+        // variable representing the tilesheet
+        var tilesheetImage;
+
+        // offset position of the starting point of the map after the map is dragged across the screen
         var offsetX;
         var offsetY;
+
+        // current scale of the map after the map is zoomed in or zoomed out
         var scaleX;
         var scaleY;
+
+        // offset-coordinate of the currently marked tile
         var markedTileX;
         var markedTileY;
 
 
         function gameVariables() {
-            @if(Model.isPointy)
-            {
-                <text>hexmapStyle = "pointy";</text>
-            }
-            else
-            {
-                <text>hexmapStyle = "flat";</text>
-            }
 
-            img = document.getElementById("tilesheet");
+            // setting the image variable to the tilesheet
+            tilesheetImage = document.getElementById("tilesheet");
 
+            // default value for the offset position of the starting point of the map
             offsetX = 0;
             offsetY = 0;
+
+            // default value for the scale of the map
             scaleX = 1;
             scaleY = 1;
+
+            // default value for the currently marked tile
             markedTileX = -1;
             markedTileY = -1;
-        }
 
-        function gameVariables_f() {
+            // setting the canvas variable to the current canvas
             canvas = document.getElementById('hexmap');
+
+            // resizing the canvas
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+
+            // setting the canvas context
             ctx = canvas.getContext('2d');
 
             //the length of each side of the hexagon
             sideLength = @Model.hexSideLength;
 
             //the amount of columns
-            boardWidth = @Model.width;
+            mapWidth = @Model.mapData[0].Count;
 
             //the amount of rows
-            boardHeight = @Model.height;
+            mapHeight = @Model.mapData.Count;
 
             //The offset positions of the neighboring hexagons
-            offDirections = [
+            offsetDirections = [
                 [[+1, 0], [+1, -1], [0, -1],
                 [-1, -1], [-1, 0], [0, +1]],
                 [[+1, +1], [+1, 0], [0, -1],
                 [-1, 0], [-1, +1], [0, +1]],
             ];
 
-            //The Inner radius of the hexagon
+            //The inner radius of the hexagon (edge-to-edge)
             hexInnerRadius = Math.sqrt(3) / 2.0 * sideLength;
 
-            //The outer radius of the hexagon
+            //The outer radius of the hexagon (corner-to-corner)
             hexOuterRadius = sideLength;
 
-            //The width of the hexagon (corner to corner)
+            //The width of the hexagon (corner-to-corner)
             hexRectangleWidth = sideLength * 2;
 
-            //The height of the hexagon (edge to edge)
+            //The height of the hexagon (edge-to-edge)
             hexRectangleHeight = hexInnerRadius * 2;
 
-            //an array with the indexes of the textures
-            textures = [];
-            for (var i = 0; i < boardWidth; i++) {
-                textures[i] = [];
+            // setting up the two-dimensional array containing the information about the map
+            mapData = [];
+            for (var i = 0; i < mapWidth; i++) {
+                mapData[i] = [];
             }
-            @for(int i = 0; i < Model.width; i++)
+            @for(int i = 0; i < Model.mapData[0].Count; i++)
             {
-                for(int j = 0; j < Model.height; j++)
+                for(int j = 0; j < Model.mapData.Count; j++)
                 {
-                    <text>textures[@i][@j] = @Model.texture_index[i][j];</text>
+                    <text>mapData[@i][@j] = @Model.mapData[j][i];</text>
                 }
             }
         }
