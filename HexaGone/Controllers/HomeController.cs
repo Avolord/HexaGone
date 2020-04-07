@@ -84,7 +84,21 @@ namespace HexaGone.Controllers
         public IActionResult Game()
         {
             string sessionData = HttpContext.Session.GetString("userKeyData");
-            if (sessionData != null && sessionData.Length > 0 || HttpContext.Request.Cookies.ContainsKey("stayLoggedIn"))
+            if (sessionData == null || sessionData.Length == 0)
+            {
+                if (HttpContext.Request.Cookies.ContainsKey("stayLoggedIn"))
+                {
+                    var userId = HttpContext.Request.Cookies["stayLoggedIn"];
+                    List<UserModel> userLoaded = new List<UserModel>();
+                    string sqlQueryUserId = "Select * From User Where UserID = \"" + userId + "\"";
+                    using (IDbConnection db = new MySqlConnection(Models.Dapper.connectionString))
+                    {
+                        userLoaded = db.Query<UserModel>(sqlQueryUserId).ToList();
+                    }
+                    HttpContext.Session.SetString("userKeyData", userLoaded[0].createSessionString());
+                }
+            }
+            if (sessionData != null && sessionData.Length > 0)
             {
                 Models.Hexmap hexmap = new Models.Hexmap();
 
@@ -118,7 +132,7 @@ namespace HexaGone.Controllers
             }
             else
             {
-                return View("Index",new UserLoginHelperModel() { isLogin = "true", errorMessage = "Please login to visit the Game page" });
+                return View("Index",new UserLoginHelperModel() { isLogin = "true", errorMessage = "Please login to visit the Game page", redirectTo = "Game" });
             }
         }
 
@@ -180,6 +194,14 @@ namespace HexaGone.Controllers
                         user.RegistrationModel.Password = Hash.GetMD5Hash(user.RegistrationModel.Password);
                         
                         int rowsAffected = db.Execute(sqlQuery, user.RegistrationModel);
+                        if(rowsAffected > 0)
+                        {
+                            List<UserModel> userLoaded = new List<UserModel>();
+                            sqlQuery = "Select * From User Where Username = \"" + user.RegistrationModel.Username + "\"";
+                            userLoaded = db.Query<UserModel>(sqlQuery).ToList();
+                            HttpContext.Session.SetString("userKeyData", userLoaded[0].createSessionString());
+                            return View("LogedInIndex", userLoaded[0]);
+                        }
                     user.isLogin = "false";
                     return View("Index",user);
                
@@ -279,7 +301,13 @@ namespace HexaGone.Controllers
 
                                     HttpContext.Response.Cookies.Append("stayLoggedIn", userLoaded[0].userId.ToString(), stayLoggedIn);
                                 }
-
+                                if(user.redirectTo != null && user.redirectTo != "")
+                                {
+                                    if(user.redirectTo == "Game")
+                                    {
+                                        return Game();
+                                    }
+                                }
                                 return View("LogedInIndex", userLoaded[0]);
                             }
                         }

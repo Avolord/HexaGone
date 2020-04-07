@@ -17,6 +17,7 @@ namespace HexaGone.Models
         public string isLogin { get; set; }
 
         public string errorMessage { get; set; }
+        public string redirectTo { get; set; }
 
 
         public bool isValid()

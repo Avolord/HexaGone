@@ -20,9 +20,10 @@
         @Html.TextBoxFor(model => model.LoginModel.Password, new { @class = "form-control loginInputText", @placeholder = "Password", @type = "password", @required = "true" })
 
         @Html.TextBoxFor(model => model.isLogin, "true", new { @id = "isLoginTextBox" })
+        @Html.TextBoxFor(model => model.redirectTo, @Model.redirectTo, new { @style = "display: none" })
         <div>
-        @Html.CheckBoxFor(model => model.stayLoggedIn, new { @id = "stayLoggedIn"})
-        <label for="stayLoggedIn" id="stayLoggedInLabel" style="margin-bottom: 1em; font-size: 1em" >Stay Logged In</label>
+            @Html.CheckBoxFor(model => model.stayLoggedIn, new { @id = "stayLoggedIn" })
+            <label for="stayLoggedIn" id="stayLoggedInLabel" style="margin-bottom: 1em; font-size: 1em">Stay Logged In</label>
         </div>
         <button type="submit" onclick="SubmitLogin()" asp-controller="Home" asp-action="Login" class="btn btn-danger" id="btnFormLogin"> Login </button>
         <button type="button" onclick="ChangeToRegistration()" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
@@ -46,7 +47,7 @@
         @Html.TextBoxFor(model => model.RegistrationModel.RepeatPassword, new { @class = "form-control loginInputText", @placeholder = "Repeat Password", @type = "password", @required = "true" })
 
         @Html.TextBoxFor(model => model.isLogin, "false", new { @id = "isLoginTextBox" })
-        
+        @Html.TextBoxFor(model => model.redirectTo, @Model.redirectTo, new { @style = "display: none" })
         <button type="button" onclick="ChangeToLogin()" class="btn btn-danger" id="btnFormLogin"> Back </button>
         <button type="submit" asp-controller="Home" asp-action="Register" class="btn btn-info" id="btnFormRegistrieren"> Registrieren </button>
     </div>
