@@ -35,8 +35,8 @@ namespace HexaGone.Controllers
             //===
             // Ausfüllen:
             hexmap.hexSideLength = 30;
-            hexmap.width = 20;
-            hexmap.height = 30;
+            hexmap.width = hexmap.mapData[0].Count;
+            hexmap.height = hexmap.mapData.Count;
             hexmap.isPointy = false;
             //===
 
