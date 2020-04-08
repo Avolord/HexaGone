@@ -17,6 +17,19 @@ namespace HexaGone.Models
 
     public class Unit
     {
+        //Constructor
+        public Unit(int unitID, int unitClass, string name, float attackStat, float defenseStat, int maxMenCount, int menCount, bool isRangedUnit, float movementPoints)
+        {
+            UnitID = unitID;
+            UnitClass = unitClass;
+            Name = name;
+            AttackStat = attackStat;
+            DefenseStat = defenseStat;
+            MaxMenCount = maxMenCount;
+            MenCount = menCount;
+            IsRangedUnit = isRangedUnit;
+            MovementPoints = movementPoints;
+        }
         //Attributes
         /// <summary>
         /// A unique ID for the Unit.
@@ -25,7 +38,7 @@ namespace HexaGone.Models
         /// <summary>
         /// A ID that specifies the class of the Unit.
         /// </summary>
-        public UnitClass Class { get; set; }
+        public int UnitClass { get; set; }
         /// <summary>
         /// The name of the unit.
         /// </summary>
@@ -50,10 +63,6 @@ namespace HexaGone.Models
         /// Is true if the Unit is a ranged Unit.
         /// </summary>
         public bool IsRangedUnit { get; set; }
-        /// <summary>
-        /// This Dictionary lists all multipliers this Unit gets against the other UnitClasses.
-        /// </summary>
-        public Dictionary<int, float> Factors { get; }
         /// <summary>
         /// Indicates how far the Unit can move in one turn.
         /// </summary>
