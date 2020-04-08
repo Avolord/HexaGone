@@ -4,17 +4,21 @@
 }
 
 <link rel="stylesheet" href="~/css/home/LoggedInIndex.css" />
+<script type="text/javascript" src="~/js/home/index.js"></script>
 
 
 
-<div id="pageTitleText" class="text-center"><span style="-webkit-user-select: none;
+<div id="divFormFixed" class="shadow">
+    @await Html.PartialAsync("_userForm", @Model)
+</div>
+
+<div id="pageTitleText" class="text-center">
+    <span style="-webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;">HexaGone</span>
 </div>
-<div id="divForm" style="display: none">
-    @await Html.PartialAsync("_userForm", @Model)
-</div>
+
 <div class="text-center mid-screen">
 
     <article class="articleWithoutPic">
@@ -50,20 +54,49 @@
             </li>
         </ul>
 
+
         <form class="form-inline ml-auto">
             <button class="btn btn-danger" id="navbar_login_btn" type="button" onclick="scroll_to_top_and_show_form()">Login</button>
         </form>
-        <div onclick="showForm()" id="navbar_user_profile">
-            <span id="user" class="navbar-text" for="profile_image" style="color: white;">
+        <div onclick="toggleForm()" id="navbar_user_profile" >
+            <span class="navbar-text" for="profile_image" style="color: white;">
                 @Model.userName
             </span>
             <img src="~/images/user.png" width="30" height="30" class="d-inline-block align-top" id="profile_image" alt="">
         </div>
     </div>
+
 }
 
 <script>
-    function showForm() {
-        $('#divForm').css("display","block");
+    function toggleForm() {
+        if ($('#divFormFixed').css("display") == "none") {
+            $('#divFormFixed').css("display", "block");
+            var height = $('.navbar').outerHeight();
+            if (!$('.navbar').hasClass('scrolled')) {
+               
+                $('#divFormFixed').css("top", height);
+                $('#divFormFixed').css("background-color", $('.navbar').css("background-color"));
+            }
+            else {
+                height = $('.navbar.scrolled').outerHeight();
+                $('#divFormFixed').css("top", height);
+                $('#divFormFixed').css("background-color", $('.navbar.scrolled').css("background-color"));
+            }
+            $('#divFormFixed').css("top", height);
+        }
+        else {
+            $('#divFormFixed').css("display", "none");
+        }
+        
     }
+
+    $(document).ready(function () {
+        var x = document.getElementById("#navbar_user_profile");
+        
+    });
+
+  
+        
+
 </script>

@@ -9,9 +9,9 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:300i&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
-<body>
+<body onscroll="checkScroll()">
     <header>
-        <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
+        <nav class="navbar fixed-top navbar-expand-lg navbar-dark" id="hello">
             @RenderSection("navbar", required:true)
         </nav>
         <img src="~/images/bg.jpg" id="background_image">
@@ -21,7 +21,9 @@
             @RenderBody()
         </main>
     </div>
-
+    <div>
+        <button onclick="showToTop()" id="toTopButton" title="Go to top">^</button>
+    </div>
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2020 - HexaGone - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
