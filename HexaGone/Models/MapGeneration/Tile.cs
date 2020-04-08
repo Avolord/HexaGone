@@ -8,14 +8,14 @@ namespace HexaGone.Models.MapGeneration
     public class Tile
     {
         //Attributes
-        public int Terrain { get; set; }
+        public int BiomeID { get; set; }
         public int Height { get; set; }
         public int Humidity { get; set; }
 
         //Constructor
         public Tile()
         { 
-            Terrain = 0;
+            BiomeID = Biome.Ocean;
             Height = 0;
             Humidity = 0;
         }
