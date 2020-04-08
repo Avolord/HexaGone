@@ -116,6 +116,10 @@
 	display: none;
 }
 
+#navbar_logout-btn{
+	display:block;
+}
+
 #navbar_login_btn.set_display_block {
 	visibility: visible;
 	opacity: 1;

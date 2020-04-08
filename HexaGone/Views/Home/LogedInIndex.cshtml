@@ -56,7 +56,7 @@
 
 
         <form class="form-inline ml-auto">
-            <button class="btn btn-danger" id="navbar_login_btn" type="button" onclick="scroll_to_top_and_show_form()">Login</button>
+            <button type="submit" class="btn btn-danger" id="navbar_logout_btn" asp-controller="Home" asp-action="Logout">Logout</button>
         </form>
         <div onclick="toggleForm()" id="navbar_user_profile" >
             <span class="navbar-text" for="profile_image" style="color: white;">
@@ -96,7 +96,7 @@
         
     });
 
-  
+    
         
 
 </script>

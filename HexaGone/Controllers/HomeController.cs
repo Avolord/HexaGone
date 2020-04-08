@@ -14,6 +14,7 @@ using Dapper.Contrib;
 using Dapper.Contrib.Extensions;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Immutable;
 
 namespace HexaGone.Controllers
 {
@@ -324,6 +325,13 @@ namespace HexaGone.Controllers
                 user.errorMessage = user.LoginModel.IsValid();
                 return View("Index",user);
             }
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("userKeyData");
+            HttpContext.Response.Cookies.Delete("stayLoggedIn");
+            return View("Index", new UserLoginHelperModel() { isLogin = "true", errorMessage = "" });
         }
     }
 }
