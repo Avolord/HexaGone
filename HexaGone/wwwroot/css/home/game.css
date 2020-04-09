@@ -1,7 +1,9 @@
 ﻿body {
+    overflow: hidden;
 }
 
 #hexmap {
+    overflow: hidden;
     z-index: 2;
     position: absolute;
     left: 0px;

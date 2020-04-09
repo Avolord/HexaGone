@@ -1,247 +1,323 @@
-﻿(function () {
+﻿var frame;
+var lastTick = performance.now();
+let controller;
 
+$(function () {
+    // setting the game variables from the Game.cshtml file
     gameVariables();
+    controller = new Controller();
 
-    //===
-    // Test
-    //document.getElementById("test1").innerHTML = img.naturalHeight;
-    //===
+    if (canvas.getContext) {
 
-    if (hexmapStyle == "pointy") {
+        // ensure that the textures stay high-quality when zooming in on the map
+        ctx.imageSmoothingEnabled = false;
+
+        // set the style when drawing figures inside of the canvas
+        ctx.fillStyle = "#CCCCCC";
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 4;
     }
-    else if (hexmapStyle == "flat") {
-        gameVariables_f();
+    requestAnimationFrame(render);
+});
 
-        if (canvas.getContext) {
-            ctx.imageSmoothingEnabled = false;
+function render(currentTick) {
+    var delta = currentTick - lastTick
+    lastTick = currentTick;
 
-            ctx.fillStyle = "#CCCCCC";
-            ctx.strokeStyle = "#000";
-            ctx.lineWidth = 2;
+    draw();
 
-            //drawBoard_f(ctx, boardWidth, boardHeight);
-            drawTextureBoard(ctx, img, boardWidth, boardHeight);
+    frame = requestAnimationFrame(render);
+}
 
-            canvas.addEventListener("mousemove", function (eventInfo) {
-                var x,
-                    y,
-                    hexX,
-                    hexY;
+function draw() {
+    clearMap();
 
-                x = eventInfo.offsetX || eventInfo.layerX;
-                y = eventInfo.offsetY || eventInfo.layerY;
+    //ctx.setTransform(scaleX, 0, 0, scaleY,
+    //    offsetX, offsetY);
 
-                hexX = Math.floor(x / (1.5 * sideLength));
-                hexY = Math.floor((y - (hexX % 2) * hexInnerRadius) / hexRectangleHeight);
+    drawMap();
+}
 
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                //drawBoard_f(ctx, boardWidth, boardHeight);
-                drawTextureBoard(ctx, img, boardWidth, boardHeight);
+function highlightTileAtMousePosition() {
+    // Position of the mouse cursor on the canvas
+    var mousePosX;
+    var mousePosY;
 
-                //===
-                // Compare original Hexagon(hexX, hexY) with its neighbors.
-                // The Hexagon with the shortest distance to the cursor is the correct one.
-                var p = offToPixel_f(hexX, hexY);
-                var d = distance(p[0], p[1], x, y);
+    // offset-coordinate of the current tile the mouse is hovering over
+    var hexX;
+    var hexY;
 
-                var n3 = offNeighbor_f(hexX, hexY, 3);
-                var p3 = offToPixel_f(n3[0], n3[1]);
-                var d3 = distance(p3[0], p3[1], x, y);
+    //
 
-                var n4 = offNeighbor_f(hexX, hexY, 4);
-                var p4 = offToPixel_f(n4[0], n4[1]);
-                var d4 = distance(p4[0], p4[1], x, y)
+    mousePosX = controller.mousePosition.x / controller.scale + controller.origin.x;
+    mousePosY = controller.mousePosition.y / controller.scale + controller.origin.y;
 
-                if (d3 < d && d3 < d4) {
-                    hexX = n3[0];
-                    hexY = n3[1];
-                }
-                else if (d4 < d) {
-                    hexX = n4[0];
-                    hexY = n4[1];
-                }
-                //===
+    // setting the currently hovered-over tile temporarily (inaccurate, but necessary for further corrections)
+    hexX = Math.floor(mousePosX / (1.5 * sideLength));
+    hexY = Math.floor((mousePosY - (hexX % 2) * hexInnerRadius) / hexRectangleHeight);
 
-                // Check if the mouse's coords are on the board
-                if (hexX >= 0 && hexX < boardWidth) {
-                    if (hexY >= 0 && hexY < boardHeight) {
-                        //ctx.fillStyle = "black";
-                        //ctx.globalAlpha = 1.0;
-                        drawHexagon_f(ctx, hexX, hexY, false);
-                        //ctx.globalAlpha = 1.0;
-                    }
-                }
-            });
-        }
+    // Correcting the currently hovered-over tile for more accuracy:
+    // Converting the offset-coordinate of the temporary hovered-over tile into a pixel location in the center of the hexagon and measuring the distance to the mouse position
+    var p = offsetToPixelCoords(hexX, hexY);
+    var d = distance(p[0], p[1], mousePosX, mousePosY);
+
+    // finding the third neighbor, converting the offset-coordinate into a pixel location and measuring the distance to the mouse position
+    var n3 = getNeighborCoords(hexX, hexY, 3);
+    var p3 = offsetToPixelCoords(n3[0], n3[1]);
+    var d3 = distance(p3[0], p3[1], mousePosX, mousePosY);
+
+    // finding the fourth neighbor, converting the offset-coordinate into a pixel location and measuring the distance to the mouse position
+    var n4 = getNeighborCoords(hexX, hexY, 4);
+    var p4 = offsetToPixelCoords(n4[0], n4[1]);
+    var d4 = distance(p4[0], p4[1], mousePosX, mousePosY)
+
+    // correcting the temporary hovered-over tile (hexX, hexY) to the neighbor with the closest distance to the the mouse position (if necessary)
+    if (d3 < d && d3 < d4) {
+        hexX = n3[0];
+        hexY = n3[1];
     }
-
-
-    //=====
-    // Functions:
-    function distance(x1, y1, x2, y2) {
-        return Math.round(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))
+    else if (d4 < d) {
+        hexX = n4[0];
+        hexY = n4[1];
     }
 
-    function drawTexture(canvasContext, image, col, row, textureIndex) {
-        pixelCol = col * 1.5 * sideLength;
-        pixelRow = (row - 1) * hexRectangleHeight + ((col % 2) * hexInnerRadius);
-
-        var imgHeight = hexRectangleHeight * 2 + (1.0 / 15.0 * hexRectangleHeight);
-        var imgWidth = hexRectangleWidth;
-        var tileX = textureIndex * 128 / 4;
-
-        canvasContext.drawImage(image, tileX, 0, 128 / 4, 232 / 4, pixelCol, pixelRow, imgWidth, imgHeight);
-
-        //console.log("Row:" + row + ", Column: " + col + ", ImageStartX: " + pixelCol + ", ImageStartY: " + pixelRow);
+    // Check if the mouse's coords are on the map
+    if (hexX >= 0 && hexX < mapWidth && hexY >= 0 && hexY < mapHeight) {
+        // setting the marked tile to the currently hovered-over tile
+        markedTileX = hexX;
+        markedTileY = hexY;
     }
-
-    function drawTextureBoard(canvasContext, image, width, height) {
-        for (var i = 0; i < height; i++) {
-            for (var j = 0; j < width; j += 2) {
-                drawTexture(canvasContext, image, j, i, textures[j][i]);
-            }
-            for (var j = 1; j < width; j += 2) {
-                drawTexture(canvasContext, image, j, i, textures[j][i]);
-            }
-        }
+    else {
+        // set the marked tile to a location outside of the map, when the mouse's coords are not on the map
+        markedTileX = -1;
+        markedTileY = -1;
     }
-    //=====
+}
 
+// clear the canvas
+function clearMap() {
 
-    //=====
-    // Functions for flat top hexagons:
-    function drawBoard_f(canvasContext, width, height) {
-        for (var i = 0; i < width; i++) {
-            for (var j = 0; j < height; j++) {
-                drawHexagon_f(canvasContext, i, j, false);
-            }
-        }
-    }
+    ctx.clearRect(controller.origin.x, controller.origin.y, controller.visibleWidth, controller.visibleWidth);
+}
 
-    function drawColoredHex_f(canvasContext, col, row, colorIndex) {
-        switch (colorIndex) {
-            case 0:
-                canvasContext.fillStyle = "#95e639";
-                break;
-            case 1:
-                canvasContext.fillStyle = "#42d4b9";
-                break;
-            case 2:
-                canvasContext.fillStyle = "#a342d4";
-                break;
-            case 3:
-                canvasContext.fillStyle = "#d49242";
-                break;
-            default:
-                canvasContext.fillStyle = "#bab9b8";
-                break
+// calculate the distance between two points
+function distance(x1, y1, x2, y2) {
+    return Math.round(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))
+}
+
+// draw the current map
+function drawMap() {
+
+    // iterate through the rows of the map
+    for (var i = 0; i < mapHeight; i++) {
+
+        // iterate through the even columns of the map
+        for (var j = 0; j < mapWidth; j += 2) {
+            drawTile(j, i, mapData[j][i], (i == markedTileY && j == markedTileX));
         }
 
-        drawHexagon_f(canvasContext, col, row, true);
-    }
-
-    function drawHexagon_f(canvasContext, col, row, fill) {
-        var fill = fill || false;
-        
-        pixelRow = row * hexRectangleHeight + ((col % 2) * hexInnerRadius);
-        pixelCol = col * 1.5 * sideLength;
-   
-        canvasContext.beginPath();
-        canvasContext.moveTo(pixelCol + 0.5 * sideLength, pixelRow);
-        canvasContext.lineTo(pixelCol + 1.5 * sideLength, pixelRow);
-        canvasContext.lineTo(pixelCol + hexRectangleWidth, pixelRow + hexInnerRadius);
-        canvasContext.lineTo(pixelCol + 1.5 * sideLength, pixelRow + hexRectangleHeight);
-        canvasContext.lineTo(pixelCol + 0.5 * sideLength, pixelRow + hexRectangleHeight);
-        canvasContext.lineTo(pixelCol, pixelRow + hexInnerRadius);
-        canvasContext.closePath();
-
-        if (fill) {
-            canvasContext.fill();
-        } else {
-            canvasContext.stroke();
+        // iterate through the odd columns of the map
+        for (var j = 1; j < mapWidth; j += 2) {
+            drawTile(j, i, mapData[j][i], (i == markedTileY && j == markedTileX));
         }
     }
+}
 
-    function offToCube_f(col, row) {
-        var x = col;
-        var z = row - (col - (col & 1)) / 2;
-        var y = -x - z;
-        return [x, y, z];
+// draw a tile
+function drawTile(col, row, textureIndex, marked) {
+
+    // get the pixel position of the current tile
+    var pixelCol = col * 1.5 * sideLength;
+    var pixelRow = (row - 1) * hexRectangleHeight + ((col % 2) * hexInnerRadius);
+
+    // the height of the drawn image
+    var imgHeight = hexRectangleHeight * 2 + (1.0 / 15.0 * hexRectangleHeight);
+    // the width of the drawn image
+    var imgWidth = hexRectangleWidth;
+
+    // position of the wanted texture in the tilesheet image
+    var tileX = textureIndex * 128 / 4;
+
+    if (marked == true) {
+        strokeHexagon(pixelCol, pixelRow);
+        ctx.globalAlpha = 0.5;
+    }
+    ctx.drawImage(tilesheetImage, tileX, 0, 128 / 4, 232 / 4, pixelCol, pixelRow, imgWidth, imgHeight);
+
+    ctx.globalAlpha = 1;
+}
+
+// draw the outline of a hexagon
+function strokeHexagon(x, y) {
+    ctx.beginPath();
+    ctx.moveTo(x + 0.5 * sideLength, y + hexRectangleHeight);
+    ctx.lineTo(x + 1.5 * sideLength, y + hexRectangleHeight);
+    ctx.lineTo(x + hexRectangleWidth, y + hexRectangleHeight + hexInnerRadius);
+    ctx.lineTo(x + 1.5 * sideLength, y + hexRectangleHeight + hexRectangleHeight);
+    ctx.lineTo(x + 0.5 * sideLength, y + hexRectangleHeight + hexRectangleHeight);
+    ctx.lineTo(x, y + hexRectangleHeight + hexInnerRadius);
+    ctx.closePath();
+    ctx.stroke();
+}
+
+// convert offset coordinates to cube coordinates
+function offsetToCubeCoords(col, row) {
+    var x = col;
+    var z = row - (col - (col & 1)) / 2;
+    var y = -x - z;
+    return [x, y, z];
+}
+
+// convert cube coordinates to axial coordinates
+function cubeToAxialCoords(x, y, z) {
+    var q = x;
+    var r = z;
+    return [q, r];
+}
+
+// convert offset coordinates to axial coordinates
+function offsetToAxialCoords(col, row) {
+    var cube = offsetToCubeCoords(col, row);
+    var axial = cubeToAxialCoords(cube[0], cube[1], cube[2]);
+    return [axial[0], axial[1]];
+}
+
+// convert axial coordinates to a pixel coordinate in the middle of the hexagon
+function axialToPixelCoords(q, r) {
+    var x = sideLength * (3. / 2 * q);
+    var y = sideLength * (Math.sqrt(3) / 2 * q + Math.sqrt(3) * r);
+
+    //set pixel coordinates to the middle of the hexagon
+    x = Math.round(x + sideLength);
+    y = Math.round(y + hexInnerRadius);
+    return [x, y];
+}
+
+// convert offset coordinates to a pixel coordinate in the middle of the hexagon
+function offsetToPixelCoords(col, row) {
+    var axial = offsetToAxialCoords(col, row);
+    var pixel = axialToPixelCoords(axial[0], axial[1]);
+    return [pixel[0], pixel[1]];
+}
+
+// get the coordinates of a neighbor of a hexagon depending on the direction
+function getNeighborCoords(col, row, direction) {
+    var parity = col & 1;
+    var dir = offsetDirections[parity][direction];
+    return [col + dir[0], row + dir[1]];
+}
+
+//var isDown = false;
+//var lastMousePos = { x: 0, y: 0 };
+//var deltaMousePos = { x: 0, y: 0 };
+
+//canvas.onmousedown = function (e) {
+//    isDown = true;
+//    lastMousePos.x = e.offsetX;
+//    lastMousePos.y = e.offsetY;
+//}
+
+//canvas.onmouseup = function (e) {
+//    isDown = false;
+//}
+
+//canvas.onmousemove = function (e) {
+//    if (!isDown) return;
+
+//    deltaMousePos.x = e.offsetX - lastMousePos.x;
+//    deltaMousePos.y = e.offsetY - lastMousePos.y;
+
+//    //ctx.translate(deltaMousePos.x, deltaMousePos.y);
+
+//    offsetX += deltaMousePos.x;
+//    offsetY += deltaMousePos.y;
+
+//    lastMousePos.x = e.offsetX;
+//    lastMousePos.y = e.offsetY;
+//}
+
+class Controller {
+    width = canvas.width;
+    height = canvas.height;
+    visibleWidth = canvas.width;
+    visibleHeight = canvas.height;
+
+    origin = { x: 0, y: 0 };
+    oldMousePosition = { x: 0, y: 0 };
+    mousePosition = { x: 0, y: 0 };
+    dragDelta = { x: 0, y: 0 };
+    mouseDown = false;
+
+    scale = 1;
+    wheel = 1;
+    zoom = 1;
+    zoomFactor = 0.2;
+
+    constructor() {
+        canvas.onmousedown = (e) => this.updateMouseDown(e);
+        canvas.onmouseup = (e) => this.updateMouseUp(e);
+        canvas.onmousemove = (e) => this.updateMouseMove(e);
+        canvas.onmousewheel = (e) => this.updateMouseWheel(e);
     }
 
-    function cubeToAxial_f(x, y, z) {
-        var q = x;
-        var r = z;
-        return [q, r];
+    updateMouseDown(e) {
+        this.mouseDown = true;
+        this.oldMousePosition = { x: e.clientX, y: e.clientY };
     }
 
-    function offToAxial_f(col, row) {
-        var cube = offToCube_f(col, row);
-        var axial = cubeToAxial_f(cube[0], cube[1], cube[2]);
-        return [axial[0], axial[1]];
+    updateMouseUp(e) {
+        this.mouseDown = false;
     }
 
-    function axialToPixel_f(q, r) {
-        var x = sideLength * (3. / 2 * q);
-        var y = sideLength * (Math.sqrt(3) / 2 * q + Math.sqrt(3) * r);
+    updateMouseMove(e) {
+        this.mousePosition.x = e.clientX - canvas.offsetLeft;
+        this.mousePosition.y = e.clientY - canvas.offsetTop;
 
-        //set pixel coordinates to the middle of the hexagon
-        x = Math.round(x + sideLength);
-        y = Math.round(y + hexInnerRadius);
-        return [x, y];
+        highlightTileAtMousePosition();
+
+        if (!this.mouseDown) return;
+
+        this.dragDelta.x = this.mousePosition.x - this.oldMousePosition.x;
+        this.dragDelta.y = this.mousePosition.y - this.oldMousePosition.y;
+
+        this.oldMousePosition.x = this.mousePosition.x;
+        this.oldMousePosition.y = this.mousePosition.y;
+
+        ctx.translate(this.dragDelta.x / this.scale, this.dragDelta.y / this.scale);
+
+        this.origin.x -= this.dragDelta.x / this.scale;
+        this.origin.y -= this.dragDelta.y / this.scale;
     }
 
-    function offToPixel_f(col, row) {
-        var axial = offToAxial_f(col, row);
-        var pixel = axialToPixel_f(axial[0], axial[1]);
-        return [pixel[0], pixel[1]];
+    updateMouseWheel(e) {
+        event.preventDefault();
+
+        // Get mouse offset.
+        // this.mousePosition.x = e.clientX - canvas.offsetLeft;
+        // this.mousePosition.y = e.clientY - canvas.offsetTop;
+        // Normalize wheel to +1 or -1.
+        this.wheel = e.deltaY < 0 ? 1 : -1;
+        // Compute zoom factor.
+        this.zoom = Math.exp(this.wheel * this.zoomFactor);
+        // Translate so the visible origin is at the context's origin.
+        ctx.translate(this.origin.x, this.origin.y);
+
+        // Compute the new visible origin. Originally the mouse is at a
+        // distance mouse/scale from the corner, we want the point under
+        // the mouse to remain in the same place after the zoom, but this
+        // is at mouse/new_scale away from the corner. Therefore we need to
+        // shift the origin (coordinates of the corner) to account for this.
+        this.origin.x -= this.mousePosition.x / (this.scale * this.zoom) - this.mousePosition.x / this.scale;
+        this.origin.y -= this.mousePosition.y / (this.scale * this.zoom) - this.mousePosition.y / this.scale;
+
+        // Scale it (centered around the origin due to the trasnslate above).
+        ctx.scale(this.zoom, this.zoom);
+        // Offset the visible origin to it's proper position.
+        ctx.translate(-this.origin.x, -this.origin.y);
+
+        // Update scale and others.
+        this.scale *= this.zoom;
+        this.visibleWidth = this.width / this.scale;
+        this.visibleHeight = this.height / this.scale;
     }
-
-    function offNeighbor_f(col, row, direction) {
-        var parity = col & 1;
-        var dir = offDirections[parity][direction];
-        return [col + dir[0], row + dir[1]];
-    }
-    //=====
-})();
-
-
-var isDown = false; // whether mouse is pressed
-var startCoords = []; // 'grab' coordinates when pressing mouse
-var last = [0, 0]; // previous coordinates of mouse release
-
-canvas.onmousedown = function (e) {
-    isDown = true;
-
-    startCoords = [
-        e.offsetX - last[0], // set start coordinates
-        e.offsetY - last[1]
-    ];
-};
-
-canvas.onmouseup = function (e) {
-    isDown = false;
-
-    last = [
-        e.offsetX - startCoords[0], // set last coordinates
-        e.offsetY - startCoords[1]
-    ];
-};
-
-canvas.onmousemove = function (e) {
-    if (!isDown) return; // don't pan if mouse is not pressed
-
-    var x = e.offsetX;
-    var y = e.offsetY;
-
-    // set the canvas' transformation matrix by setting the amount of movement:
-    // 1  0  dx
-    // 0  1  dy
-    // 0  0  1
-
-    ctx.setTransform(1, 0, 0, 1,
-        x - startCoords[0], y - startCoords[1]);
-
-    render(); // render to show changes
-
 }

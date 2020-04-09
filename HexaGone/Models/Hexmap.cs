@@ -2,33 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace HexaGone.Models
 {
     public class Hexmap
     {
-        public bool isPointy;
-        public int width { get; set; }
-        public int height { get; set; }
-
-        public float hexWidth { get; set; }
-        public float hexHeight { get; set; }
-        public float hexSideLength { get; set; }
-        
-        public int[][] texture_index { get; set; }
-
-
-        public void calculate()
+        public Hexmap()
         {
-            if (isPointy)
+            // Fill in mapData with information from a .csv file.
+            using (var reader = new StreamReader(@"wwwroot/map/HexaGone_map.csv"))
             {
-                hexWidth = (float)Math.Sqrt(3) * hexSideLength;
-                hexHeight = 2 * hexSideLength;
-            }
-            else
-            {
+                mapData = new List<List<int>>();
+                while (!reader.EndOfStream)
+                {
+                    mapData.Add(new List<int>());
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
 
+                    foreach(string s in values)
+                    {
+                        mapData.Last().Add(int.Parse(s));
+                    }
+                }
             }
         }
+
+        /// <summary>
+        /// Sidelength of a hexagon.
+        /// </summary>
+        public float hexSideLength { get; set; }
+
+        /// <summary>
+        /// Two-Dimensional List which contains the information about the map.
+        /// </summary>
+        public List<List<int>> mapData;
     }
 }
