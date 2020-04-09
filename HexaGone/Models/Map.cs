@@ -12,6 +12,7 @@ namespace HexaGone.Models
         public List<List<Field>> Fields { get; }
         public int Width { get; }
         public int Height { get; }
+        public int BiomeSize { get; }
         public bool IsPointy { get; }
         public int HexSideLength { get; set; }
 
@@ -25,18 +26,49 @@ namespace HexaGone.Models
         public const int mapModeTinyIslands = 1;
         public const int mapModeOneIsland = 2;
         public const int mapModeBiomes = 3;
-        
+
+        public const int Small = 0;
+        public const int Medium = 1;
+        public const int Big = 2;
 
         //Constructor
-        //public Map(int mapMode, int sizeMode)
-        //{
+        public Map(int mapMode, int sizeMode, int biomeSize)
+        {
+            switch (sizeMode)
+            {
+                //Creates a completely random map. Every Field has a randomly chosen terrain.
+                case Small:
+                    Width = 100;
+                    Height = 100;
+                    break;
+                case Medium:
+                    Width = 200;
+                    Height = 200;
+                    break;
+                case Big:
+                    Width = 300;
+                    Height = 300;
+                    break;
+                //sets the mapSize to  200 x 200
+                default:
+                    Width = 200;
+                    Height = 200;
+                    break;
+            }
+            BiomeSize = biomeSize;
+            IsPointy = false;
+            HexSideLength = 30;
+            Fields = new List<List<Field>>();
 
-        //}
-        public Map(int mapMode, int width, int height)
+            //Generate the Map
+            MapgeneratorSwitcher(mapMode);
+        }
+        public Map(int mapMode, int width, int height, int biomeSize)
         {
             //Set Width and Height
             Width = width;
             Height = height;
+            BiomeSize = biomeSize;
             IsPointy = false;
             HexSideLength = 30;
             Fields = new List<List<Field>>();
@@ -80,7 +112,7 @@ namespace HexaGone.Models
                 }
             }
         }
-
+       
         private Field GetField(int column, int row)
         {
             return Fields[column][row];
@@ -190,94 +222,19 @@ namespace HexaGone.Models
         private void BiomesMapgenerator()
         {
             //A 2-Dimensional List containing all the tiles with its biomes.
-            List<List<Tile>> tiles = new List<List<Tile>>();
             Random random = new Random();
-            //The first loop iterates over the Width, to create as many columns as needed, by creating a columnList.
-            for (int column = 0; column < Width; column++)
-            {
-                List<Tile> columnList = new List<Tile>();
-                //The second loop iterates over the Height, to create as many Tiles as there are Rows.
-                for (int row = 0; row < Height; row++)
-                {
-                    //At first every tile-biome will be ocean
-                    Tile tile = new Tile()
-                    {
-                        BiomeID = Biome.Ocean
-                    };
-                    columnList.Add(tile);
-                }
-                //Add the columnList to tiles.
-                tiles.Add(columnList);
-            }
-
+            List<List<Tile>> tiles = new List<List<Tile>>();
             //Create a List of all the biomes, that are created
             List<Biome> biomes = new List<Biome>();
             //Create a List with the biome probabilities. A biome that is more probable to be select, is more often in this list.
             List<int> biomeProbability = new List<int>();
 
-            //This loop is for the creation of the biomes.
-            for(int i = 0; i < 9; i++)
-            {
-                //Select the starting tile of the biome
-                int startX = Convert.ToInt32((Width / 4) + (Width / 12) + ((i%3)*Width/6));
-                int startY = Convert.ToInt32((Height / 4) + (Height / 12) +((Convert.ToInt32(i/3)) * Height/6));
-                Coordinates coordinates = new Coordinates(startX, startY);
-                Biome biome;
-                //Set the biome-type of the biome
-                switch(i)
-                {
-                    case 0:
-                        biome = new Biome(Biome.Desert);
-                        break;
-                    case 1:
-                        biome = new Biome(Biome.Forest);
-                        break;
-                    case 2:
-                        biome = new Biome(Biome.Plains);
-                        break;
-                    case 3:
-                        biome = new Biome(Biome.Jungle);
-                        break;
-                    case 4:
-                        biome = new Biome(Biome.Lake);
-                        break;
-                    case 5:
-                        biome = new Biome(Biome.Swamp);
-                        break;
-                    case 6:
-                        biome = new Biome(Biome.Tundra);
-                        break;
-                    case 7:
-                        biome = new Biome(Biome.Plains);
-                        break;
-                    //case 8
-                    default:
-                        biome = new Biome(Biome.Forest);
-                        break;
-                }
 
-                //Add the biome to the biomes List.
-                biomes.Add(biome);
-                //Give the starting-Tile the biome ID.
-                tiles[startX][startY].BiomeID = biome.ID;
 
-                //System.Diagnostics.Debug.WriteLine(i + ": " + startX + " ; " + startY);
-
-                //Add Neighbour tiles of the starting field to the List of neighbours 
-                AddNeighbourTiles(biome, ref tiles, coordinates);
-
-                //Add the biome-index as much to the probability list, as their weight is.
-                for (int w = 0; w < biome.Weight; w++)
-                {
-                    biomeProbability.Add(i);
-                }
-                
-            }
-
-            
             //Set a number of max Land Fields. In this case it's 40%
+
+            int currentLandFields = GenerateBiomes(ref tiles, ref biomes, ref biomeProbability); ;
             int maxLandFields = Convert.ToInt32(Width*Height *0.4);
-            int currentLandFields = 9;
 
             //Select random neighbour fields and make them land
             while (currentLandFields <= maxLandFields)
@@ -333,6 +290,96 @@ namespace HexaGone.Models
             return;
         }
 
+        /// <summary>
+        /// This methode creates Biomes based on Mapsize and biome size selected. Returns amount of current lanfields
+        /// </summary>
+        /// <param name="tiles"></param>
+        /// <param name="biomes"></param>
+        /// <param name="biomeProbability"></param>
+        private int GenerateBiomes(ref List<List<Tile>> tiles, ref List<Biome> biomes, ref List<int>biomeProbability)
+        {
+            Random random = new Random();
+            int landFields = 0;
+            //The first loop iterates over the Width, to create as many columns as needed, by creating a columnList.
+            for (int column = 0; column < Width; column++)
+            {
+                List<Tile> columnList = new List<Tile>();
+                //The second loop iterates over the Height, to create as many Tiles as there are Rows.
+                for (int row = 0; row < Height; row++)
+                {
+                    //At first every tile-biome will be ocean
+                    Tile tile = new Tile()
+                    {
+                        BiomeID = Biome.Ocean
+                    };
+                    columnList.Add(tile);
+                }
+                //Add the columnList to tiles.
+                tiles.Add(columnList);
+            }
+
+            //This loop is for the creation of the biomes.
+            for (int i = 0; i < 9; i++)
+            {
+                //Select the starting tile of the biome
+                int startX = Convert.ToInt32((Width / 4) + (Width / 12) + ((i % 3) * Width / 6));
+                int startY = Convert.ToInt32((Height / 4) + (Height / 12) + ((Convert.ToInt32(i / 3)) * Height / 6));
+                Coordinates coordinates = new Coordinates(startX, startY);
+                Biome biome;
+                //Set the biome-type of the biome
+                switch (i)
+                {
+                    case 0:
+                        biome = new Biome(Biome.Desert);
+                        break;
+                    case 1:
+                        biome = new Biome(Biome.Forest);
+                        break;
+                    case 2:
+                        biome = new Biome(Biome.Plains);
+                        break;
+                    case 3:
+                        biome = new Biome(Biome.Jungle);
+                        break;
+                    case 4:
+                        biome = new Biome(Biome.Lake);
+                        break;
+                    case 5:
+                        biome = new Biome(Biome.Swamp);
+                        break;
+                    case 6:
+                        biome = new Biome(Biome.Tundra);
+                        break;
+                    case 7:
+                        biome = new Biome(Biome.Plains);
+                        break;
+                    //case 8
+                    default:
+                        biome = new Biome(Biome.Forest);
+                        break;
+                }
+
+                //Add the biome to the biomes List.
+                biomes.Add(biome);
+                landFields++;
+                //Give the starting-Tile the biome ID.
+                tiles[startX][startY].BiomeID = biome.ID;
+
+                //System.Diagnostics.Debug.WriteLine(i + ": " + startX + " ; " + startY);
+
+                //Add Neighbour tiles of the starting field to the List of neighbours 
+                AddNeighbourTiles(biome, ref tiles, coordinates);
+
+                //Add the biome-index as much to the probability list, as their weight is.
+                for (int w = 0; w < biome.Weight; w++)
+                {
+                    biomeProbability.Add(i);
+                }
+
+            }
+            return landFields;
+        }
+
         private int GetTerrainIdFromBiomeId(int biomeId)
         {
             switch(biomeId)
@@ -357,26 +404,6 @@ namespace HexaGone.Models
                     return Terrain.Mountain;
             }
         }
-
-        private void CoastlineGeneration(ref List<List<Tile>> tiles)
-        {
-            List<List<Tile>> waterTiles = new List<List<Tile>>();
-            List<List<Tile>> oceanTiles = new List<List<Tile>>();
-            List<List<Tile>> coastTiles = new List<List<Tile>>();
-
-            foreach(List<Tile> tileColumn in tiles)
-            {
-                List<Tile> waterColumn = new List<Tile>();
-                List<Tile> oceanColumn = new List<Tile>();
-                List<Tile> coastColumn = new List<Tile>();
-
-                foreach(Tile tile in tileColumn)
-                {
-
-                }
-            }
-        }
-
         private void AddNeighbours(ref List<Coordinates> neighbours, Field field)
         {
 
