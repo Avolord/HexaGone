@@ -13,6 +13,7 @@ namespace HexaGone.Models
         public int Width { get; }
         public int Height { get; }
         public int BiomeSize { get; }
+        public int MapSize { get; }
         public bool IsPointy { get; }
         public int HexSideLength { get; set; }
 
@@ -36,18 +37,18 @@ namespace HexaGone.Models
         {
             switch (sizeMode)
             {
-                //Creates a completely random map. Every Field has a randomly chosen terrain.
+                //Depanding on MapSize sets Width and Height.
                 case Small:
                     Width = 100;
-                    Height = 100;
+                    Height = 50;
                     break;
                 case Medium:
                     Width = 200;
-                    Height = 200;
+                    Height = 100;
                     break;
                 case Big:
                     Width = 300;
-                    Height = 300;
+                    Height = 150;
                     break;
                 //sets the mapSize to  200 x 200
                 default:
@@ -55,6 +56,7 @@ namespace HexaGone.Models
                     Height = 200;
                     break;
             }
+            MapSize = sizeMode;
             BiomeSize = biomeSize;
             IsPointy = false;
             HexSideLength = 30;
@@ -229,8 +231,6 @@ namespace HexaGone.Models
             //Create a List with the biome probabilities. A biome that is more probable to be select, is more often in this list.
             List<int> biomeProbability = new List<int>();
 
-
-
             //Set a number of max Land Fields. In this case it's 40%
 
             int currentLandFields = GenerateBiomes(ref tiles, ref biomes, ref biomeProbability); ;
@@ -300,6 +300,8 @@ namespace HexaGone.Models
         {
             Random random = new Random();
             int landFields = 0;
+            int amountBiomes = CreateAmountOfBiomes(); 
+
             //The first loop iterates over the Width, to create as many columns as needed, by creating a columnList.
             for (int column = 0; column < Width; column++)
             {
@@ -317,11 +319,12 @@ namespace HexaGone.Models
                 //Add the columnList to tiles.
                 tiles.Add(columnList);
             }
-
+            List<Coordinates> startPoints = SetStartPoints(amountBiomes);
             //This loop is for the creation of the biomes.
             for (int i = 0; i < 9; i++)
             {
                 //Select the starting tile of the biome
+                
                 int startX = Convert.ToInt32((Width / 4) + (Width / 12) + ((i % 3) * Width / 6));
                 int startY = Convert.ToInt32((Height / 4) + (Height / 12) + ((Convert.ToInt32(i / 3)) * Height / 6));
                 Coordinates coordinates = new Coordinates(startX, startY);
@@ -380,6 +383,115 @@ namespace HexaGone.Models
             return landFields;
         }
 
+        private List<Coordinates> SetStartPoints(int i)
+        {
+            List<Coordinates> points = new List<Coordinates>();
+
+            switch(MapSize)
+            {
+                case 0:
+
+                    break;
+            }
+
+            return points;
+        }
+        private int CreateAmountOfBiomes()
+        {
+            Random rnd = new Random();
+            int amount = 0;
+
+            //This switch case decides how much Biomes will be generated for the map
+            switch(MapSize)
+            {
+                case 0:
+                    switch (BiomeSize)
+                    {
+                        case 0:
+                            amount = rnd.Next(19, 23);
+                            
+                            break;
+                        case 1:
+                            amount = rnd.Next(15, 19);
+                            
+                            break;
+                        case 2:
+                            amount = rnd.Next(9, 15);
+                            
+                            break;
+                        default:
+                            amount = rnd.Next(15, 19);
+                            
+                            break;
+                    }
+                    break;
+                case 1:
+                    switch (BiomeSize)
+                    {
+                        case 0:
+                            amount = rnd.Next(40, 45);
+                            
+                            break;
+                        case 1:
+                            amount = rnd.Next(30, 40);
+                            
+                            break;
+                        case 2:
+                            amount = rnd.Next(20, 30);
+                            
+                            break;
+                        default:
+                            amount = rnd.Next(30, 40);
+                            
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch (BiomeSize)
+                    {
+                        case 0:
+                            amount = rnd.Next(50, 65);
+                            
+                            break;
+                        case 1:
+                            amount = rnd.Next(40, 50);
+                            
+                            break;
+                        case 2:
+                            amount = rnd.Next(30, 40);
+                            
+                            break;
+                        default:
+                            amount = rnd.Next(40, 50);
+                            
+                            break;
+                    }
+                    break;
+                default:
+                    switch (BiomeSize)
+                    {
+                        case 0:
+                            amount = rnd.Next(40, 45);
+                            
+                            break;
+                        case 1:
+                            amount = rnd.Next(30, 40);
+                            
+                            break;
+                        case 2:
+                            amount = rnd.Next(20, 30);
+                            
+                            break;
+                        default:
+                            amount = rnd.Next(30, 40);
+                            
+                            break;
+                    }
+                    break;
+            }
+
+            return amount;
+        }
         private void CoastlineGeneration(ref List<List<Tile>> tiles)
         {
             List<List<Tile>> waterTiles = new List<List<Tile>>();
