@@ -25,8 +25,8 @@ namespace HexaGone.Controllers
             {
                 Models.Army Attacker = new Models.Army();
                 Models.Army Defender = new Models.Army();
-                Attacker.Units.Add(new Unit(UnitStats.AllUnits[0]));
-                Defender.Units.Add(new Unit(UnitStats.AllUnits[0]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[1]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[1]));
 
                 Models.Modifier.BattleSolver.Solve(ref Attacker, ref Attacker);
             }
