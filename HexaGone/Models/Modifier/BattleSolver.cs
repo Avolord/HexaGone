@@ -99,8 +99,8 @@ namespace HexaGone.Models.Modifier
                 }
                 test += "Defender Won! \n" ;
             }
-            /*
-            foreach (Unit n in defenderArmy.Units)
+            
+            /*foreach (Unit n in defenderArmy.Units)
             {
                 n.MenCount = n.MaxMenCount;
             }
