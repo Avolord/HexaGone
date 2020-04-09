@@ -189,26 +189,33 @@ namespace HexaGone.Models
 
         private void BiomesMapgenerator()
         {
+            //A 2-Dimensional List containing all the tiles with its biomes.
             List<List<Tile>> tiles = new List<List<Tile>>();
             Random random = new Random();
             //The first loop iterates over the Width, to create as many columns as needed, by creating a columnList.
             for (int column = 0; column < Width; column++)
             {
                 List<Tile> columnList = new List<Tile>();
-                //The second loop iterates over the Height, to create as many Fields as there are Rows.
+                //The second loop iterates over the Height, to create as many Tiles as there are Rows.
                 for (int row = 0; row < Height; row++)
                 {
+                    //At first every tile-biome will be ocean
                     Tile tile = new Tile()
                     {
                         BiomeID = Biome.Ocean
                     };
                     columnList.Add(tile);
                 }
-                //Add the columnList to Fields, otherwise everything was useless and the while-loop in the MapgeneratorSwitcher won't end.
+                //Add the columnList to tiles.
                 tiles.Add(columnList);
             }
+
+            //Create a List of all the biomes, that are created
             List<Biome> biomes = new List<Biome>();
+            //Create a List with the biome probabilities. A biome that is more probable to be select, is more often in this list.
             List<int> biomeProbability = new List<int>();
+
+            //This loop is for the creation of the biomes.
             for(int i = 0; i < 9; i++)
             {
                 //Select the starting tile of the biome
@@ -216,7 +223,7 @@ namespace HexaGone.Models
                 int startY = Convert.ToInt32((Height / 4) + (Height / 12) +((Convert.ToInt32(i/3)) * Height/6));
                 Coordinates coordinates = new Coordinates(startX, startY);
                 Biome biome;
-                //Set it to the biome
+                //Set the biome-type of the biome
                 switch(i)
                 {
                     case 0:
@@ -249,14 +256,17 @@ namespace HexaGone.Models
                         break;
                 }
 
+                //Add the biome to the biomes List.
                 biomes.Add(biome);
+                //Give the starting-Tile the biome ID.
                 tiles[startX][startY].BiomeID = biome.ID;
 
                 //System.Diagnostics.Debug.WriteLine(i + ": " + startX + " ; " + startY);
-                //Create a List with all neighbours
-                List<Coordinates> neighbours = new List<Coordinates>();
+
+                //Add Neighbour tiles of the starting field to the List of neighbours 
                 AddNeighbourTiles(biome, ref tiles, coordinates);
 
+                //Add the biome-index as much to the probability list, as their weight is.
                 for (int w = 0; w < biome.Weight; w++)
                 {
                     biomeProbability.Add(i);
@@ -272,13 +282,18 @@ namespace HexaGone.Models
             //Select random neighbour fields and make them land
             while (currentLandFields <= maxLandFields)
             {
+                //First select a random biome, that gets a new tile
                 int randomBiomeIndex = biomeProbability[random.Next(0, biomeProbability.Count)];
                 Biome randomBiome = biomes[randomBiomeIndex];
+
+                //Check if the random biome has any neighbours
                 if (randomBiome.Neighbours.Count > 0)
                 {
+                    //Select a random neighbour from its Neighbours List.
                     int randomIndex = random.Next(0, randomBiome.Neighbours.Count);
                     Coordinates coordinates = randomBiome.Neighbours[randomIndex];
 
+                    //Check if the neighbour tile is Ocean, in this case it can be set
                     if (tiles[coordinates.Column][coordinates.Row].BiomeID == Biome.Ocean)
                     {
                         Tile tile = tiles[coordinates.Column][coordinates.Row];
@@ -289,11 +304,13 @@ namespace HexaGone.Models
                         //System.Diagnostics.Debug.WriteLine(currentLandFields + ": " + coordinates.Column + " ; " + coordinates.Row);
                     }
 
+                    //Remove the neighbour from the Neighbours List
                     randomBiome.Neighbours.RemoveAt(randomIndex);
                 }
-                else
+                //Check if the random biome has any neighbours. If not, remove it from the probability List
+                if (randomBiome.Neighbours.Count == 0)
                 {
-                    biomes.RemoveAt(randomBiomeIndex);
+                    //biomes.RemoveAt(randomBiomeIndex);
                     biomeProbability.RemoveAll(item => item == randomBiomeIndex);
                 }
             }
