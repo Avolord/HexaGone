@@ -380,6 +380,24 @@ namespace HexaGone.Models
             return landFields;
         }
 
+        private void CoastlineGeneration(ref List<List<Tile>> tiles)
+        {
+            List<List<Tile>> waterTiles = new List<List<Tile>>();
+            List<List<Tile>> oceanTiles = new List<List<Tile>>();
+            List<List<Tile>> coastTiles = new List<List<Tile>>();
+
+            foreach (List<Tile> tileColumn in tiles)
+            {
+                List<Tile> waterColumn = new List<Tile>();
+                List<Tile> oceanColumn = new List<Tile>();
+                List<Tile> coastColumn = new List<Tile>();
+
+                foreach (Tile tile in tileColumn)
+                {
+
+                }
+            }
+        }
         private int GetTerrainIdFromBiomeId(int biomeId)
         {
             switch(biomeId)
