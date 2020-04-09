@@ -30,6 +30,19 @@ namespace HexaGone.Models
             IsRangedUnit = isRangedUnit;
             MovementPoints = movementPoints;
         }
+        public Unit(UnitSettings settings)
+        {
+            UnitID = settings.UnitID;
+            UnitClass = settings.UnitClass;
+            Name = settings.Name;
+            AttackStat = settings.AttackStat;
+            DefenseStat = settings.DefenseStat;
+            MaxMenCount = settings.MaxMenCount;
+            MenCount = settings.MenCount;
+            IsRangedUnit = settings.IsRangedUnit;
+            MovementPoints = settings.MovementPoints;
+
+        }
         //Attributes
         /// <summary>
         /// A unique ID for the Unit.

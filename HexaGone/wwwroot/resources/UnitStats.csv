@@ -1,6 +1,6 @@
 UnitID,Class,Name,AttackStat,DefenseStat,MaxMenCount,MenCount,IsRangedUnit,MovementPoints
-1,1,Sword Militia,7,12,250,250,0,800
-2,2,Spear Militia,5,13,250,250,0,800
-3,4,Archer Militia,3,6,250,250,1,800
-4,5,Cavalary Militia,9,14,150,150,0,1250
-5,6,Savages,11,5,200,200,0,900
+1,0,Sword Militia,7,12,250,250,0,800
+2,1,Spear Militia,5,13,250,250,0,800
+3,3,Archer Militia,3,6,250,250,1,800
+4,4,Cavalary Militia,9,14,150,150,0,1250
+5,5,Savages,11,5,200,200,0,900

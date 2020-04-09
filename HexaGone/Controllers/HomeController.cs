@@ -20,14 +20,16 @@ namespace HexaGone.Controllers
 
         public IActionResult Index()
         {
-            Models.Army Attacker = new Models.Army();
-            Models.Army Defender = new Models.Army();
             UnitStats.PopulateUnits();
-            Attacker.Units.Add(UnitStats.AllUnits[0]);
-            Attacker.Units.Add(UnitStats.AllUnits[1]);
-            Defender.Units.Add(UnitStats.AllUnits[2]);
+            for (int i = 0; i < 100; i++)
+            {
+                Models.Army Attacker = new Models.Army();
+                Models.Army Defender = new Models.Army();
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[0]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[0]));
 
-            Models.Modifier.BattleSolver.Solve(ref Defender, ref Attacker);
+                Models.Modifier.BattleSolver.Solve(ref Attacker, ref Attacker);
+            }
 
             return Content(Models.Modifier.BattleSolver.test);
         }

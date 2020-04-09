@@ -7,9 +7,8 @@ namespace HexaGone.Models.Modifier
 {
     static public class BattleSolver
     {
+        static public  string test = "";
         static Random RandomGenerator = new Random(DateTime.Now.Second);
-
-        static public String test { get; set; }
         static public void Solve(ref Army defenderArmy, ref Army attackerArmy)
         {
             //update defender stats
@@ -56,6 +55,7 @@ namespace HexaGone.Models.Modifier
             //Defender lost
             if (TotalDefenseDefender < TotalDefenseAttacker)
             {
+                test += "Attacker won \n";
                 //Attacker is also almost destroyed
                 if (TotalDefenseAttacker < 0)
                 {
@@ -76,6 +76,7 @@ namespace HexaGone.Models.Modifier
             //Attacker lost
             else
             {
+                test += "Defender won \n";
                 //Defender is also almost destroyed
                 if (TotalDefenseDefender < 0)
                 {
