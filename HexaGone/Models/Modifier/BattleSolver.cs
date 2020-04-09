@@ -8,6 +8,8 @@ namespace HexaGone.Models.Modifier
     static public class BattleSolver
     {
         static Random RandomGenerator = new Random(DateTime.Now.Second);
+
+        static public String test { get; set; }
         static public void Solve(ref Army defenderArmy, ref Army attackerArmy)
         {
             //update defender stats

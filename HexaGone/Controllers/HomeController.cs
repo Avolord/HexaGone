@@ -20,7 +20,16 @@ namespace HexaGone.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            Models.Army Attacker = new Models.Army();
+            Models.Army Defender = new Models.Army();
+            UnitStats.PopulateUnits();
+            Attacker.Units.Add(UnitStats.AllUnits[0]);
+            Attacker.Units.Add(UnitStats.AllUnits[1]);
+            Defender.Units.Add(UnitStats.AllUnits[2]);
+
+            Models.Modifier.BattleSolver.Solve(ref Defender, ref Attacker);
+
+            return Content(Models.Modifier.BattleSolver.test);
         }
 
         public IActionResult Privacy()

@@ -7,7 +7,8 @@ namespace HexaGone.Models
 {
     public class Army
     {
-        public List<Unit> Units { get; }
+        public readonly List<Unit> Units = new List<Unit>();
+        
         public void Destroy()
         {
             foreach (Unit n in Units)
