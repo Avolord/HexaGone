@@ -6,6 +6,7 @@ $(function () {
     // setting the game variables from the Game.cshtml file
     gameVariables();
     controller = new Controller();
+    Controller.enableEvents(controller);
 
     if (canvas.getContext) {
 
@@ -253,11 +254,14 @@ class Controller {
     zoom = 1;
     zoomFactor = 0.2;
 
-    constructor() {
-        canvas.onmousedown = (e) => this.updateMouseDown(e);
-        canvas.onmouseup = (e) => this.updateMouseUp(e);
-        canvas.onmousemove = (e) => this.updateMouseMove(e);
-        canvas.onmousewheel = (e) => this.updateMouseWheel(e);
+    constructor() {}
+
+    static enableEvents(_controller) {
+        let c = $(canvas);
+        c.mousedown(function (e) { _controller.updateMouseDown(e); });
+        c.mouseup(function (e) { _controller.updateMouseUp(e); });
+        c.mousemove(function (e) { _controller.updateMouseMove(e); });
+        canvas.addEventListener('wheel', function (e) { _controller.updateMouseWheel(e); });
     }
 
     updateMouseDown(e) {
