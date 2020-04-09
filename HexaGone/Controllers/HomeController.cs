@@ -20,15 +20,53 @@ namespace HexaGone.Controllers
 
         public IActionResult Index()
         {
+            int losses = 0;
             UnitStats.PopulateUnits();
             for (int i = 0; i < 100; i++)
             {
                 Models.Army Attacker = new Models.Army();
                 Models.Army Defender = new Models.Army();
-                Attacker.Units.Add(new Unit(UnitStats.AllUnits[1]));
-                Defender.Units.Add(new Unit(UnitStats.AllUnits[1]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
+                Attacker.Units.Add(new Unit(UnitStats.AllUnits[5]));
 
-                Models.Modifier.BattleSolver.Solve(ref Attacker, ref Attacker);
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));
+                Defender.Units.Add(new Unit(UnitStats.AllUnits[3]));           
+   
+                Models.Modifier.BattleSolver.Solve(ref Defender, ref Attacker);
+
             }
 
             return Content(Models.Modifier.BattleSolver.test);

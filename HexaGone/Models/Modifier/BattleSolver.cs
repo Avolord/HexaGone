@@ -8,12 +8,14 @@ namespace HexaGone.Models.Modifier
     static public class BattleSolver
     {
         static public  string test = "";
-        static Random RandomGenerator = new Random(DateTime.Now.Second);
+        static Random RandomGenerator = new Random(Guid.NewGuid().GetHashCode());
         static public void Solve(ref Army defenderArmy, ref Army attackerArmy)
         {
             //update defender stats
             float TotalAttackDefender = 0;
+            float TotalRangedAttackDefender = 0;
             float TotalDefenseDefender = 0;
+            int TotalManCountDefender = defenderArmy.GetTotalManCount();
             foreach (Unit n in defenderArmy.Units)
             {
                 int CurrentUnitClass = n.UnitClass;
@@ -24,12 +26,18 @@ namespace HexaGone.Models.Modifier
                 }
                 TotalAttackDefender += n.MenCount * n.AttackStat * (1 + totalBuff);
                 TotalDefenseDefender += n.MenCount *  n.DefenseStat * (1 + totalBuff);
+                if (n.IsRangedUnit)
+                {
+                    TotalRangedAttackDefender += n.MenCount * n.AttackStat * (1 + totalBuff);
+                }
             }
             float OriginalDefenseDefender = TotalDefenseDefender;
 
             //update attacker stats
             float TotalAttackAttacker = 0;
+            float TotalRangedAttackAttacker = 0;
             float TotalDefenseAttacker = 0;
+            int TotalManCountAttacker = attackerArmy.GetTotalManCount();
             foreach (Unit n in attackerArmy.Units)
             {
                 int CurrentUnitClass = n.UnitClass;
@@ -40,9 +48,16 @@ namespace HexaGone.Models.Modifier
                 }
                 TotalAttackAttacker += n.MenCount * n.AttackStat * (1 + totalBuff);
                 TotalDefenseAttacker += n.MenCount * n.DefenseStat * (1 + totalBuff);
+                if (n.IsRangedUnit)
+                {
+                    TotalRangedAttackAttacker += n.MenCount * n.AttackStat * (1 + totalBuff);
+                }
             }
             float OriginalDefenseAttacker = TotalDefenseAttacker;
 
+            //Let the Ranged Units get one free attack
+            TotalDefenseDefender -= TotalRangedAttackAttacker * RandomGenerator.Next(85, 105) / 100;
+            TotalDefenseAttacker -= TotalRangedAttackDefender * RandomGenerator.Next(85, 105) / 100;
             //Calculate Winner with RNG
             while (TotalDefenseAttacker > 0 && TotalDefenseDefender > 0)
             {
@@ -52,10 +67,11 @@ namespace HexaGone.Models.Modifier
 
             float SurvivingDefendersPercentage = 0;
             float SurvivingAttackersPercentage = 0;
+
             //Defender lost
             if (TotalDefenseDefender < TotalDefenseAttacker)
             {
-                test += "Attacker won \n";
+                test += "Attacker won ";
                 //Attacker is also almost destroyed
                 if (TotalDefenseAttacker < 0)
                 {
@@ -65,18 +81,23 @@ namespace HexaGone.Models.Modifier
                 else
                 {
                     SurvivingAttackersPercentage = TotalDefenseAttacker / OriginalDefenseAttacker + 0.1f;
+                    if (SurvivingDefendersPercentage > 1)
+                    {
+                        SurvivingDefendersPercentage = 1;
+                    }
                 }
                 //Apply the losses
                 defenderArmy.Destroy();
                 foreach (Unit n in attackerArmy.Units)
                 {
-                    n.MenCount = (int)(n.MenCount * SurvivingAttackersPercentage); 
+                    n.MenCount = (int)(n.MenCount * SurvivingAttackersPercentage);
                 }
+                test += "and lost " + (TotalManCountAttacker - attackerArmy.GetTotalManCount()).ToString() + " \n";
             }
             //Attacker lost
             else
             {
-                test += "Defender won \n";
+                test += "Defender won ";
                 //Defender is also almost destroyed
                 if (TotalDefenseDefender < 0)
                 {
@@ -86,6 +107,10 @@ namespace HexaGone.Models.Modifier
                 else
                 {
                     SurvivingDefendersPercentage = TotalDefenseDefender / OriginalDefenseDefender + 0.1f;
+                    if (SurvivingDefendersPercentage > 1)
+                    {
+                        SurvivingDefendersPercentage = 1;
+                    }
                 }
                 //Apply the losses
                 attackerArmy.Destroy();
@@ -93,6 +118,7 @@ namespace HexaGone.Models.Modifier
                 {
                     n.MenCount = (int)(n.MenCount * SurvivingDefendersPercentage);
                 }
+                test += "and lost " + (TotalManCountDefender - defenderArmy.GetTotalManCount()).ToString() + " \n";
             }
         }
     }
