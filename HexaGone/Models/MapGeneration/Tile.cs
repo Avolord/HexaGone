@@ -15,7 +15,7 @@ namespace HexaGone.Models.MapGeneration
         //Constructor
         public Tile()
         { 
-            BiomeID = Biome.Ocean;
+            BiomeID = -1;
             Height = 0;
             Humidity = 0;
         }
