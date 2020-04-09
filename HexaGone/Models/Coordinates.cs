@@ -14,11 +14,11 @@ namespace HexaGone.Models
         /// <summary>
         /// Describes the Column-Coordinate
         /// </summary>
-        public double Column { get; set; }
+        public int Column { get; set; }
         /// <summary>
         /// Describes the Row-Coordinate
         /// </summary>
-        public double Row { get; set; }
+        public int Row { get; set; }
 
 
         //Constructor
@@ -32,7 +32,7 @@ namespace HexaGone.Models
         /// </summary>
         /// <param name="column">Describes the Column-Coordinate</param>
         /// <param name="row">Describes the Row-Coordinate</param>
-        public Coordinates(double column, double row)
+        public Coordinates(int column, int row)
         {
             Column = column;
             Row = row;

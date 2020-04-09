@@ -37,7 +37,7 @@ namespace HexaGone.Controllers
 
         public IActionResult Game()
         {
-            Models.Map map = new Map(Map.mapModeOneBigIsland, 50, 50);
+            Models.Map map = new Map(Map.mapModeBiomes, 50, 50);
 
             //===
             // Ausfüllen:

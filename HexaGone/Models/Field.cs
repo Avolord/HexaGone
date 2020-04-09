@@ -18,7 +18,7 @@ namespace HexaGone.Models
         /// <summary>
         /// The coordinates on the Map. Are given at initialisation.
         /// </summary>
-        public List<int> Coordinates { get; }
+        public Coordinates Coordinates { get; }
         /// <summary>
         /// The Terrain at this Field. Is given at initialisation.
         /// </summary>
@@ -81,10 +81,7 @@ namespace HexaGone.Models
         public Field(int mapX, int mapY, int fieldTerrainID, int height = 0)
         {
             FieldID = CreateUniqueFieldID();
-            Coordinates = new List<int>()
-            {   mapX,
-                mapY
-            };
+            Coordinates = new Coordinates(mapX, mapY);
             FieldTerrain = new Terrain(fieldTerrainID);
             Height = height;
             ParentEmpire = null;
@@ -99,6 +96,28 @@ namespace HexaGone.Models
             ExpendituresModifiers = new List<Modifier.FieldExpendituresModifier>();
             FillFieldModifiersFromTerrainModifiers();
 
+        }
+
+        /// <summary>
+        /// Constructs a Field without specifying the Terrain. Terrain must be specified later.
+        /// </summary>
+        /// <param name="mapX"></param>
+        /// <param name="mapY"></param>
+        public Field(int mapX, int mapY)
+        {
+            FieldID = CreateUniqueFieldID();
+            Coordinates = new Coordinates(mapX, mapY);
+            FieldTerrain = null;
+            Height = 0;
+            ParentEmpire = null;
+            ParentCity = null;
+
+            //Create Lists
+            FieldResources = new List<int>();
+
+            MovementRateModifiers = new List<Modifier.FieldMovementRateModifier>();
+            VisibilityModifiers = new List<Modifier.FieldVisibilityModifier>();
+            ExpendituresModifiers = new List<Modifier.FieldExpendituresModifier>();
         }
 
 
@@ -132,6 +151,17 @@ namespace HexaGone.Models
             AddMovementRateModifier(Modifier.FieldMovementRateModifier.modifierTerrain);
             AddExpendituresModifier(Modifier.FieldExpendituresModifier.modifierTerrain);
             AddVisibilityModifier(Modifier.FieldVisibilityModifier.modifierTerrain);
+        }
+
+        public void SetTerrain(int terrainID)
+        {
+            if(FieldTerrain == null)
+            {
+                Terrain terrain = new Terrain(terrainID);
+                FieldTerrain = terrain;
+                FillFieldResourcesFromTerrainResources();
+                FillFieldModifiersFromTerrainModifiers();
+            }
         }
 
 
