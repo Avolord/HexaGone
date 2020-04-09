@@ -1,4 +1,4 @@
-﻿@model HexaGone.Models.Hexmap
+﻿@model HexaGone.Models.Map
 @{
     Layout = "_GameLayout";
 }
@@ -84,13 +84,13 @@
             ctx = canvas.getContext('2d');
 
             //the length of each side of the hexagon
-            sideLength = @Model.hexSideLength;
+            sideLength = @Model.HexSideLength;
 
             //the amount of columns
-            mapWidth = @Model.mapData[0].Count;
+            mapWidth = @Model.Width;
 
             //the amount of rows
-            mapHeight = @Model.mapData.Count;
+            mapHeight = @Model.Height;
 
             //The offset positions of the neighboring hexagons
             offsetDirections = [
@@ -117,13 +117,18 @@
             for (var i = 0; i < mapWidth; i++) {
                 mapData[i] = [];
             }
-            @for(int i = 0; i < Model.mapData[0].Count; i++)
+            @for(int i = 0; i < Model.Width; i++)
             {
-                for(int j = 0; j < Model.mapData.Count; j++)
+                for(int j = 0; j < Model.Height; j++)
                 {
-                    <text>mapData[@i][@j] = @Model.mapData[j][i];</text>
+                    <text>mapData[@i][@j] = @Model.Fields[i][j].FieldTerrain.TerrainID;</text>
                 }
             }
         }
+
+        [
+            [1, 1, 1, 1,],
+            [1, 1, 1, 1]
+        ]
     </script>
 }
