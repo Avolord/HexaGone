@@ -272,21 +272,30 @@ namespace HexaGone.Models
             //Select random neighbour fields and make them land
             while (currentLandFields <= maxLandFields)
             {
-                Biome randomBiome = biomes[biomeProbability[random.Next(0, biomeProbability.Count)]];
-                int randomIndex = random.Next(0, randomBiome.Neighbours.Count);
-                Coordinates coordinates = randomBiome.Neighbours[randomIndex];
-
-                if (tiles[coordinates.Column][coordinates.Row].BiomeID == Biome.Ocean)
+                int randomBiomeIndex = biomeProbability[random.Next(0, biomeProbability.Count)];
+                Biome randomBiome = biomes[randomBiomeIndex];
+                if (randomBiome.Neighbours.Count > 0)
                 {
-                    Tile tile = tiles[coordinates.Column][coordinates.Row];
-                    tiles[coordinates.Column][coordinates.Row].BiomeID = randomBiome.ID;
-                    AddNeighbourTiles(randomBiome, ref tiles, coordinates);
-                    currentLandFields += 1;
+                    int randomIndex = random.Next(0, randomBiome.Neighbours.Count);
+                    Coordinates coordinates = randomBiome.Neighbours[randomIndex];
 
-                    //System.Diagnostics.Debug.WriteLine(currentLandFields + ": " + coordinates.Column + " ; " + coordinates.Row);
+                    if (tiles[coordinates.Column][coordinates.Row].BiomeID == Biome.Ocean)
+                    {
+                        Tile tile = tiles[coordinates.Column][coordinates.Row];
+                        tiles[coordinates.Column][coordinates.Row].BiomeID = randomBiome.ID;
+                        AddNeighbourTiles(randomBiome, ref tiles, coordinates);
+                        currentLandFields += 1;
+
+                        //System.Diagnostics.Debug.WriteLine(currentLandFields + ": " + coordinates.Column + " ; " + coordinates.Row);
+                    }
+
+                    randomBiome.Neighbours.RemoveAt(randomIndex);
                 }
-
-                randomBiome.Neighbours.RemoveAt(randomIndex);
+                else
+                {
+                    biomes.RemoveAt(randomBiomeIndex);
+                    biomeProbability.RemoveAll(item => item == randomBiomeIndex);
+                }
             }
             //Translate Tilemap biomes into Terrains.
 
@@ -325,6 +334,8 @@ namespace HexaGone.Models
                     return Terrain.SwampTrees;
                 case Biome.Tundra:
                     return Terrain.SnowTrees;
+                case Biome.Ocean:
+                    return Terrain.Ocean;
                 default:
                     return Terrain.Mountain;
             }
