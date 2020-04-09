@@ -11,10 +11,7 @@ namespace HexaGone.Models
         
         public void Destroy()
         {
-            foreach (Unit n in Units)
-            {
-                n.MenCount = 0;
-            }
+            Units.Clear();
         }
 
         public void AddUnit(Unit unit)
