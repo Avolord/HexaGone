@@ -238,23 +238,23 @@ function getNeighborCoords(col, row, direction) {
 //}
 
 class Controller {
-    width = canvas.width;
-    height = canvas.height;
-    visibleWidth = canvas.width;
-    visibleHeight = canvas.height;
+    constructor() {
+        this.width = canvas.width;
+        this.height = canvas.height;
+        this.visibleWidth = this.width;
+        this.visibleHeight = this.height;
 
-    origin = { x: 0, y: 0 };
-    oldMousePosition = { x: 0, y: 0 };
-    mousePosition = { x: 0, y: 0 };
-    dragDelta = { x: 0, y: 0 };
-    mouseDown = false;
+        this.origin = { x: 0, y: 0 };
+        this.oldMousePosition = { x: 0, y: 0 };
+        this.mousePosition = { x: 0, y: 0 };
+        this.dragDelta = { x: 0, y: 0 };
+        this.mouseDown = false;
 
-    scale = 1;
-    wheel = 1;
-    zoom = 1;
-    zoomFactor = 0.2;
-
-    constructor() {}
+        this.scale = 1;
+        this.wheel = 1;
+        this.zoom = 1;
+        this.zoomFactor = 0.2;
+    }
 
     static enableEvents(_controller) {
         let c = $(canvas);
@@ -294,7 +294,7 @@ class Controller {
     }
 
     updateMouseWheel(e) {
-        event.preventDefault();
+        e.preventDefault();
 
         // Get mouse offset.
         // this.mousePosition.x = e.clientX - canvas.offsetLeft;
