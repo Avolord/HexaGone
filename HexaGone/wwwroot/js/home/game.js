@@ -1,5 +1,108 @@
 ﻿var frame;
 var lastTick = performance.now();
+let controller;
+
+$(function () {
+    // setting the game variables from the Game.cshtml file
+    gameVariables();
+    controller = new Controller();
+
+    if (canvas.getContext) {
+
+        // ensure that the textures stay high-quality when zooming in on the map
+        ctx.imageSmoothingEnabled = false;
+
+        // set the style when drawing figures inside of the canvas
+        ctx.fillStyle = "#CCCCCC";
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 4;
+
+        {
+            // draw the map
+            //drawMap();
+
+            // handle the event when hovering over the map with the mouse
+            //canvas.addEventListener("mousemove", function (eventInfo) {
+
+            //    // Position of the mouse cursor on the canvas
+            //    var mousePosX;
+            //    var mousePosY;
+
+            //    // offset-coordinate of the current tile the mouse is hovering over
+            //    var hexX;
+            //    var hexY;
+
+            //    // setting the mouse position variable to the current mouse position
+            //    mousePosX = eventInfo.offsetX || eventInfo.layerX;
+            //    mousePosY = eventInfo.offsetY || eventInfo.layerY;
+
+            //    // correcting the mouse position with the offset of the map (from dragging the map around) and the scale of the map (from zooming in and out of the map)
+            //    mousePosX = (mousePosX - offsetX) / scaleX;
+            //    mousePosY = (mousePosY - offsetY) / scaleY;
+
+            //    // setting the currently hovered-over tile temporarily (inaccurate, but necessary for further corrections)
+            //    hexX = Math.floor(mousePosX / (1.5 * sideLength));
+            //    hexY = Math.floor((mousePosY - (hexX % 2) * hexInnerRadius) / hexRectangleHeight);
+
+            //    // Correcting the currently hovered-over tile for more accuracy:
+            //    // Converting the offset-coordinate of the temporary hovered-over tile into a pixel location in the center of the hexagon and measuring the distance to the mouse position
+            //    var p = offsetToPixelCoords(hexX, hexY);
+            //    var d = distance(p[0], p[1], mousePosX, mousePosY);
+
+            //    // finding the third neighbor, converting the offset-coordinate into a pixel location and measuring the distance to the mouse position
+            //    var n3 = getNeighborCoords(hexX, hexY, 3);
+            //    var p3 = offsetToPixelCoords(n3[0], n3[1]);
+            //    var d3 = distance(p3[0], p3[1], mousePosX, mousePosY);
+
+            //    // finding the fourth neighbor, converting the offset-coordinate into a pixel location and measuring the distance to the mouse position
+            //    var n4 = getNeighborCoords(hexX, hexY, 4);
+            //    var p4 = offsetToPixelCoords(n4[0], n4[1]);
+            //    var d4 = distance(p4[0], p4[1], mousePosX, mousePosY)
+
+            //    // correcting the temporary hovered-over tile (hexX, hexY) to the neighbor with the closest distance to the the mouse position (if necessary)
+            //    if (d3 < d && d3 < d4) {
+            //        hexX = n3[0];
+            //        hexY = n3[1];
+            //    }
+            //    else if (d4 < d) {
+            //        hexX = n4[0];
+            //        hexY = n4[1];
+            //    }
+
+            //    // Check if the mouse's coords are on the map
+            //    if (hexX >= 0 && hexX < mapWidth && hexY >= 0 && hexY < mapHeight) {
+            //        // setting the marked tile to the currently hovered-over tile
+            //        markedTileX = hexX;
+            //        markedTileY = hexY;
+            //    }
+            //    else {
+            //        // set the marked tile to a location outside of the map, when the mouse's coords are not on the map
+            //        markedTileX = -1;
+            //        markedTileY = -1;
+            //    }
+            //});
+
+            //// handle the event of scrolling the mousewheel when over the canvas
+            //canvas.addEventListener("wheel", function (eventInfo) {
+
+            //    // temporary variable for the direction the mousewheel is scrolled
+            //    var scalingFactor = (1 - eventInfo.deltaY / 1000);
+
+            //    // setting the global scale variable to a new scale depending on the mousewheel scroll
+            //    scaleX = scaleX * scalingFactor;
+            //    scaleY = scaleX;
+
+            //    offsetX += scaleX * (eventInfo.clientX * scalingFactor) * (1 - scalingFactor);
+            //    offsetY += scaleY * (eventInfo.clientY * scalingFactor) * (1 - scalingFactor);
+
+            //    // clear the current map and redraw it correctly
+            //    clearMap();
+            //    drawMap();
+            //});
+        }
+    }
+    requestAnimationFrame(render);
+});
 
 function render(currentTick) {
     var delta = currentTick - lastTick
@@ -13,138 +116,72 @@ function render(currentTick) {
 function draw() {
     clearMap();
 
-    ctx.setTransform(scaleX, 0, 0, scaleY,
-        offsetX, offsetY);
+    //ctx.setTransform(scaleX, 0, 0, scaleY,
+    //    offsetX, offsetY);
 
     drawMap();
 }
 
-requestAnimationFrame(render);
+function highlightTileAtMousePosition() {
+    // Position of the mouse cursor on the canvas
+    var mousePosX;
+    var mousePosY;
 
-// setting the game variables from the Game.cshtml file
-gameVariables();
+    // offset-coordinate of the current tile the mouse is hovering over
+    var hexX;
+    var hexY;
 
-if (canvas.getContext) {
+    //
 
-    // ensure that the textures stay high-quality when zooming in on the map
-    ctx.imageSmoothingEnabled = false;
+    mousePosX = controller.mousePosition.x / controller.scale + controller.origin.x;
+    mousePosY = controller.mousePosition.y / controller.scale + controller.origin.y;
 
-    // set the style when drawing figures inside of the canvas
-    ctx.fillStyle = "#CCCCCC";
-    ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 4;
+    // setting the currently hovered-over tile temporarily (inaccurate, but necessary for further corrections)
+    hexX = Math.floor(mousePosX / (1.5 * sideLength));
+    hexY = Math.floor((mousePosY - (hexX % 2) * hexInnerRadius) / hexRectangleHeight);
 
-    // draw the map
-    drawMap();
+    // Correcting the currently hovered-over tile for more accuracy:
+    // Converting the offset-coordinate of the temporary hovered-over tile into a pixel location in the center of the hexagon and measuring the distance to the mouse position
+    var p = offsetToPixelCoords(hexX, hexY);
+    var d = distance(p[0], p[1], mousePosX, mousePosY);
 
-    // handle the event when hovering over the map with the mouse
-    canvas.addEventListener("mousemove", function (eventInfo) {
+    // finding the third neighbor, converting the offset-coordinate into a pixel location and measuring the distance to the mouse position
+    var n3 = getNeighborCoords(hexX, hexY, 3);
+    var p3 = offsetToPixelCoords(n3[0], n3[1]);
+    var d3 = distance(p3[0], p3[1], mousePosX, mousePosY);
 
-        // Position of the mouse cursor on the canvas
-        var mousePosX;
-        var mousePosY;
+    // finding the fourth neighbor, converting the offset-coordinate into a pixel location and measuring the distance to the mouse position
+    var n4 = getNeighborCoords(hexX, hexY, 4);
+    var p4 = offsetToPixelCoords(n4[0], n4[1]);
+    var d4 = distance(p4[0], p4[1], mousePosX, mousePosY)
 
-        // offset-coordinate of the current tile the mouse is hovering over
-        var hexX;
-        var hexY;
+    // correcting the temporary hovered-over tile (hexX, hexY) to the neighbor with the closest distance to the the mouse position (if necessary)
+    if (d3 < d && d3 < d4) {
+        hexX = n3[0];
+        hexY = n3[1];
+    }
+    else if (d4 < d) {
+        hexX = n4[0];
+        hexY = n4[1];
+    }
 
-        // setting the mouse position variable to the current mouse position
-        mousePosX = eventInfo.offsetX || eventInfo.layerX;
-        mousePosY = eventInfo.offsetY || eventInfo.layerY;
-
-        // correcting the mouse position with the offset of the map (from dragging the map around) and the scale of the map (from zooming in and out of the map)
-        mousePosX = (mousePosX - offsetX) / scaleX;
-        mousePosY = (mousePosY - offsetY) / scaleY;
-
-        // setting the currently hovered-over tile temporarily (inaccurate, but necessary for further corrections)
-        hexX = Math.floor(mousePosX / (1.5 * sideLength));
-        hexY = Math.floor((mousePosY - (hexX % 2) * hexInnerRadius) / hexRectangleHeight);
-
-        // Correcting the currently hovered-over tile for more accuracy:
-        // Converting the offset-coordinate of the temporary hovered-over tile into a pixel location in the center of the hexagon and measuring the distance to the mouse position
-        var p = offsetToPixelCoords(hexX, hexY);
-        var d = distance(p[0], p[1], mousePosX, mousePosY);
-
-        // finding the third neighbor, converting the offset-coordinate into a pixel location and measuring the distance to the mouse position
-        var n3 = getNeighborCoords(hexX, hexY, 3);
-        var p3 = offsetToPixelCoords(n3[0], n3[1]);
-        var d3 = distance(p3[0], p3[1], mousePosX, mousePosY);
-
-        // finding the fourth neighbor, converting the offset-coordinate into a pixel location and measuring the distance to the mouse position
-        var n4 = getNeighborCoords(hexX, hexY, 4);
-        var p4 = offsetToPixelCoords(n4[0], n4[1]);
-        var d4 = distance(p4[0], p4[1], mousePosX, mousePosY)
-
-        // correcting the temporary hovered-over tile (hexX, hexY) to the neighbor with the closest distance to the the mouse position (if necessary)
-        if (d3 < d && d3 < d4) {
-            hexX = n3[0];
-            hexY = n3[1];
-        }
-        else if (d4 < d) {
-            hexX = n4[0];
-            hexY = n4[1];
-        }
-
-        // Check if the mouse's coords are on the map
-        if (hexX >= 0 && hexX < mapWidth && hexY >= 0 && hexY < mapHeight) {
-            // setting the marked tile to the currently hovered-over tile
-            markedTileX = hexX;
-            markedTileY = hexY;
-        }
-        else {
-            // set the marked tile to a location outside of the map, when the mouse's coords are not on the map
-            markedTileX = -1;
-            markedTileY = -1;
-        }
-    });
-
-    // handle the event of scrolling the mousewheel when over the canvas
-    canvas.addEventListener("wheel", function (eventInfo) {
-
-        // temporary variable for the direction the mousewheel is scrolled
-        var direction = eventInfo.deltaY > 0 ? -1 : 1;
-        var scalingFactor = (1 - eventInfo.deltaY / 1000);
-
-        const width = hexRectangleWidth * mapWidth * 0.75;
-        const height = hexRectangleHeight * mapHeight + hexRectangleHeight / 2.0
-        const wx = (eventInfo.clientX) / (canvas.width * scaleX);
-        const wy = (eventInfo.clientY) / (canvas.height * scaleY);
-
-        // setting the global scale variable to a new scale depending on the mousewheel scroll
-        scaleX = scaleX * scalingFactor;
-        scaleY = scaleX;
-
-        // apply the change in x,y and zoom.
-        offsetX -= wx * canvas.width * direction * scaleX;
-        offsetY -= wy * canvas.height * direction * scaleY;
-
-        //console.log({ clientX: eventInfo.clientX, clientY: eventInfo.clientY, offsetX: offsetX, offsetY: offsetY, width: canvas.width, height: canvas.height, wx: wx, wy: wy });
-
-        // setting the new scale for the canvas context
-        //ctx.translate(eventInfo.pageX, eventInfo.pageY);
-        //ctx.scale(scalingFactor, scalingFactor);
-        //ctx.translate(-eventInfo.pageX, -eventInfo.pageY);
-
-        // clear the current map and redraw it correctly
-        clearMap();
-        drawMap();
-    });
+    // Check if the mouse's coords are on the map
+    if (hexX >= 0 && hexX < mapWidth && hexY >= 0 && hexY < mapHeight) {
+        // setting the marked tile to the currently hovered-over tile
+        markedTileX = hexX;
+        markedTileY = hexY;
+    }
+    else {
+        // set the marked tile to a location outside of the map, when the mouse's coords are not on the map
+        markedTileX = -1;
+        markedTileY = -1;
+    }
 }
 
 // clear the canvas
 function clearMap() {
 
-    // save the current transform of the map
-    ctx.save();
-
-    // setting the transform to default settings
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    // clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // restore the saved transform of the map
-    ctx.restore();
+    ctx.clearRect(controller.origin.x, controller.origin.y, controller.visibleWidth, controller.visibleWidth);
 }
 
 // calculate the distance between two points
@@ -254,71 +291,117 @@ function getNeighborCoords(col, row, direction) {
     return [col + dir[0], row + dir[1]];
 }
 
-var isDown = false;
-var lastMousePos = { x: 0, y: 0 };
-var deltaMousePos = { x: 0, y: 0 };
-
-canvas.onmousedown = function (e) {
-    isDown = true;
-    lastMousePos.x = e.offsetX;
-    lastMousePos.y = e.offsetY;
-}
-
-canvas.onmouseup = function (e) {
-    isDown = false;
-}
-
-canvas.onmousemove = function (e) {
-    if (!isDown) return;
-
-    deltaMousePos.x = e.offsetX - lastMousePos.x;
-    deltaMousePos.y = e.offsetY - lastMousePos.y;
-
-    offsetX += deltaMousePos.x;
-    offsetY += deltaMousePos.y;
-
-    lastMousePos.x = e.offsetX;
-    lastMousePos.y = e.offsetY;
-}
-
-//var isDown = false; // whether mouse is pressed
-//var startCoords = []; // 'grab' coordinates when pressing mouse
-//var last = [0, 0]; // previous coordinates of mouse release
+//var isDown = false;
+//var lastMousePos = { x: 0, y: 0 };
+//var deltaMousePos = { x: 0, y: 0 };
 
 //canvas.onmousedown = function (e) {
 //    isDown = true;
-
-//    startCoords = [
-//        e.offsetX - last[0], // set start coordinates
-//        e.offsetY - last[1]
-//    ];
-//};
+//    lastMousePos.x = e.offsetX;
+//    lastMousePos.y = e.offsetY;
+//}
 
 //canvas.onmouseup = function (e) {
 //    isDown = false;
-
-//    last = [
-//        e.offsetX - startCoords[0], // set last coordinates
-//        e.offsetY - startCoords[1]
-//    ];
-//};
+//}
 
 //canvas.onmousemove = function (e) {
-//    if (!isDown) return; // don't pan if mouse is not pressed
+//    if (!isDown) return;
 
-//    var x = e.offsetX;
-//    var y = e.offsetY;
+//    deltaMousePos.x = e.offsetX - lastMousePos.x;
+//    deltaMousePos.y = e.offsetY - lastMousePos.y;
 
-//    // set the canvas' transformation matrix by setting the amount of movement:
-//    // 1  0  dx
-//    // 0  1  dy
-//    // 0  0  1
+//    //ctx.translate(deltaMousePos.x, deltaMousePos.y);
 
-//    //ctx.setTransform(scaleX, 0, 0, scaleY,
-//    //    x - startCoords[0], y - startCoords[1]);
+//    offsetX += deltaMousePos.x;
+//    offsetY += deltaMousePos.y;
 
-//    offsetX = x - startCoords[0];
-//    offsetY = y - startCoords[1];
-
-
+//    lastMousePos.x = e.offsetX;
+//    lastMousePos.y = e.offsetY;
 //}
+
+class Controller {
+    width = canvas.width;
+    height = canvas.height;
+    visibleWidth = canvas.width;
+    visibleHeight = canvas.height;
+
+    origin = { x: 0, y: 0 };
+    oldMousePosition = { x: 0, y: 0 };
+    mousePosition = { x: 0, y: 0 };
+    dragDelta = { x: 0, y: 0 };
+    mouseDown = false;
+
+    scale = 1;
+    wheel = 1;
+    zoom = 1;
+    zoomFactor = 0.2;
+
+    constructor() {
+        canvas.onmousedown = (e) => this.updateMouseDown(e);
+        canvas.onmouseup = (e) => this.updateMouseUp(e);
+        canvas.onmousemove = (e) => this.updateMouseMove(e);
+        canvas.onmousewheel = (e) => this.updateMouseWheel(e);
+    }
+
+    updateMouseDown(e) {
+        this.mouseDown = true;
+        this.oldMousePosition = { x: e.clientX, y: e.clientY };
+    }
+
+    updateMouseUp(e) {
+        this.mouseDown = false;
+    }
+
+    updateMouseMove(e) {
+        this.mousePosition.x = e.clientX - canvas.offsetLeft;
+        this.mousePosition.y = e.clientY - canvas.offsetTop;
+
+        highlightTileAtMousePosition();
+
+        if (!this.mouseDown) return;
+
+        this.dragDelta.x = this.mousePosition.x - this.oldMousePosition.x;
+        this.dragDelta.y = this.mousePosition.y - this.oldMousePosition.y;
+
+        this.oldMousePosition.x = this.mousePosition.x;
+        this.oldMousePosition.y = this.mousePosition.y;
+
+        ctx.translate(this.dragDelta.x / this.scale, this.dragDelta.y / this.scale);
+
+        this.origin.x -= this.dragDelta.x / this.scale;
+        this.origin.y -= this.dragDelta.y / this.scale;
+    }
+
+    updateMouseWheel(e) {
+        event.preventDefault();
+
+        // Get mouse offset.
+        // this.mousePosition.x = e.clientX - canvas.offsetLeft;
+        // this.mousePosition.y = e.clientY - canvas.offsetTop;
+        // Normalize wheel to +1 or -1.
+        this.wheel = e.deltaY < 0 ? 1 : -1;
+        // Compute zoom factor.
+        this.zoom = Math.exp(this.wheel * this.zoomFactor);
+        // Translate so the visible origin is at the context's origin.
+        ctx.translate(this.origin.x, this.origin.y);
+
+        // Compute the new visible origin. Originally the mouse is at a
+        // distance mouse/scale from the corner, we want the point under
+        // the mouse to remain in the same place after the zoom, but this
+        // is at mouse/new_scale away from the corner. Therefore we need to
+        // shift the origin (coordinates of the corner) to account for this.
+        this.origin.x -= this.mousePosition.x / (this.scale * this.zoom) - this.mousePosition.x / this.scale;
+        this.origin.y -= this.mousePosition.y / (this.scale * this.zoom) - this.mousePosition.y / this.scale;
+
+        // Scale it (centered around the origin due to the trasnslate above).
+        ctx.scale(this.zoom, this.zoom);
+        // Offset the visible origin to it's proper position.
+        ctx.translate(-this.origin.x, -this.origin.y);
+
+        // Update scale and others.
+        this.scale *= this.zoom;
+        this.visibleWidth = this.width / this.scale;
+        this.visibleHeight = this.height / this.scale;
+    }
+}
