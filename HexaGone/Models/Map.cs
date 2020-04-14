@@ -48,12 +48,12 @@ namespace HexaGone.Models
                     break;
                 case Big:
                     Width = 300;
-                    Height = 150;
+                    Height = 160;
                     break;
                 //sets the mapSize to  200 x 200
                 default:
                     Width = 200;
-                    Height = 200;
+                    Height = 100;
                     break;
             }
             MapSize = sizeMode;
@@ -321,52 +321,51 @@ namespace HexaGone.Models
             }
             List<Coordinates> startPoints = SetStartPoints(amountBiomes);
             //This loop is for the creation of the biomes.
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < amountBiomes; i++)
             {
                 //Select the starting tile of the biome
-                
-                int startX = Convert.ToInt32((Width / 4) + (Width / 12) + ((i % 3) * Width / 6));
-                int startY = Convert.ToInt32((Height / 4) + (Height / 12) + ((Convert.ToInt32(i / 3)) * Height / 6));
-                Coordinates coordinates = new Coordinates(startX, startY);
+
+                Coordinates coordinates = startPoints[i];
                 Biome biome;
+                biome = new Biome(random.Next(0, 8));
                 //Set the biome-type of the biome
-                switch (i)
-                {
-                    case 0:
-                        biome = new Biome(Biome.Desert);
-                        break;
-                    case 1:
-                        biome = new Biome(Biome.Forest);
-                        break;
-                    case 2:
-                        biome = new Biome(Biome.Plains);
-                        break;
-                    case 3:
-                        biome = new Biome(Biome.Jungle);
-                        break;
-                    case 4:
-                        biome = new Biome(Biome.Lake);
-                        break;
-                    case 5:
-                        biome = new Biome(Biome.Swamp);
-                        break;
-                    case 6:
-                        biome = new Biome(Biome.Tundra);
-                        break;
-                    case 7:
-                        biome = new Biome(Biome.Plains);
-                        break;
-                    //case 8
-                    default:
-                        biome = new Biome(Biome.Forest);
-                        break;
-                }
+                //switch (i)
+                //{
+                //    case 0:
+                //        biome = new Biome(Biome.Desert);
+                //        break;
+                //    case 1:
+                //        biome = new Biome(Biome.Forest);
+                //        break;
+                //    case 2:
+                //        biome = new Biome(Biome.Plains);
+                //        break;
+                //    case 3:
+                //        biome = new Biome(Biome.Jungle);
+                //        break;
+                //    case 4:
+                //        biome = new Biome(Biome.Lake);
+                //        break;
+                //    case 5:
+                //        biome = new Biome(Biome.Swamp);
+                //        break;
+                //    case 6:
+                //        biome = new Biome(Biome.Tundra);
+                //        break;
+                //    case 7:
+                //        biome = new Biome(Biome.Plains);
+                //        break;
+                //    //case 8
+                //    default:
+                //        biome = new Biome(Biome.Forest);
+                //        break;
+                //}
 
                 //Add the biome to the biomes List.
                 biomes.Add(biome);
                 landFields++;
                 //Give the starting-Tile the biome ID.
-                tiles[startX][startY].BiomeID = biome.ID;
+                tiles[coordinates.Column][coordinates.Row].BiomeID = biome.ID;
 
                 //System.Diagnostics.Debug.WriteLine(i + ": " + startX + " ; " + startY);
 
@@ -383,14 +382,142 @@ namespace HexaGone.Models
             return landFields;
         }
 
-        private List<Coordinates> SetStartPoints(int i)
+        private List<Coordinates> SetStartPoints(int amount)
         {
             List<Coordinates> points = new List<Coordinates>();
+            List<List<bool>> spots = new List<List<bool>>();
+            int highest = 1;
+            int pointsSet = 0;
+            Random rnd = new Random();
 
-            switch(MapSize)
+            switch (MapSize)
             {
                 case 0:
 
+                    for (int column = 0; column < Width / 10 -2; column++)
+                    {
+                        List<bool> columnList = new List<bool>();
+                        //The second loop iterates over the Height, to create as many Tiles as there are Rows.
+                        for (int row = 0; row < Height / 10 -2; row++)
+                        {
+                            //At first every tile-biome will be ocean
+
+                            columnList.Add(false);
+                        }
+                        //Add the columnList to tiles.
+                        spots.Add(columnList);
+                    }
+                    int[] smallCol = new int[8];
+                    for (int i = 0; i<8; i++)
+                    {
+                        smallCol[i] = 0;
+                    }
+                    
+                    while(pointsSet < amount)
+                    {
+                        Coordinates point = new Coordinates(rnd.Next(10, 90), rnd.Next(10, 40));
+                        int[] temp = new int[2];
+                        temp[0] = (point.Column / 10)-1;
+                        temp[1] = (point.Row / 10)-1;
+
+                        if(smallCol[temp[0]]<highest && !spots[temp[0]][temp[1]])
+                        {
+                            spots[temp[0]][temp[1]] = true;
+                            smallCol[temp[0]] += 1;
+                            pointsSet++;
+                            points.Add(point);
+                            if(pointsSet%8==0)
+                            {
+                                highest++;
+                            }
+                        }
+                    }
+                    break;
+
+                case 1:
+
+                    for (int column = 0; column < Width / 20 -1; column++)
+                    {
+                        List<bool> columnList = new List<bool>();
+                        //The second loop iterates over the Height, to create as many Tiles as there are Rows.
+                        for (int row = 0; row < Height / 20 -1; row++)
+                        {
+                            //At first every tile-biome will be ocean
+
+                            columnList.Add(false);
+                        }
+                        //Add the columnList to tiles.
+                        spots.Add(columnList);
+                    }
+
+                    int[] mediumCol = new int[9];
+                    for (int i = 0; i < 9; i++)
+                    {
+                        mediumCol[i] = 0;
+                    }
+
+                    while (pointsSet < amount)
+                    {
+                        Coordinates point = new Coordinates(rnd.Next(10, 190), rnd.Next(10, 90));
+                        int[] temp = new int[2];
+                        temp[0] = ((point.Column+10) / 20) - 1;
+                        temp[1] = ((point.Row+10) / 20) - 1;
+
+                        if (mediumCol[temp[0]] < highest && !spots[temp[0]][temp[1]])
+                        {
+                            spots[temp[0]][temp[1]] = true;
+                            mediumCol[temp[0]] += 1;
+                            pointsSet++;
+                            points.Add(point);
+                            if (pointsSet % 9 == 0)
+                            {
+                                highest++;
+                            }
+                        }
+                    }
+                    break;
+
+                case 2:
+
+                    for (int column = 0; column < Width / 20 - 2; column++)
+                    {
+                        List<bool> columnList = new List<bool>();
+                        //The second loop iterates over the Height, to create as many Tiles as there are Rows.
+                        for (int row = 0; row < Height / 20 - 2; row++)
+                        {
+                            //At first every tile-biome will be ocean
+
+                            columnList.Add(false);
+                        }
+                        //Add the columnList to tiles.
+                        spots.Add(columnList);
+                    }
+
+                    int[] BigCol = new int[13];
+                    for (int i = 0; i < 13; i++)
+                    {
+                        BigCol[i] = 0;
+                    }
+
+                    while (pointsSet < amount)
+                    {
+                        Coordinates point = new Coordinates(rnd.Next(20, 280), rnd.Next(20, 140));
+                        int[] temp = new int[2];
+                        temp[0] = (point.Column / 20)-1;
+                        temp[1] = (point.Row / 20)-1;
+
+                        if (BigCol[temp[0]] < highest && !spots[temp[0]][temp[1]])
+                        {
+                            spots[temp[0]][temp[1]] = true;
+                            BigCol[temp[0]] += 1;
+                            pointsSet++;
+                            points.Add(point);
+                            if (pointsSet % 13 == 0)
+                            {
+                                highest++;
+                            }
+                        }
+                    }
                     break;
             }
 
@@ -429,19 +556,19 @@ namespace HexaGone.Models
                     switch (BiomeSize)
                     {
                         case 0:
-                            amount = rnd.Next(40, 45);
+                            amount = rnd.Next(30, 35);
                             
                             break;
                         case 1:
-                            amount = rnd.Next(30, 40);
-                            
-                            break;
-                        case 2:
                             amount = rnd.Next(20, 30);
                             
                             break;
+                        case 2:
+                            amount = rnd.Next(15, 20);
+                            
+                            break;
                         default:
-                            amount = rnd.Next(30, 40);
+                            amount = rnd.Next(20, 30);
                             
                             break;
                     }
@@ -450,15 +577,15 @@ namespace HexaGone.Models
                     switch (BiomeSize)
                     {
                         case 0:
-                            amount = rnd.Next(50, 65);
+                            amount = rnd.Next(60, 75);
                             
                             break;
                         case 1:
-                            amount = rnd.Next(40, 50);
+                            amount = rnd.Next(40, 60);
                             
                             break;
                         case 2:
-                            amount = rnd.Next(30, 40);
+                            amount = rnd.Next(26, 40);
                             
                             break;
                         default:
