@@ -17,6 +17,8 @@ namespace HexaGone.Models
         public bool IsPointy { get; }
         public int HexSideLength { get; set; }
 
+        private Random rnd;
+
         //Constants
 
         //mapModes - A constant mapMode the host can choose from, that generates the map.
@@ -61,25 +63,42 @@ namespace HexaGone.Models
             IsPointy = false;
             HexSideLength = 30;
             Fields = new List<List<Field>>();
-
+            rnd = new Random();
             //Generate the Map
             MapgeneratorSwitcher(mapMode);
         }
-        public Map(int mapMode, int width, int height, int biomeSize)
+        public Map(int mapMode, int sizeMode, int biomeSize, int seed)
         {
-            //Set Width and Height
-            Width = width;
-            Height = height;
+            switch (sizeMode)
+            {
+                //Depanding on MapSize sets Width and Height.
+                case Small:
+                    Width = 100;
+                    Height = 50;
+                    break;
+                case Medium:
+                    Width = 200;
+                    Height = 100;
+                    break;
+                case Big:
+                    Width = 300;
+                    Height = 160;
+                    break;
+                //sets the mapSize to  200 x 200
+                default:
+                    Width = 200;
+                    Height = 100;
+                    break;
+            }
+            MapSize = sizeMode;
             BiomeSize = biomeSize;
             IsPointy = false;
             HexSideLength = 30;
             Fields = new List<List<Field>>();
-
+            rnd = new Random(seed);
             //Generate the Map
             MapgeneratorSwitcher(mapMode);
-
         }
-
         //Functions
         /// <summary>
         /// Selects a mapgeneration function from the mapMode.
@@ -114,7 +133,6 @@ namespace HexaGone.Models
                 }
             }
         }
-       
         private Field GetField(int column, int row)
         {
             return Fields[column][row];
@@ -128,7 +146,6 @@ namespace HexaGone.Models
         /// </summary>
         private void CompletelyRandomMapgenerator()
         {
-            Random random = new Random();
             //The first loop iterates over the Width, to create as many columns as needed, by creating a columnList.
             for(int column = 0; column < Width; column++)
             {
@@ -136,7 +153,7 @@ namespace HexaGone.Models
                 //The second loop iterates over the Height, to create as many Fields as there are Rows.
                 for(int row = 0; row < Height; row++)
                 {
-                    Field field = new Field(column, row, random.Next(0, Terrain.amountTerrains));
+                    Field field = new Field(column, row, rnd.Next(0, Terrain.amountTerrains));
                     columnList.Add(field);
                 }
                 //Add the columnList to Fields, otherwise everything was useless and the while-loop in the MapgeneratorSwitcher won't end.
@@ -145,7 +162,6 @@ namespace HexaGone.Models
         }
         private void TinyIslandsMapgenerator()
         {
-            Random random = new Random();
             //The first loop iterates over the Width, to create as many columns as needed, by creating a columnList.
             for (int column = 0; column < Width; column++)
             {
@@ -156,7 +172,7 @@ namespace HexaGone.Models
                     Field field;
                     if((column + row)%3 == 0)
                     {
-                        field = new Field(column, row, random.Next(1, Terrain.amountTerrains));
+                        field = new Field(column, row, rnd.Next(1, Terrain.amountTerrains));
                     }
                     else
                     {
@@ -170,7 +186,6 @@ namespace HexaGone.Models
         }
         private void OneIslandMapgenerator()
         {
-            Random random = new Random();
             //The first loop iterates over the Width, to create as many columns as needed, by creating a columnList.
             for (int column = 0; column < Width; column++)
             {
@@ -201,7 +216,7 @@ namespace HexaGone.Models
             //Select random neighbour fields and make them land
             while(currentLandFields <= maxLandFields)
             {
-                int randomIndex = random.Next(0, neighbours.Count);
+                int randomIndex = rnd.Next(0, neighbours.Count);
                 Coordinates coordinates = neighbours[randomIndex];
 
                 if(GetField(coordinates).FieldTerrain.TerrainID == Terrain.Ocean)
@@ -220,11 +235,12 @@ namespace HexaGone.Models
             }
             return;
         }
-
+        /// <summary>
+        /// Creates a Map on base of random biomes
+        /// </summary>
         private void BiomesMapgenerator()
         {
             //A 2-Dimensional List containing all the tiles with its biomes.
-            Random random = new Random();
             List<List<Tile>> tiles = new List<List<Tile>>();
             //Create a List of all the biomes, that are created
             List<Biome> biomes = new List<Biome>();
@@ -234,20 +250,20 @@ namespace HexaGone.Models
             //Set a number of max Land Fields. In this case it's 40%
 
             int currentLandFields = GenerateBiomes(ref tiles, ref biomes, ref biomeProbability); ;
-            int maxLandFields = Convert.ToInt32(Width*Height *0.4);
+            int maxLandFields = Convert.ToInt32(Width*Height *0.6);
 
             //Select random neighbour fields and make them land
             while (currentLandFields <= maxLandFields)
             {
                 //First select a random biome, that gets a new tile
-                int randomBiomeIndex = biomeProbability[random.Next(0, biomeProbability.Count)];
+                int randomBiomeIndex = biomeProbability[rnd.Next(0, biomeProbability.Count)];
                 Biome randomBiome = biomes[randomBiomeIndex];
 
                 //Check if the random biome has any neighbours
                 if (randomBiome.Neighbours.Count > 0)
                 {
                     //Select a random neighbour from its Neighbours List.
-                    int randomIndex = random.Next(0, randomBiome.Neighbours.Count);
+                    int randomIndex = rnd.Next(0, randomBiome.Neighbours.Count);
                     Coordinates coordinates = randomBiome.Neighbours[randomIndex];
 
                     //Check if the neighbour tile is Ocean, in this case it can be set
@@ -289,7 +305,6 @@ namespace HexaGone.Models
             }
             return;
         }
-
         /// <summary>
         /// This methode creates Biomes based on Mapsize and biome size selected. Returns amount of current lanfields
         /// </summary>
@@ -298,7 +313,6 @@ namespace HexaGone.Models
         /// <param name="biomeProbability"></param>
         private int GenerateBiomes(ref List<List<Tile>> tiles, ref List<Biome> biomes, ref List<int>biomeProbability)
         {
-            Random random = new Random();
             int landFields = 0;
             int amountBiomes = CreateAmountOfBiomes(); 
 
@@ -327,39 +341,7 @@ namespace HexaGone.Models
 
                 Coordinates coordinates = startPoints[i];
                 Biome biome;
-                biome = new Biome(random.Next(0, 8));
-                //Set the biome-type of the biome
-                //switch (i)
-                //{
-                //    case 0:
-                //        biome = new Biome(Biome.Desert);
-                //        break;
-                //    case 1:
-                //        biome = new Biome(Biome.Forest);
-                //        break;
-                //    case 2:
-                //        biome = new Biome(Biome.Plains);
-                //        break;
-                //    case 3:
-                //        biome = new Biome(Biome.Jungle);
-                //        break;
-                //    case 4:
-                //        biome = new Biome(Biome.Lake);
-                //        break;
-                //    case 5:
-                //        biome = new Biome(Biome.Swamp);
-                //        break;
-                //    case 6:
-                //        biome = new Biome(Biome.Tundra);
-                //        break;
-                //    case 7:
-                //        biome = new Biome(Biome.Plains);
-                //        break;
-                //    //case 8
-                //    default:
-                //        biome = new Biome(Biome.Forest);
-                //        break;
-                //}
+                biome = new Biome(rnd.Next(0, 8));
 
                 //Add the biome to the biomes List.
                 biomes.Add(biome);
@@ -377,19 +359,23 @@ namespace HexaGone.Models
                 {
                     biomeProbability.Add(i);
                 }
-
             }
             return landFields;
         }
-
+        /// <summary>
+        /// This methode sets the startpoints from the biomes based on the amount of biomes and Mapsize 
+        /// </summary>
+        /// <param name="amount">The amount of biomes</param>
+        /// <returns>Returns a List with the Coordinates of the Startpoints</returns>
         private List<Coordinates> SetStartPoints(int amount)
         {
+            //in this List the startingpoints are saved
             List<Coordinates> points = new List<Coordinates>();
             List<List<bool>> spots = new List<List<bool>>();
             int highest = 1;
             int pointsSet = 0;
-            Random rnd = new Random();
 
+            //Based on the Mapsize set the Startpoints
             switch (MapSize)
             {
                 case 0:
@@ -436,32 +422,28 @@ namespace HexaGone.Models
 
                 case 1:
 
-                    for (int column = 0; column < Width / 20 -1; column++)
+                    for (int column = 0; column < Width / 20 -2; column++)
                     {
                         List<bool> columnList = new List<bool>();
-                        //The second loop iterates over the Height, to create as many Tiles as there are Rows.
-                        for (int row = 0; row < Height / 20 -1; row++)
+                        for (int row = 0; row < Height / 10 -4; row++)
                         {
-                            //At first every tile-biome will be ocean
-
                             columnList.Add(false);
                         }
-                        //Add the columnList to tiles.
                         spots.Add(columnList);
                     }
 
-                    int[] mediumCol = new int[9];
-                    for (int i = 0; i < 9; i++)
+                    int[] mediumCol = new int[8];
+                    for (int i = 0; i < 8; i++)
                     {
                         mediumCol[i] = 0;
                     }
 
                     while (pointsSet < amount)
                     {
-                        Coordinates point = new Coordinates(rnd.Next(10, 190), rnd.Next(10, 90));
+                        Coordinates point = new Coordinates(rnd.Next(20, 180), rnd.Next(20, 80));
                         int[] temp = new int[2];
-                        temp[0] = ((point.Column+10) / 20) - 1;
-                        temp[1] = ((point.Row+10) / 20) - 1;
+                        temp[0] = (point.Column / 20) - 1;
+                        temp[1] = (point.Row / 10) - 2;
 
                         if (mediumCol[temp[0]] < highest && !spots[temp[0]][temp[1]])
                         {
@@ -469,7 +451,7 @@ namespace HexaGone.Models
                             mediumCol[temp[0]] += 1;
                             pointsSet++;
                             points.Add(point);
-                            if (pointsSet % 9 == 0)
+                            if (pointsSet % 8 == 0)
                             {
                                 highest++;
                             }
@@ -523,9 +505,12 @@ namespace HexaGone.Models
 
             return points;
         }
+        /// <summary>
+        /// This methode creates an integer based on Mapsize and Biomesize which is used for the Amount of Biomes that should be created 
+        /// </summary>
+        /// <returns>Amount of Biomes for the Map</returns>
         private int CreateAmountOfBiomes()
         {
-            Random rnd = new Random();
             int amount = 0;
 
             //This switch case decides how much Biomes will be generated for the map
@@ -556,19 +541,19 @@ namespace HexaGone.Models
                     switch (BiomeSize)
                     {
                         case 0:
-                            amount = rnd.Next(30, 35);
+                            amount = rnd.Next(35, 45);
                             
                             break;
                         case 1:
-                            amount = rnd.Next(20, 30);
+                            amount = rnd.Next(28, 35);
                             
                             break;
                         case 2:
-                            amount = rnd.Next(15, 20);
+                            amount = rnd.Next(20, 28);
                             
                             break;
                         default:
-                            amount = rnd.Next(20, 30);
+                            amount = rnd.Next(28, 35);
                             
                             break;
                     }
@@ -577,15 +562,15 @@ namespace HexaGone.Models
                     switch (BiomeSize)
                     {
                         case 0:
-                            amount = rnd.Next(60, 75);
+                            amount = rnd.Next(65, 78);
                             
                             break;
                         case 1:
-                            amount = rnd.Next(40, 60);
+                            amount = rnd.Next(45, 65);
                             
                             break;
                         case 2:
-                            amount = rnd.Next(26, 40);
+                            amount = rnd.Next(30, 45);
                             
                             break;
                         default:
