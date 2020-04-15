@@ -308,7 +308,7 @@ namespace HexaGone.Models
                 for (int row = 0; row < Height; row++)
                 {
                     //At first every tile-biome will be ocean
-                    Tile tile = new Tile()
+                    Tile tile = new Tile(column, row)
                     {
                         BiomeID = Biome.Ocean
                     };
@@ -380,24 +380,105 @@ namespace HexaGone.Models
             return landFields;
         }
 
-        private void CoastlineGeneration(ref List<List<Tile>> tiles)
+        private void CoastlineGeneration(ref List<List<Tile>> tiles, int coastWidth)
         {
-            List<List<Tile>> waterTiles = new List<List<Tile>>();
-            List<List<Tile>> oceanTiles = new List<List<Tile>>();
-            List<List<Tile>> coastTiles = new List<List<Tile>>();
+            List<Tile> waterTiles = new List<Tile>();
+            List<Tile> oceanTiles = new List<Tile>();
+            List<Tile> coastTiles = new List<Tile>();
 
             foreach (List<Tile> tileColumn in tiles)
             {
-                List<Tile> waterColumn = new List<Tile>();
-                List<Tile> oceanColumn = new List<Tile>();
-                List<Tile> coastColumn = new List<Tile>();
-
                 foreach (Tile tile in tileColumn)
                 {
+                    if (tile.BiomeID == Biome.Lake)
+                    {
+                        tile.BiomeID = Biome.Ocean;
+                    }
+                }
+            }
 
+            for (int i = 0; i < coastWidth; i++)
+            {
+                foreach (List<Tile> tileColumn in tiles)
+                {
+                    foreach (Tile tile in tileColumn)
+                    {
+                        if (tile.BiomeID == Biome.Ocean && IsCoastTile(ref tiles, tile.Coordinates))
+                        {
+                            tile.BiomeID = Biome.Lake;
+                        }
+                    }
                 }
             }
         }
+
+        private bool IsCoastTile(ref List<List<Tile>> tiles, Coordinates coordinates)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                int column = coordinates.Column;
+                int row = coordinates.Row;
+                Coordinates neighbourCoordinates = new Coordinates();
+                switch (i)
+                {
+                    //On top
+                    case 0:
+                        neighbourCoordinates.Column = column;
+                        neighbourCoordinates.Row = row - 1;
+                        break;
+                    //top right even/bottom right odd
+                    case 1:
+                        if (coordinates.Column % 2 == 0)
+                        {
+                            neighbourCoordinates.Column = column + 1;
+                            neighbourCoordinates.Row = row - 1;
+                            break;
+                        }
+                        else
+                        {
+                            neighbourCoordinates.Column = column + 1;
+                            neighbourCoordinates.Row = row + 1;
+                            break;
+                        }
+                    //bottom right even/top right odd
+                    case 2:
+                        neighbourCoordinates.Column = column + 1;
+                        neighbourCoordinates.Row = row;
+                        break;
+                    //bottom
+                    case 3:
+                        neighbourCoordinates.Column = column;
+                        neighbourCoordinates.Row = row + 1;
+                        break;
+                    //bottom left even/top left odd
+                    case 4:
+                        neighbourCoordinates.Column = column - 1;
+                        neighbourCoordinates.Row = row;
+                        break;
+                    //top left even/bottom left odd
+                    case 5:
+                        if (coordinates.Column % 2 == 0)
+                        {
+                            neighbourCoordinates.Column = column - 1;
+                            neighbourCoordinates.Row = row - 1;
+                            break;
+                        }
+                        else
+                        {
+                            neighbourCoordinates.Column = column - 1;
+                            neighbourCoordinates.Row = row + 1;
+                            break;
+                        }
+                }
+
+                if (IsCoordinateInRange(neighbourCoordinates) && tiles[neighbourCoordinates.Column][neighbourCoordinates.Row].BiomeID != Biome.Ocean)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private int GetTerrainIdFromBiomeId(int biomeId)
         {
             switch(biomeId)
