@@ -349,13 +349,29 @@ namespace HexaGone.Models
                 //Select the starting tile of the biome
 
                 Coordinates coordinates = startPoints[i];
-                Biome biome;
-
-                if(coordinates.Row/Height > 0.4)
+                Biome biome =new Biome(0);
+                bool biomeIsSet = false;
+                double temp;
+                while (!biomeIsSet)
                 {
-
+                    biome = new Biome(rnd.Next(0, 7));
+                    temp = Convert.ToDouble(coordinates.Row) / Convert.ToDouble(Height);
+                    if (temp <= 0.5)
+                    {
+                        if (!(biome.ID == Biome.Desert))
+                        {
+                            biomeIsSet = true;
+                        }
+                    }
+                    else
+                    {
+                        if (!(biome.ID == Biome.Tundra))
+                        {
+                            biomeIsSet = true;
+                        }
+                    }
                 }
-                biome = new Biome(rnd.Next(0, 7));
+                //biome = new Biome(rnd.Next(0, 7));
 
                 //Add the biome to the biomes List.
                 biomes.Add(biome);
@@ -634,15 +650,20 @@ namespace HexaGone.Models
 
             for (int i = 0; i < coastWidth; i++)
             {
+                List<Tile> newCoastTiles = new List<Tile>();
                 foreach (List<Tile> tileColumn in tiles)
                 {
                     foreach (Tile tile in tileColumn)
                     {
                         if (tile.BiomeID == Biome.Ocean && IsCoastTile(ref tiles, tile.Coordinates))
                         {
-                            tile.BiomeID = Biome.Lake;
+                            newCoastTiles.Add(tile);
                         }
                     }
+                }
+                foreach(Tile tile in newCoastTiles)
+                {
+                    tile.BiomeID = Biome.Lake;
                 }
             }
 
@@ -877,13 +898,12 @@ namespace HexaGone.Models
                         }
                 }
 
-                if (IsCoordinateInRange(neighbourCoordinates) && tiles[neighbourCoordinates.Column][neighbourCoordinates.Row].BiomeID != Biome.Ocean && tiles[neighbourCoordinates.Column][neighbourCoordinates.Row].BiomeID != Biome.Lake)
+                if (IsCoordinateInRange(neighbourCoordinates) && tiles[neighbourCoordinates.Column][neighbourCoordinates.Row].BiomeID != Biome.Ocean)
                 {
                     return true;
                 }
             }
             return false;
         }
-
     }
 }
