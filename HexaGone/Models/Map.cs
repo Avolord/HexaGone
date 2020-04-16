@@ -296,6 +296,10 @@ namespace HexaGone.Models
                     biomeProbability.RemoveAll(item => item == randomBiomeIndex);
                 }
             }
+            for (int i = 0; i < 100; i++)
+            {
+                CreateMountain(ref tiles);
+            }
             CoastlineGeneration(ref tiles, 2);
             //Translate Tilemap biomes into Terrains.
             //Create List of Fields with the Terrains from biomes.
@@ -883,7 +887,6 @@ namespace HexaGone.Models
             }
             return false;
         }
-
         public Biome GetBiomeFromHeight(int mapHeight, int tileHeight)
         {
             double heightPercentage = Convert.ToDouble(tileHeight) / Convert.ToDouble(mapHeight);
@@ -922,6 +925,205 @@ namespace HexaGone.Models
 
             Biome biome = new Biome(randomBiome);
             return biome;
+        }
+        private void CreateMountain(ref List<List<Tile>> tiles)
+        {
+            //Startpunkt Gebirge
+            Coordinates latestPoint = new Coordinates(rnd.Next(1, Width - 1), rnd.Next(1, Height - 1));
+            //Richtung Gebirge
+            int direction = rnd.Next(0, 6);
+            //Länge Gebirge
+            int length = rnd.Next(10, 50);
+            //
+            int straightness = 10;
+            //Liste in der die ^Koordinaten gespeichert werden, welche als nächstes ausgewählt werden können
+            List<Coordinates> coordinateProbabilities = new List<Coordinates>();
+
+            //Höhe des Startpunktes anpassen
+            while(tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Ocean || tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Lake)
+            {
+                latestPoint = new Coordinates(rnd.Next(1, Width - 1), rnd.Next(1, Height - 1));
+            }
+            tiles[latestPoint.Column][latestPoint.Row].Height = 3;
+            tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
+            //Für die Länge des Gebirges werden neu Tiles ausgewählt
+            for (int i = 0; i<length; i++)
+            {
+                bool noNeighbour = false;
+                switch(direction)
+                {
+                    //top
+                    case 0:     
+                        for(int n = 0; n < straightness; n++)
+                        {
+                            coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+                        }
+                        coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                        coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+
+                        break;
+                    //top right
+                    case 1:
+                        for (int n = 0; n < straightness; n++)
+                        {
+                            coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+                        }
+                        coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                        coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+
+                        break;
+                    //bottom right
+                    case 2:
+                        for (int n = 0; n < straightness; n++)
+                        {
+                            coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+                        }
+                        coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                        coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+
+                        break;
+                    //bottom
+                    case 3:
+                        for (int n = 0; n < straightness; n++)
+                        {
+                            coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                        }
+                        coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                        coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+
+                        break;
+                    //bottom left
+                    case 4:
+                        for (int n = 0; n < straightness; n++)
+                        {
+                            coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                        }
+                        coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+                        coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+                        break;
+                    //up left
+                    case 5:
+                        for (int n = 0; n < straightness; n++)
+                        {
+                            coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+                        }
+                        coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+                        coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+                        break;
+                }
+
+                int neighbourIndex = rnd.Next(0, coordinateProbabilities.Count);
+                latestPoint = coordinateProbabilities[neighbourIndex];
+
+                while ((tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Ocean || tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Lake )&& coordinateProbabilities.Count!=0)
+                {
+                    coordinateProbabilities.RemoveAt(neighbourIndex);
+
+                    if(coordinateProbabilities.Count > 0)
+                    {
+                        neighbourIndex = rnd.Next(0, coordinateProbabilities.Count);
+                        latestPoint = coordinateProbabilities[neighbourIndex];
+                    }
+                    else
+                    {
+                        noNeighbour = true;
+                    }
+                    
+                }
+
+                if (noNeighbour)
+                {
+                    break;
+                }
+
+                if (IsCoordinateInRange(latestPoint))
+                {
+                    tiles[latestPoint.Column][latestPoint.Row].Height = 3;
+                    tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
+                }
+                coordinateProbabilities.Clear();
+            }
+
+        }
+        private Coordinates GetTopRightNeighbour(Coordinates point)
+        {
+            Coordinates neighbour;
+
+            if(point.Column %2 == 0)
+            {
+                neighbour = new Coordinates(point.Column + 1, point.Row - 1);
+            }
+            else
+            {
+                neighbour = new Coordinates(point.Column + 1, point.Row);
+            }
+
+            return neighbour;
+        }
+        private Coordinates GetBottomRightNeighbour(Coordinates point)
+        {
+            Coordinates neighbour;
+
+            if (point.Column % 2 == 0)
+            {
+                neighbour = new Coordinates(point.Column + 1, point.Row);
+            }
+            else
+            {
+                neighbour = new Coordinates(point.Column + 1, point.Row + 1);
+            }
+
+            return neighbour;
+        }
+        private Coordinates GetTopLeftNeighbour(Coordinates point)
+        {
+            Coordinates neighbour;
+
+            if (point.Column % 2 == 0)
+            {
+                neighbour = new Coordinates(point.Column - 1, point.Row - 1);
+            }
+            else
+            {
+                neighbour = new Coordinates(point.Column - 1, point.Row);
+            }
+
+            return neighbour;
+        }
+        private Coordinates GetBottomLeftNeighbour(Coordinates point)
+        {
+            Coordinates neighbour;
+
+            if (point.Column % 2 == 0)
+            {
+                neighbour = new Coordinates(point.Column - 1, point.Row);
+            }
+            else
+            {
+                neighbour = new Coordinates(point.Column - 1, point.Row +1);
+            }
+
+            return neighbour;
+        }
+        private Coordinates GetTopNeighbour(Coordinates point)
+        {
+            return new Coordinates(point.Column, point.Row - 1);
+        }
+        private Coordinates GetBottomNeighbour(Coordinates point)
+        {
+            return new Coordinates(point.Column, point.Row + 1);
         }
     }
 }
