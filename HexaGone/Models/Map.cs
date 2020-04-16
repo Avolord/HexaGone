@@ -300,6 +300,7 @@ namespace HexaGone.Models
             {
                 CreateMountain(ref tiles);
             }
+            CreateHeightLevels(ref tiles);
             CoastlineGeneration(ref tiles, 2);
             //Translate Tilemap biomes into Terrains.
             //Create List of Fields with the Terrains from biomes.
@@ -309,7 +310,7 @@ namespace HexaGone.Models
                 //The second loop iterates over the Height, to create as many Fields as there are Rows.
                 for (int row = 0; row < Height; row++)
                 {
-                    int terrainID = GetTerrainIdFromBiomeId(tiles[column][row].BiomeID);
+                    int terrainID = GetTerrainIdFromBiomeIdAndHeight(tiles[column][row].BiomeID, tiles[column][row].Height);
                     Field field = new Field(column, row, terrainID);
                     columnList.Add(field);
                 }
@@ -674,6 +675,96 @@ namespace HexaGone.Models
                     return Terrain.Mountain;
             }
         }
+        private int GetTerrainIdFromBiomeIdAndHeight(int biomeId, int height)
+        {
+            int veryHigh = 60;
+            int high = 30;
+            int low = 10;
+
+            switch (biomeId)
+            {
+                case Biome.Plains:
+                    if(height >= veryHigh)
+                    {
+                        return Terrain.Mountain;
+                    }
+                    else if(height >= high)
+                    {
+                        return Terrain.Hills;
+                    }
+                    return Terrain.Plains;
+
+
+                case Biome.Forest:
+                    if (height >= veryHigh)
+                    {
+                        return Terrain.Mountain;
+                    }
+                    else if (height >= high)
+                    {
+                        return Terrain.HillTrees;
+                    }
+                    return Terrain.Forest;
+
+
+                case Biome.Desert:
+                    if (height >= veryHigh)
+                    {
+                        return Terrain.DesertMountain;
+                    }
+                    else if (height >= high)
+                    {
+                        return Terrain.DesertHills;
+                    }
+                    return Terrain.DesertPlains;
+
+
+                case Biome.Lake:
+                    return Terrain.ShallowWater;
+
+
+                case Biome.Jungle:
+                    if (height >= veryHigh)
+                    {
+                        return Terrain.Mountain;
+                    }
+                    return Terrain.Jungle;
+
+
+                case Biome.Swamp:
+                    if (height >= veryHigh)
+                    {
+                        return Terrain.Mountain;
+                    }
+                    else if (height >= high)
+                    {
+                        return Terrain.SwampTrees;
+                    }
+                    else if(height >= low)
+                    {
+                        return Terrain.SwampPlains;
+                    }
+                    return Terrain.SwampPond;
+
+
+                case Biome.Tundra:
+                    if (height >= veryHigh)
+                    {
+                        return Terrain.Mountain;
+                    }
+                    else if (height >= high)
+                    {
+                        return Terrain.SnowHillTrees;
+                    }
+                    return Terrain.SnowTrees;
+
+
+                case Biome.Ocean:
+                    return Terrain.Ocean;
+                default:
+                    return Terrain.Mountain;
+            }
+        }
         private void AddNeighbours(ref List<Coordinates> neighbours, Field field)
         {
 
@@ -934,7 +1025,9 @@ namespace HexaGone.Models
             int direction = rnd.Next(0, 6);
             //Länge Gebirge
             int length = rnd.Next(10, 50);
-            //
+            //Höhe des Gebirges
+            int height = rnd.Next(50, 90);
+            //Wie stark das Gebirge es vorzieht in die gegebene Richtung zu gehen.
             int straightness = 10;
             //Liste in der die ^Koordinaten gespeichert werden, welche als nächstes ausgewählt werden können
             List<Coordinates> coordinateProbabilities = new List<Coordinates>();
@@ -944,8 +1037,8 @@ namespace HexaGone.Models
             {
                 latestPoint = new Coordinates(rnd.Next(1, Width - 1), rnd.Next(1, Height - 1));
             }
-            tiles[latestPoint.Column][latestPoint.Row].Height = 3;
-            tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
+            tiles[latestPoint.Column][latestPoint.Row].Height = rnd.Next(height-5, height+6);
+            //tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
             //Für die Länge des Gebirges werden neu Tiles ausgewählt
             for (int i = 0; i<length; i++)
             {
@@ -1050,8 +1143,12 @@ namespace HexaGone.Models
 
                 if (IsCoordinateInRange(latestPoint))
                 {
-                    tiles[latestPoint.Column][latestPoint.Row].Height = 3;
-                    tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
+                    int newHeight = rnd.Next(height - 10, height + 11);
+                    if(newHeight > tiles[latestPoint.Column][latestPoint.Row].Height)
+                    {
+                        tiles[latestPoint.Column][latestPoint.Row].Height = newHeight;
+                    }
+                    //tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
                 }
                 coordinateProbabilities.Clear();
             }
@@ -1124,6 +1221,85 @@ namespace HexaGone.Models
         private Coordinates GetBottomNeighbour(Coordinates point)
         {
             return new Coordinates(point.Column, point.Row + 1);
+        }
+        private void CreateHeightLevels(ref List<List<Tile>> tiles)
+        {
+            int highestHeight = 11;
+
+            while (highestHeight > 10)
+            {
+                highestHeight = 0;
+
+                List<Tile> newHeightsTiles = new List<Tile>();
+                List<int> newHeights = new List<int>();
+
+                foreach (List<Tile> tileColumn in tiles)
+                {
+                    foreach (Tile tile in tileColumn)
+                    {
+                        if ((tile.BiomeID != Biome.Ocean || tile.BiomeID != Biome.Lake) && tile.Height == 0)
+                        {
+
+                            int newHeight = 0;
+                            int amountNeighbourHeights = 0;
+
+                            for (int i = 0; i < 6; i++)
+                            {
+                                Coordinates neighbourCoordinates;
+                                switch (i)
+                                {
+                                    case 0:
+                                        neighbourCoordinates = GetTopNeighbour(tile.Coordinates);
+                                        break;
+                                    case 1:
+                                        neighbourCoordinates = GetTopRightNeighbour(tile.Coordinates);
+                                        break;
+                                    case 2:
+                                        neighbourCoordinates = GetBottomRightNeighbour(tile.Coordinates);
+                                        break;
+                                    case 3:
+                                        neighbourCoordinates = GetBottomNeighbour(tile.Coordinates);
+                                        break;
+                                    case 4:
+                                        neighbourCoordinates = GetBottomLeftNeighbour(tile.Coordinates);
+                                        break;
+                                    case 5:
+                                        neighbourCoordinates = GetTopLeftNeighbour(tile.Coordinates);
+                                        break;
+                                    //There is no default case in this loop.
+                                    default:
+                                        neighbourCoordinates = GetTopNeighbour(tile.Coordinates);
+                                        break;
+                                }
+
+                                if (IsCoordinateInRange(neighbourCoordinates) && tiles[neighbourCoordinates.Column][neighbourCoordinates.Row].Height > 0)
+                                {
+                                    newHeight += tiles[neighbourCoordinates.Column][neighbourCoordinates.Row].Height;
+                                    amountNeighbourHeights += 1;
+                                }
+                            }
+
+                            if (amountNeighbourHeights > 0)
+                            {
+                                newHeight /= amountNeighbourHeights;
+                                newHeightsTiles.Add(tile);
+                                newHeights.Add(newHeight);
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < newHeights.Count; i++)
+                {
+                    int newHeight = newHeights[i] - 10 + rnd.Next(-5, 6);
+                    newHeightsTiles[i].Height = newHeight;
+
+                    if(newHeight > highestHeight )
+                    {
+                        highestHeight = newHeight;
+                    }
+                }
+            }
         }
     }
 }
