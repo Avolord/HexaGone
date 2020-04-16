@@ -349,29 +349,7 @@ namespace HexaGone.Models
                 //Select the starting tile of the biome
 
                 Coordinates coordinates = startPoints[i];
-                Biome biome =new Biome(0);
-                bool biomeIsSet = false;
-                double temp;
-                while (!biomeIsSet)
-                {
-                    biome = new Biome(rnd.Next(0, 7));
-                    temp = Convert.ToDouble(coordinates.Row) / Convert.ToDouble(Height);
-                    if (temp <= 0.5)
-                    {
-                        if (!(biome.ID == Biome.Desert))
-                        {
-                            biomeIsSet = true;
-                        }
-                    }
-                    else
-                    {
-                        if (!(biome.ID == Biome.Tundra))
-                        {
-                            biomeIsSet = true;
-                        }
-                    }
-                }
-                //biome = new Biome(rnd.Next(0, 7));
+                Biome biome = GetBiomeFromHeight(Height, coordinates.Row);
 
                 //Add the biome to the biomes List.
                 biomes.Add(biome);
@@ -904,6 +882,46 @@ namespace HexaGone.Models
                 }
             }
             return false;
+        }
+
+        public Biome GetBiomeFromHeight(int mapHeight, int tileHeight)
+        {
+            double heightPercentage = Convert.ToDouble(tileHeight) / Convert.ToDouble(mapHeight);
+
+            List<int> biomeProbabilities = new List<int>();
+
+            //Add standard biomes
+            for (int i = 0; i < 10; i++)
+            {
+                biomeProbabilities.Add(Biome.Plains);
+                biomeProbabilities.Add(Biome.Forest);
+                biomeProbabilities.Add(Biome.Lake);
+                biomeProbabilities.Add(Biome.Swamp);
+                biomeProbabilities.Add(Biome.Jungle);
+            }
+
+            if (heightPercentage < 0.4)
+            {
+                int amountTundra = Convert.ToInt32(-24.21448 + (147.6358 - -24.21448) / (1 + Math.Pow((heightPercentage / 0.1724576), 1.755318)));
+                for (int i = 0; i < amountTundra; i++)
+                {
+                    biomeProbabilities.Add(Biome.Tundra);
+                }
+            }
+
+            if (heightPercentage > 0.6)
+            {
+                int amountDesert = Convert.ToInt32(129.6022 + (-3.675622 - 129.6022) / (1 + Math.Pow((heightPercentage / 0.8425428), 7.299509)));
+                for (int i = 0; i < amountDesert; i++)
+                {
+                    biomeProbabilities.Add(Biome.Desert);
+                }
+            }
+
+            int randomBiome = biomeProbabilities[rnd.Next(0, biomeProbabilities.Count)];
+
+            Biome biome = new Biome(randomBiome);
+            return biome;
         }
     }
 }

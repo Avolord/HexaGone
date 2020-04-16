@@ -41,7 +41,7 @@ namespace HexaGone.Models.MapGeneration
                         Weight = 10;
                         break;
                     case Desert:
-                        Weight = 3;
+                        Weight = 5;
                         break;
                     case Lake:
                         Weight = 2;
@@ -65,5 +65,7 @@ namespace HexaGone.Models.MapGeneration
                 }
             }
         }
+
+
     }
 }
