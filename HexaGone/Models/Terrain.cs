@@ -41,17 +41,41 @@ namespace HexaGone.Models
         /// </summary>
         public List<int> TerrainResources { get; }
 
-        //Constants 
-        public const int terrainIdWater = 0;
-        public const int terrainIdPlains = 1;
-        public const int terrainIdForest = 2;
-        public const int terrainIdMountains = 3;
-        public const int terrainIdDesert = 4;
+        //Constants
+        public const int Plains = 0;
+        public const int Trees = 1;
+        public const int Forest = 2;
+        public const int Hills = 3;
+        public const int HillTrees = 4;
+        public const int Mountain = 5;
+
+        public const int ShallowWater = 6;
+        public const int Ocean = 7;
+
+        public const int SwampTrees = 12;
+        public const int SwampPond = 13;
+        public const int SwampPlains = 14;
+        public const int SwampWater = 15;
+
+        public const int SnowPlains = 16;
+        public const int SnowTrees = 17;
+        public const int SnowForest = 18;
+        public const int SnowHills = 19;
+        public const int SnowHillTrees = 20;
+        public const int IceWater = 21;
+
+        public const int DesertPlains = 24;
+        public const int DesertHills = 25;
+        public const int DesertDunes = 26;
+        public const int DesertMountain = 27;
+        public const int DesertOasis = 28;
+
+        public const int Jungle = 32;
 
         /// <summary>
         /// The amount of defined terrains. If you add a terrain at the top and in the constructor in the switch-case statement, increase this number by 1.
         /// </summary>
-        public const int amountTerrains = 5;
+        public const int amountTerrains = 24;
         
 
         //Constructor
@@ -76,8 +100,8 @@ namespace HexaGone.Models
 
             switch(TerrainID)
             {
-                //Water
-                case terrainIdWater:
+                //Ocean
+                case Ocean:
                     Name = "Water";
                     BaseMovementRate = 1;
                     BaseVisibility = 2;
@@ -85,8 +109,17 @@ namespace HexaGone.Models
                     IsLand = false;
                     TerrainResources.Add(Resource.resourceIdFood);
                     break;
+                //Shallow Water
+                case ShallowWater:
+                    Name = "Shallow Water";
+                    BaseMovementRate = 1;
+                    BaseVisibility = 2;
+                    BaseExpenditures = 1;
+                    IsLand = false;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    break;
                 //Plains
-                case terrainIdPlains:
+                case Plains:
                     Name = "Plains";
                     BaseMovementRate = 1;
                     BaseVisibility = 1.5;
@@ -94,7 +127,7 @@ namespace HexaGone.Models
                     TerrainResources.Add(Resource.resourceIdFood);
                     break;
                 //Forest
-                case terrainIdForest:
+                case Forest:
                     Name = "Forest";
                     BaseMovementRate = 0.8;
                     BaseVisibility = 0.25;
@@ -103,7 +136,7 @@ namespace HexaGone.Models
                     TerrainResources.Add(Resource.resourceIdWood);
                     break;
                 //Mountains
-                case terrainIdMountains:
+                case Mountain:
                     Name = "Mountains";
                     BaseMovementRate = 0.5;
                     BaseVisibility = 0.75;
@@ -111,16 +144,139 @@ namespace HexaGone.Models
                     TerrainResources.Add(Resource.resourceIdStone);
                     break;
                 //Desert
-                case terrainIdDesert:
+                case DesertPlains:
                     Name = "Desert";
                     BaseMovementRate = 0.8;
                     BaseVisibility = 1.5;
                     BaseExpenditures = 2;
                     break;
 
+
+                //These Terrains have the same properties as forests, they were just copy pasted for functionality
+
+                //Jungle
+                case Jungle:
+                    Name = "Jungle";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //SwampTrees
+                case SwampTrees:
+                    Name = "Swamp Trees";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //SnowTrees
+                case SnowTrees:
+                    Name = "Snow Trees";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //Hills
+                case Hills:
+                    Name = "Hills";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //Hill Trees
+                case HillTrees:
+                    Name = "Hill Trees";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //DesertMountain
+                case DesertMountain:
+                    Name = "Desert Mountain";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //DesertHills
+                case DesertHills:
+                    Name = "Desert Hills";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //SwampPlains
+                case SwampPlains:
+                    Name = "Swamp Plains";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //SwampPond
+                case SwampPond:
+                    Name = "Swamp Pond";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //SnowHillTrees
+                case SnowHillTrees:
+                    Name = "Snow Hill Trees";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //SnowPlains
+                case SnowPlains:
+                    Name = "Snow Plains";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //Trees
+                case Trees:
+                    Name = "Trees";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //DesertDunes
+                case DesertDunes:
+                    Name = "Desert Dunes";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+
+
+
                 //Default (in this case Water)
                 default:
-                    TerrainID = terrainIdWater;
+                    TerrainID = Ocean;
                     Name = "Water";
                     BaseMovementRate = 1;
                     BaseVisibility = 2;
