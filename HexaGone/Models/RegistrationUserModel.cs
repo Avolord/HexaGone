@@ -23,7 +23,10 @@ namespace HexaGone.Models
         public string RepeatPassword { get; set; }
 
 
-
+        /// <summary>
+        /// tries to verify the RegistrationModel
+        /// </summary>
+        /// <returns>ErrorMessage or String 'true'</returns>
         public string IsValid()
         {
             if (Password == null)

@@ -17,6 +17,10 @@ namespace HexaGone.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        /// <summary>
+        /// tries to validate the User Model
+        /// </summary>
+        /// <returns>errorMessage or String 'true'</returns>
         public string IsValid()
         {
             if(Password == null)

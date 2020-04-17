@@ -10,28 +10,28 @@ namespace HexaGone.Models
     {
 
 
-        public int userId { get;set; }
-        public string email { get;set; }
-        public string userName { get; set; }
+        public int UserId { get;set; }
+        public string Email { get;set; }
+        public string UserName { get; set; }
 
         /// <summary>
         /// Seperates the session String and fills the Key Values of the UserModel (userId, email, userName), with the provided Data
         /// </summary>
         /// <param name="sessionData">The Current Session String</param>
-        public void readSessionCookieData(string sessionData)
+        public void ReadSessionCookieData(string sessionData)
         {
             int indexOfData = sessionData.IndexOf('&')+1;
             int endIndexOfData = sessionData.IndexOf('&', indexOfData);
             int dataLength = endIndexOfData - indexOfData;
-            userId = Int32.Parse(sessionData.Substring(indexOfData, dataLength));
+            UserId = Int32.Parse(sessionData.Substring(indexOfData, dataLength));
             indexOfData = endIndexOfData + 1;
             endIndexOfData = sessionData.IndexOf('&', indexOfData);
             dataLength = endIndexOfData - indexOfData;
-            email = sessionData.Substring(indexOfData, dataLength);
+            Email = sessionData.Substring(indexOfData, dataLength);
             indexOfData = endIndexOfData + 1;
             endIndexOfData = sessionData.IndexOf('&', indexOfData);
             dataLength = endIndexOfData - indexOfData;
-            userName = sessionData.Substring(indexOfData, dataLength);
+            UserName = sessionData.Substring(indexOfData, dataLength);
         }
 
         /// <summary>
@@ -40,9 +40,8 @@ namespace HexaGone.Models
         /// <param name="sessionData">Session String</param>
         /// <param name="onlyID">Can be true or false, only necessary to overload function </param>
         /// <returns>UserId as Integera</returns>
-        public int readSessionCookieData(string sessionData, bool onlyID)
+        static public int ReadSessionCookieData(string sessionData, bool onlyID)
         {
-            
             int indexOfData = sessionData.IndexOf('&') + 1;
             int endIndexOfData = sessionData.IndexOf('&', indexOfData);
             int dataLength = endIndexOfData - indexOfData;
@@ -55,10 +54,10 @@ namespace HexaGone.Models
         /// Creates the Session String
         /// </summary>
         /// <returns>Session String</returns>
-        public string createSessionString()
+        public string CreateSessionString()
         {
             
-            return "&" + userId.ToString() + "&" + email + "&" + userName + "&";
+            return "&" + UserId.ToString() + "&" + Email + "&" + UserName + "&";
             
         }
 
