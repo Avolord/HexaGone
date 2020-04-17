@@ -114,35 +114,15 @@ namespace HexaGone.Controllers
             //Is the User logged in? True:: Go to Game False::redirect to LogInPage
             if (sessionData != null && sessionData.Length > 0)
             {
-                Models.Hexmap hexmap = new Hexmap();
+                Models.Map map = new Map(Map.mapModeBiomes, Map.Big, Map.Small);
 
                 //===
                 // Ausfüllen:
-                hexmap.hexSideLength = 30;
-                hexmap.width = 20;
-                hexmap.height = 30;
-                hexmap.isPointy = false;
+                map.HexSideLength = 30;
                 //===
 
-                hexmap.texture_index = new int[hexmap.width][];
-
-                for (int i = 0; i < hexmap.width; i++)
-                {
-                    hexmap.texture_index[i] = new int[hexmap.height];
-                }
-
-                for (int i = 0; i < hexmap.width; i++)
-                {
-                    for (int j = 0; j < hexmap.height; j++)
-                    {
-                        Random rand = new Random();
-                        hexmap.texture_index[i][j] = rand.Next(0, 30);
-                    }
-                }
-
-                hexmap.calculate();
                 //user is logged In redirect to game
-                return View("Game", hexmap);
+                return View("Game", map);
             }
             else
             {
