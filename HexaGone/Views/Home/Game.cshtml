@@ -2,11 +2,24 @@
 @{
     Layout = "_GameLayout";
 }
+
+
+
 <img id="tilesheet" src="~/images/tilesheet2.png" hidden/>
 <canvas id="hexmap"></canvas>
 
+@{ 
+    int getTerrainID(int col, int row)
+    {
+       return @Model.Fields[col][row].FieldTerrain.TerrainID;
+    }
+}
+
+<button id="queryHelper" style="display:none" onclick="eee()"></button>
+
 @section Scripts{
     <script>
+
         // variable that represents the canvas
         var canvas;
 

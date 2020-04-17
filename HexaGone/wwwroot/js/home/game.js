@@ -2,10 +2,23 @@
 var lastTick = performance.now();
 let controller;
 
+let firstVisibleRow, firstVisibleCol, amountOfVisibleRows, amountOfVisibleCols, lastVisibleRow, lastVisibleCol;
+let columnOffsetFactorA, columnOffsetFactorB;
+
+fps_counter = document.getElementById("fps-counter");
+let counter_delay = 0;
+let counter_delay_counter = 0;
+let counter_update_time = 1000; //time in ms
+
 $(function () {
     // setting the game variables from the Game.cshtml file
     gameVariables();
     controller = new Controller();
+    Controller.enableEvents(controller);
+
+    Math.clip = function (number, min, max) {
+        return Math.max(min, Math.min(number, max));
+    }
 
     if (canvas.getContext) {
 
@@ -16,13 +29,34 @@ $(function () {
         ctx.fillStyle = "#CCCCCC";
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 4;
+
+        firstVisibleRow = Math.clip((((controller.origin.y + hexRectangleHeight / 2 - 5) / hexRectangleHeight) | 0) - 1, 0, mapHeight);
+        firstVisibleCol = Math.clip((controller.origin.x / (hexRectangleWidth * 0.75)) | 0, 0, mapWidth);
+
+        amountOfVisibleRows = Math.clip(((controller.visibleHeight / hexRectangleHeight) | 0) + 2, 0, mapHeight);
+        amountOfVisibleCols = Math.clip(((controller.visibleWidth / (hexRectangleWidth * 0.75)) | 0) + 2, 0, mapWidth);
+
+        lastVisibleRow = Math.clip(firstVisibleRow + amountOfVisibleRows, 0, mapHeight);
+        lastVisibleCol = Math.clip(firstVisibleCol + amountOfVisibleCols, 0, mapWidth);
+
+        columnOffsetFactorA = 0;
+        columnOffsetFactorB = 1;
     }
-    requestAnimationFrame(render);
+
+    frame = requestAnimationFrame(render);
 });
 
 function render(currentTick) {
     var delta = currentTick - lastTick
     lastTick = currentTick;
+
+    counter_delay += delta;
+    counter_delay_counter++;
+    if (counter_delay >= counter_update_time) {
+        fps_counter.innerHTML = "FPS: " + counter_delay_counter * (1000 / counter_update_time);
+        counter_delay = 0;
+        counter_delay_counter = 0;
+    }
 
     draw();
 
@@ -31,10 +65,6 @@ function render(currentTick) {
 
 function draw() {
     clearMap();
-
-    //ctx.setTransform(scaleX, 0, 0, scaleY,
-    //    offsetX, offsetY);
-
     drawMap();
 }
 
@@ -105,19 +135,19 @@ function distance(x1, y1, x2, y2) {
     return Math.round(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))
 }
 
+
 // draw the current map
 function drawMap() {
-
     // iterate through the rows of the map
-    for (var i = 0; i < mapHeight; i++) {
+    for (var i = firstVisibleRow; i < lastVisibleRow; i++) {
 
         // iterate through the even columns of the map
-        for (var j = 0; j < mapWidth; j += 2) {
+        for (var j = firstVisibleCol + columnOffsetFactorA; j < lastVisibleCol; j += 2) {
             drawTile(j, i, mapData[j][i], (i == markedTileY && j == markedTileX));
         }
 
-        // iterate through the odd columns of the map
-        for (var j = 1; j < mapWidth; j += 2) {
+        //iterate through the odd columns of the map
+        for (var j = firstVisibleCol + columnOffsetFactorB; j < lastVisibleCol; j += 2) {
             drawTile(j, i, mapData[j][i], (i == markedTileY && j == markedTileX));
         }
     }
@@ -207,57 +237,31 @@ function getNeighborCoords(col, row, direction) {
     return [col + dir[0], row + dir[1]];
 }
 
-//var isDown = false;
-//var lastMousePos = { x: 0, y: 0 };
-//var deltaMousePos = { x: 0, y: 0 };
-
-//canvas.onmousedown = function (e) {
-//    isDown = true;
-//    lastMousePos.x = e.offsetX;
-//    lastMousePos.y = e.offsetY;
-//}
-
-//canvas.onmouseup = function (e) {
-//    isDown = false;
-//}
-
-//canvas.onmousemove = function (e) {
-//    if (!isDown) return;
-
-//    deltaMousePos.x = e.offsetX - lastMousePos.x;
-//    deltaMousePos.y = e.offsetY - lastMousePos.y;
-
-//    //ctx.translate(deltaMousePos.x, deltaMousePos.y);
-
-//    offsetX += deltaMousePos.x;
-//    offsetY += deltaMousePos.y;
-
-//    lastMousePos.x = e.offsetX;
-//    lastMousePos.y = e.offsetY;
-//}
-
 class Controller {
-    width = canvas.width;
-    height = canvas.height;
-    visibleWidth = canvas.width;
-    visibleHeight = canvas.height;
-
-    origin = { x: 0, y: 0 };
-    oldMousePosition = { x: 0, y: 0 };
-    mousePosition = { x: 0, y: 0 };
-    dragDelta = { x: 0, y: 0 };
-    mouseDown = false;
-
-    scale = 1;
-    wheel = 1;
-    zoom = 1;
-    zoomFactor = 0.2;
-
     constructor() {
-        canvas.onmousedown = (e) => this.updateMouseDown(e);
-        canvas.onmouseup = (e) => this.updateMouseUp(e);
-        canvas.onmousemove = (e) => this.updateMouseMove(e);
-        canvas.onmousewheel = (e) => this.updateMouseWheel(e);
+        this.width = canvas.width;
+        this.height = canvas.height;
+        this.visibleWidth = this.width;
+        this.visibleHeight = this.height;
+
+        this.origin = { x: 0, y: 0 };
+        this.oldMousePosition = { x: 0, y: 0 };
+        this.mousePosition = { x: 0, y: 0 };
+        this.dragDelta = { x: 0, y: 0 };
+        this.mouseDown = false;
+
+        this.scale = 1;
+        this.wheel = 1;
+        this.zoom = 1;
+        this.zoomFactor = 0.2;
+    }
+
+    static enableEvents(_controller) {
+        let c = $(canvas);
+        c.mousedown(function (e) { _controller.updateMouseDown(e); });
+        c.mouseup(function (e) { _controller.updateMouseUp(e); });
+        c.mousemove(function (e) { _controller.updateMouseMove(e); });
+        canvas.addEventListener('wheel', function (e) { _controller.updateMouseWheel(e); });
     }
 
     updateMouseDown(e) {
@@ -287,14 +291,26 @@ class Controller {
 
         this.origin.x -= this.dragDelta.x / this.scale;
         this.origin.y -= this.dragDelta.y / this.scale;
+
+        //update the rows and columns that are visble to the screen
+        firstVisibleRow = Math.clip((((controller.origin.y + hexRectangleHeight / 2 - 5) / hexRectangleHeight) | 0) - 1, 0, mapHeight);
+        firstVisibleCol = Math.clip((controller.origin.x / (hexRectangleWidth * 0.75)) | 0, 0, mapWidth);
+        lastVisibleRow = Math.clip(firstVisibleRow + amountOfVisibleRows, 0, mapHeight);
+        lastVisibleCol = Math.clip(firstVisibleCol + amountOfVisibleCols, 0, mapWidth);
+
+        if (firstVisibleCol % 2 == 0) {
+            columnOffsetFactorA = 0;
+            columnOffsetFactorB = 1;
+        } else {
+            columnOffsetFactorA = -1;
+            columnOffsetFactorB = 0;
+        }
+
     }
 
     updateMouseWheel(e) {
-        event.preventDefault();
+        e.preventDefault();
 
-        // Get mouse offset.
-        // this.mousePosition.x = e.clientX - canvas.offsetLeft;
-        // this.mousePosition.y = e.clientY - canvas.offsetTop;
         // Normalize wheel to +1 or -1.
         this.wheel = e.deltaY < 0 ? 1 : -1;
         // Compute zoom factor.
@@ -319,5 +335,21 @@ class Controller {
         this.scale *= this.zoom;
         this.visibleWidth = this.width / this.scale;
         this.visibleHeight = this.height / this.scale;
+
+        //update the amount of visible Rows and Columns
+        firstVisibleRow = Math.clip((((controller.origin.y + hexRectangleHeight / 2 - 5) / hexRectangleHeight) | 0) - 1, 0, mapHeight);
+        firstVisibleCol = Math.clip((controller.origin.x / (hexRectangleWidth * 0.75)) | 0, 0, mapWidth);
+        amountOfVisibleRows = Math.clip(((controller.visibleHeight / hexRectangleHeight) | 0) + 2, 0, mapHeight);
+        amountOfVisibleCols = Math.clip(((controller.visibleWidth / (hexRectangleWidth * 0.75)) | 0) + 2, 0, mapWidth);
+        lastVisibleRow = Math.clip(firstVisibleRow + amountOfVisibleRows, 0, mapHeight);
+        lastVisibleCol = Math.clip(firstVisibleCol + amountOfVisibleCols, 0, mapWidth);
+
+        if (firstVisibleCol % 2 == 0) {
+            columnOffsetFactorA = 0;
+            columnOffsetFactorB = 1;
+        } else {
+            columnOffsetFactorA = -1;
+            columnOffsetFactorB = 0;
+        }
     }
 }
