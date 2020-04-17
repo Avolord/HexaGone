@@ -244,6 +244,33 @@ namespace HexaGone.Models
                     TerrainResources.Add(Resource.resourceIdFood);
                     TerrainResources.Add(Resource.resourceIdWood);
                     break;
+                //SnowPlains
+                case SnowPlains:
+                    Name = "Snow Plains";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //Trees
+                case Trees:
+                    Name = "Trees";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
+                //DesertDunes
+                case DesertDunes:
+                    Name = "Desert Dunes";
+                    BaseMovementRate = 0.8;
+                    BaseVisibility = 0.25;
+                    BaseExpenditures = 1.2;
+                    TerrainResources.Add(Resource.resourceIdFood);
+                    TerrainResources.Add(Resource.resourceIdWood);
+                    break;
 
 
 
