@@ -1154,6 +1154,11 @@ namespace HexaGone.Models
             }
 
         }
+        /// <summary>
+        /// This Methode returns the Top Right Neigbour of a given Point
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns>Top Right Neigbour</returns>
         private Coordinates GetTopRightNeighbour(Coordinates point)
         {
             Coordinates neighbour;
@@ -1169,6 +1174,11 @@ namespace HexaGone.Models
 
             return neighbour;
         }
+        /// <summary>
+        /// This Methode returns the Bottom Right Neigbour of a given Point
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns>Bottom Right Neigbour</returns>
         private Coordinates GetBottomRightNeighbour(Coordinates point)
         {
             Coordinates neighbour;
@@ -1184,6 +1194,11 @@ namespace HexaGone.Models
 
             return neighbour;
         }
+        /// <summary>
+        /// This Methode returns the Top Left Neigbour of a given Point
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns>Top Left Neigbour</returns>
         private Coordinates GetTopLeftNeighbour(Coordinates point)
         {
             Coordinates neighbour;
@@ -1199,6 +1214,11 @@ namespace HexaGone.Models
 
             return neighbour;
         }
+        /// <summary>
+        /// This Methode returns the Bottom Left Neigbour of a given Point
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns>Bottom Left Neigbour</returns>
         private Coordinates GetBottomLeftNeighbour(Coordinates point)
         {
             Coordinates neighbour;
@@ -1214,10 +1234,20 @@ namespace HexaGone.Models
 
             return neighbour;
         }
+        /// <summary>
+        /// This Methode returns the Top Neigbour of a given Point
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns>Top Neigbour</returns>
         private Coordinates GetTopNeighbour(Coordinates point)
         {
             return new Coordinates(point.Column, point.Row - 1);
         }
+        /// <summary>
+        /// This Methode returns the Bottom Neigbour of a given Point
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns>Bottom Neigbour</returns>
         private Coordinates GetBottomNeighbour(Coordinates point)
         {
             return new Coordinates(point.Column, point.Row + 1);
