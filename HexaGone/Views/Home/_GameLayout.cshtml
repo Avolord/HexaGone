@@ -2,30 +2,175 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @*<meta name="viewport" content="width=device-width, initial-scale=1.0" />*@
     <title>@ViewData["Title"] - HexaGone</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/home/game.css" />
     <link href="https://fonts.googleapis.com/css?family=Nunito:300i&display=swap" rel="stylesheet">
 </head>
 <body>
-    @*<header>
-    </header>*@
+    <header>
+        <div class="bg-dark info_bar" id="info_bar_global_resources">
+            <div class="info_bar_resource_container">
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name"><b>[Global Resources]</b></span>
+                </div>
+                <div class="info_bar_data text-light" id="gold">
+                    <span class="info_bar_data_name">Gold: </span>
+                    <span class="info_bar_data_value">238947389</span>
+                </div>
+                <div class="info_bar_data text-light" id="silver">
+                    <span class="info_bar_data_name">Silver: </span>
+                    <span class="info_bar_data_value">384738</span>
+                </div>
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name" id="copper">Copper: </span>
+                    <span class="info_bar_data_value">738478</span>
+                </div>
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name">Population: </span>
+                    <span class="info_bar_data_value">43</span>
+                </div>
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name">Weapons: </span>
+                    <span class="info_bar_data_value">39480</span>
+                </div>
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name">Armor: </span>
+                    <span class="info_bar_data_value">3</span>
+                </div>
+            </div>
+            <div class="info_bar_data text-light" id="round_end_info">
+                <span class="info_bar_data_name">This round ends on the 31.3.2020</span>
+            </div>
+        </div>
+        <div class="bg-secondary info_bar" id="info_bar_local_resources">
+            <div class="info_bar_resource_container">
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name"><b>[Local Resources]</b></span>
+                </div>
+                <div class="info_bar_data text-light" id="gold">
+                    <span class="info_bar_data_name">Gold: </span>
+                    <span class="info_bar_data_value">125</span>
+                </div>
+                <div class="info_bar_data text-light" id="silver">
+                    <span class="info_bar_data_name">Silver: </span>
+                    <span class="info_bar_data_value">34</span>
+                </div>
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name" id="copper">Copper: </span>
+                    <span class="info_bar_data_value">1</span>
+                </div>
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name">Population: </span>
+                    <span class="info_bar_data_value">5</span>
+                </div>
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name">Weapons: </span>
+                    <span class="info_bar_data_value">0</span>
+                </div>
+                <div class="info_bar_data text-light">
+                    <span class="info_bar_data_name">Armor: </span>
+                    <span class="info_bar_data_value">2</span>
+                </div>
+            </div>
+            <div class="info_bar_data text-light" id="city_name_info">
+                <span class="info_bar_data_name">City: </span>
+                <span class="info_bar_data_value">Blomberg</span>
+            </div>
+        </div>
+
+        <div class="bg-dark menu_bar">
+            <div class="menu_bar_header">
+                <div class="burger_menu_container" onclick="toggle_menu_bar(this)">
+                    <div class="burger_menu_bar1 bg-light"></div>
+                    <div class="burger_menu_bar2 bg-light"></div>
+                    <div class="burger_menu_bar3 bg-light"></div>
+                </div>
+                <div class="menu_bar_title text-light" id="id_menu_bar_title">Menu</div>
+            </div>
+            <div class="menu_bar_section" id="menu_button_section">
+                <button class="btn btn-info menu_button">Map</button>
+                <button class="btn btn-info menu_button">Contacts</button>
+                <button class="btn btn-info menu_button">Empire</button>
+                <button class="btn btn-info menu_button">Military</button>
+            </div>
+            <button class="btn btn-danger game_ready_button game_ready_button_not_ready">
+                <h2>Not Ready!</h2>
+                <p>2/11 Players are Ready</p>
+            </button>
+            <div class="menu_bar_section" id="action_list_section">
+                <div class="menu_bar_title text-light">Actionlist</div>
+                <ul class="list-group action_list text-light bg-dark">
+                    <li class="list-group-item action_list_item" id='1' draggable="true">
+                        Transfer 10 Gold to Blomberg
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='0' draggable="true">
+                        Build a farm
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='2' draggable="true">
+                        Train horses as bodybuilders
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='3' draggable="true">
+                        Eat a banana
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='4' draggable="true">
+                        Die while holding an apple
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='4' draggable="true">
+                        Die while holding an apple
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='4' draggable="true">
+                        Die while holding an apple
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='4' draggable="true">
+                        Die while holding an apple
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='4' draggable="true">
+                        Die while holding an apple
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='4' draggable="true">
+                        Die while holding an apple
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                    <li class="list-group-item action_list_item" id='4' draggable="true">
+                        Die while holding an apple
+                        <button class="btn btn-danger action_list_delete_button">x</button>
+                    </li>
+                </ul>
+            </div>
+            <button class="btn btn-danger menu_button" id="quit_button">Quit</button>
+        </div>
+    </header>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb_3">
             @RenderBody()
+            <button class="btn btn-dark" id="test_button">CITY</button>
+            <div class="bg-dark stat_bar">
+                d
+            </div>
         </main>
     </div>
 
-    @*<footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2020 - HexaGone - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>*@
+    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    @RenderSection("Scripts", required: false)
     <script src="~/js/home/game.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+    <script src="~/js/home/hexmap.js" asp-append-version="true"></script>
 </body>
 </html>
 

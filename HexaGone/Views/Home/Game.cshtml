@@ -3,12 +3,10 @@
     Layout = "_GameLayout";
 }
 <img id="tilesheet" src="~/images/tilesheet2.png" hidden/>
-<canvas id="hexmap"></canvas>
+<canvas id="hexmap" class="hexmap"></canvas>
 
 @section Scripts{
     <script>
-        var canvas;
-        var ctx;
         var hexmapStyle;
 
         var hexInnerRadius;
@@ -22,6 +20,12 @@
         var offDirections;
         var textures;
         var img;
+        var offsetX;
+        var offsetY;
+        var scaleX;
+        var scaleY;
+        var markedTileX;
+        var markedTileY;
 
 
         function gameVariables() {
@@ -35,14 +39,16 @@
             }
 
             img = document.getElementById("tilesheet");
+
+            offsetX = 0;
+            offsetY = 0;
+            scaleX = 1;
+            scaleY = 1;
+            markedTileX = -1;
+            markedTileY = -1;
         }
 
         function gameVariables_f() {
-            canvas = document.getElementById('hexmap');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            ctx = canvas.getContext('2d');
-
             //the length of each side of the hexagon
             sideLength = @Model.hexSideLength;
 
@@ -81,7 +87,7 @@
             {
                 for(int j = 0; j < Model.height; j++)
                 {
-                    <text>textures[@i][@j] = @Model.texture_index[i][j];</text>
+                    <text>textures[@i][@j] = @Model.mapData[j][i];</text>
                 }
             }
         }
