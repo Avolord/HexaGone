@@ -35,9 +35,22 @@ namespace HexaGone.Controllers
             return View();
         }
 
-        public IActionResult Game()
+        //public IActionResult Game()
+        //{
+        //    Models.Map map = new Map(Map.mapModeBiomes, 50, 50, Map.Medium);
+
+        //    //===
+        //    // Ausfüllen:
+        //    map.HexSideLength = 30;
+        //    //===
+
+
+        //    return View("Game", map);
+        //}
+
+        public IActionResult Game(int col = -1, int row = -1)
         {
-            Models.Map map = new Map(Map.mapModeBiomes, 50, 50, Map.Medium);
+            Models.Map map = new Map(Map.mapModeBiomes, 200, 100, Map.Medium);
 
             //===
             // Ausfüllen:
