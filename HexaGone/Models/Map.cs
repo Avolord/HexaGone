@@ -296,12 +296,11 @@ namespace HexaGone.Models
                     biomeProbability.RemoveAll(item => item == randomBiomeIndex);
                 }
             }
-            for (int i = 0; i < 100; i++)
-            {
-                CreateMountain(ref tiles);
-            }
+
+            CreateMountain(ref tiles);
             CreateHeightLevels(ref tiles);
             CoastlineGeneration(ref tiles, 2);
+
             //Translate Tilemap biomes into Terrains.
             //Create List of Fields with the Terrains from biomes.
             for (int column = 0; column < Width; column++)
@@ -677,7 +676,7 @@ namespace HexaGone.Models
         }
         private int GetTerrainIdFromBiomeIdAndHeight(int biomeId, int height)
         {
-            int veryHigh = 60;
+            int veryHigh = 70;
             int high = 30;
             int low = 10;
 
@@ -692,7 +691,14 @@ namespace HexaGone.Models
                     {
                         return Terrain.Hills;
                     }
-                    return Terrain.Plains;
+                    if(rnd.Next(0,3) < 2)
+                    {
+                        return Terrain.Plains;
+                    }
+                    else
+                    {
+                        return Terrain.Trees;
+                    }
 
 
                 case Biome.Forest:
@@ -704,7 +710,25 @@ namespace HexaGone.Models
                     {
                         return Terrain.HillTrees;
                     }
-                    return Terrain.Forest;
+
+                    int probabilityForest = 6;
+                    int probabilityTrees = 2;
+                    int probabilityPlains = 1;
+
+                    int randomTerrain = rnd.Next(0, probabilityForest + probabilityPlains + probabilityTrees);
+                    if(randomTerrain < probabilityForest)
+                    {
+                        return Terrain.Forest;
+                    }
+                    else if(randomTerrain < probabilityForest + probabilityTrees)
+                    {
+                        return Terrain.Trees;
+                    }
+                    else
+                    {
+                        return Terrain.Plains;
+                    }
+                    
 
 
                 case Biome.Desert:
@@ -716,7 +740,15 @@ namespace HexaGone.Models
                     {
                         return Terrain.DesertHills;
                     }
-                    return Terrain.DesertPlains;
+
+                    if (rnd.Next(0, 3) < 2)
+                    {
+                        return Terrain.DesertPlains;
+                    }
+                    else
+                    {
+                        return Terrain.DesertDunes;
+                    }
 
 
                 case Biome.Lake:
@@ -756,7 +788,14 @@ namespace HexaGone.Models
                     {
                         return Terrain.SnowHillTrees;
                     }
-                    return Terrain.SnowTrees;
+                    if (rnd.Next(0, 3) < 2)
+                    {
+                        return Terrain.SnowTrees;
+                    }
+                    else
+                    {
+                        return Terrain.SnowPlains;
+                    }
 
 
                 case Biome.Ocean:
@@ -1019,140 +1058,144 @@ namespace HexaGone.Models
         }
         private void CreateMountain(ref List<List<Tile>> tiles)
         {
-            //Startpunkt Gebirge
-            Coordinates latestPoint = new Coordinates(rnd.Next(1, Width - 1), rnd.Next(1, Height - 1));
-            //Richtung Gebirge
-            int direction = rnd.Next(0, 6);
-            //Länge Gebirge
-            int length = rnd.Next(10, 50);
-            //Höhe des Gebirges
-            int height = rnd.Next(50, 90);
-            //Wie stark das Gebirge es vorzieht in die gegebene Richtung zu gehen.
-            int straightness = 10;
-            //Liste in der die ^Koordinaten gespeichert werden, welche als nächstes ausgewählt werden können
-            List<Coordinates> coordinateProbabilities = new List<Coordinates>();
+            int amountMountains = (MapSize + 1) * 33;
 
-            //Höhe des Startpunktes anpassen
-            while(tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Ocean || tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Lake)
+            for (int mountain = 0; mountain < amountMountains; mountain++)
             {
-                latestPoint = new Coordinates(rnd.Next(1, Width - 1), rnd.Next(1, Height - 1));
+                //Startpunkt Gebirge
+                Coordinates latestPoint = new Coordinates(rnd.Next(1, Width - 1), rnd.Next(1, Height - 1));
+                //Richtung Gebirge
+                int direction = rnd.Next(0, 6);
+                //Länge Gebirge
+                int length = rnd.Next(10, 50);
+                //Höhe des Gebirges
+                int height = rnd.Next(50, 90);
+                //Wie stark das Gebirge es vorzieht in die gegebene Richtung zu gehen.
+                int straightness = 10;
+                //Liste in der die ^Koordinaten gespeichert werden, welche als nächstes ausgewählt werden können
+                List<Coordinates> coordinateProbabilities = new List<Coordinates>();
+
+                //Höhe des Startpunktes anpassen
+                while (tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Ocean || tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Lake)
+                {
+                    latestPoint = new Coordinates(rnd.Next(1, Width - 1), rnd.Next(1, Height - 1));
+                }
+                tiles[latestPoint.Column][latestPoint.Row].Height = rnd.Next(height - 5, height + 6);
+                //tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
+                //Für die Länge des Gebirges werden neu Tiles ausgewählt
+                for (int i = 0; i < length; i++)
+                {
+                    bool noNeighbour = false;
+                    switch (direction)
+                    {
+                        //top
+                        case 0:
+                            for (int n = 0; n < straightness; n++)
+                            {
+                                coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+                            }
+                            coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+
+                            break;
+                        //top right
+                        case 1:
+                            for (int n = 0; n < straightness; n++)
+                            {
+                                coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+                            }
+                            coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+
+                            break;
+                        //bottom right
+                        case 2:
+                            for (int n = 0; n < straightness; n++)
+                            {
+                                coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+                            }
+                            coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+
+                            break;
+                        //bottom
+                        case 3:
+                            for (int n = 0; n < straightness; n++)
+                            {
+                                coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                            }
+                            coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+
+                            break;
+                        //bottom left
+                        case 4:
+                            for (int n = 0; n < straightness; n++)
+                            {
+                                coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                            }
+                            coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+                            break;
+                        //up left
+                        case 5:
+                            for (int n = 0; n < straightness; n++)
+                            {
+                                coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
+                                coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
+                            }
+                            coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
+                            coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
+                            break;
+                    }
+
+                    int neighbourIndex = rnd.Next(0, coordinateProbabilities.Count);
+                    latestPoint = coordinateProbabilities[neighbourIndex];
+
+                    while ((tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Ocean || tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Lake) && coordinateProbabilities.Count != 0)
+                    {
+                        coordinateProbabilities.RemoveAt(neighbourIndex);
+
+                        if (coordinateProbabilities.Count > 0)
+                        {
+                            neighbourIndex = rnd.Next(0, coordinateProbabilities.Count);
+                            latestPoint = coordinateProbabilities[neighbourIndex];
+                        }
+                        else
+                        {
+                            noNeighbour = true;
+                        }
+
+                    }
+
+                    if (noNeighbour)
+                    {
+                        break;
+                    }
+
+                    if (IsCoordinateInRange(latestPoint))
+                    {
+                        int newHeight = rnd.Next(height - 10, height + 11);
+                        if (newHeight > tiles[latestPoint.Column][latestPoint.Row].Height)
+                        {
+                            tiles[latestPoint.Column][latestPoint.Row].Height = newHeight;
+                        }
+                        //tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
+                    }
+                    coordinateProbabilities.Clear();
+                }
             }
-            tiles[latestPoint.Column][latestPoint.Row].Height = rnd.Next(height-5, height+6);
-            //tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
-            //Für die Länge des Gebirges werden neu Tiles ausgewählt
-            for (int i = 0; i<length; i++)
-            {
-                bool noNeighbour = false;
-                switch(direction)
-                {
-                    //top
-                    case 0:     
-                        for(int n = 0; n < straightness; n++)
-                        {
-                            coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
-                        }
-                        coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
-                        coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
-
-                        break;
-                    //top right
-                    case 1:
-                        for (int n = 0; n < straightness; n++)
-                        {
-                            coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
-                        }
-                        coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
-                        coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
-
-                        break;
-                    //bottom right
-                    case 2:
-                        for (int n = 0; n < straightness; n++)
-                        {
-                            coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
-                        }
-                        coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
-                        coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
-
-                        break;
-                    //bottom
-                    case 3:
-                        for (int n = 0; n < straightness; n++)
-                        {
-                            coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
-                        }
-                        coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
-                        coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
-
-                        break;
-                    //bottom left
-                    case 4:
-                        for (int n = 0; n < straightness; n++)
-                        {
-                            coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
-                        }
-                        coordinateProbabilities.Add(GetBottomRightNeighbour(latestPoint));
-                        coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
-                        break;
-                    //up left
-                    case 5:
-                        for (int n = 0; n < straightness; n++)
-                        {
-                            coordinateProbabilities.Add(GetTopLeftNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetBottomLeftNeighbour(latestPoint));
-                            coordinateProbabilities.Add(GetTopNeighbour(latestPoint));
-                        }
-                        coordinateProbabilities.Add(GetBottomNeighbour(latestPoint));
-                        coordinateProbabilities.Add(GetTopRightNeighbour(latestPoint));
-                        break;
-                }
-
-                int neighbourIndex = rnd.Next(0, coordinateProbabilities.Count);
-                latestPoint = coordinateProbabilities[neighbourIndex];
-
-                while ((tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Ocean || tiles[latestPoint.Column][latestPoint.Row].BiomeID == Biome.Lake )&& coordinateProbabilities.Count!=0)
-                {
-                    coordinateProbabilities.RemoveAt(neighbourIndex);
-
-                    if(coordinateProbabilities.Count > 0)
-                    {
-                        neighbourIndex = rnd.Next(0, coordinateProbabilities.Count);
-                        latestPoint = coordinateProbabilities[neighbourIndex];
-                    }
-                    else
-                    {
-                        noNeighbour = true;
-                    }
-                    
-                }
-
-                if (noNeighbour)
-                {
-                    break;
-                }
-
-                if (IsCoordinateInRange(latestPoint))
-                {
-                    int newHeight = rnd.Next(height - 10, height + 11);
-                    if(newHeight > tiles[latestPoint.Column][latestPoint.Row].Height)
-                    {
-                        tiles[latestPoint.Column][latestPoint.Row].Height = newHeight;
-                    }
-                    //tiles[latestPoint.Column][latestPoint.Row].BiomeID = 8;
-                }
-                coordinateProbabilities.Clear();
-            }
-
         }
         private Coordinates GetTopRightNeighbour(Coordinates point)
         {
@@ -1224,12 +1267,19 @@ namespace HexaGone.Models
         }
         private void CreateHeightLevels(ref List<List<Tile>> tiles)
         {
+            //the amount of height a tile will get less than its neighbours
+            int reduction = 15;
+            //sets the amount a tile can go up and down with the height randomly
+            int spread = 5;
+
+            //This integer counts the highest height set in one iteration of the while loop. If it is too low, the loop won't continue.
             int highestHeight = 11;
 
             while (highestHeight > 10)
             {
                 highestHeight = 0;
 
+                //Create two lists. One with the tiles that need to be changed and one with the new heights they are getting.
                 List<Tile> newHeightsTiles = new List<Tile>();
                 List<int> newHeights = new List<int>();
 
@@ -1237,12 +1287,13 @@ namespace HexaGone.Models
                 {
                     foreach (Tile tile in tileColumn)
                     {
+                        //Only land tiles that don't have a height yet, get a new height
                         if ((tile.BiomeID != Biome.Ocean || tile.BiomeID != Biome.Lake) && tile.Height == 0)
                         {
-
                             int newHeight = 0;
                             int amountNeighbourHeights = 0;
 
+                            //this loop goes through every neighbour and checks if the Height is bigger than 0, so the Height can be added to newHeight
                             for (int i = 0; i < 6; i++)
                             {
                                 Coordinates neighbourCoordinates;
@@ -1279,6 +1330,7 @@ namespace HexaGone.Models
                                 }
                             }
 
+                            //If the tile has neighbours with height, it gets added to the two lists from above.
                             if (amountNeighbourHeights > 0)
                             {
                                 newHeight /= amountNeighbourHeights;
@@ -1289,9 +1341,10 @@ namespace HexaGone.Models
                     }
                 }
 
+                //Go through the two lists and add the heights to the tiles
                 for (int i = 0; i < newHeights.Count; i++)
                 {
-                    int newHeight = newHeights[i] - 10 + rnd.Next(-5, 6);
+                    int newHeight = newHeights[i] - reduction + rnd.Next(-spread, spread +1);
                     newHeightsTiles[i].Height = newHeight;
 
                     if(newHeight > highestHeight )
