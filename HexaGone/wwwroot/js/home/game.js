@@ -5,7 +5,7 @@ let controller;
 let firstVisibleRow, firstVisibleCol, amountOfVisibleRows, amountOfVisibleCols, lastVisibleRow, lastVisibleCol;
 let columnOffsetFactorA, columnOffsetFactorB;
 
-fps_counter = document.getElementById("fps-counter");
+//fps_counter = document.getElementById("fps-counter");
 let counter_delay = 0;
 let counter_delay_counter = 0;
 let counter_update_time = 1000; //time in ms
@@ -53,7 +53,7 @@ function render(currentTick) {
     counter_delay += delta;
     counter_delay_counter++;
     if (counter_delay >= counter_update_time) {
-        fps_counter.innerHTML = "FPS: " + counter_delay_counter * (1000 / counter_update_time);
+        //fps_counter.innerHTML = "FPS: " + counter_delay_counter * (1000 / counter_update_time);
         counter_delay = 0;
         counter_delay_counter = 0;
     }

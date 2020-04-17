@@ -345,7 +345,7 @@ namespace HexaGone.Controllers
 
                                 //If User comes from a restricted page redirect back to it
                                 
-                                if(String.IsNullOrEmpty(user.redirectTo))
+                                if(!String.IsNullOrEmpty(user.redirectTo))
                                 {
                                     if(user.redirectTo == "Game")
                                     {
