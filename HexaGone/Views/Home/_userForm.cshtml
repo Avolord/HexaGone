@@ -1,0 +1,42 @@
+﻿@model HexaGone.Models.UserModel
+
+
+
+    <form>
+        <div class="text-center" style="font-size:2em; font-weight:bolder">
+            @Html.Label("Your data")
+        </div>
+        <div style="float:left;">
+            <div>
+                @Html.Label("Nutzername:")
+                @Html.LabelFor(model => model.UserName, @Model.UserName, new { @id = "userNameLabel" })
+            </div>
+            <div>
+                @Html.Label("Email:")
+                @Html.LabelFor(model => model.Email, @Model.Email, new { @id = "emailLabel" })
+            </div>
+            <div>
+                @Html.Label("Your ID:")
+                @Html.LabelFor(model => model.UserId, @Model.UserId.ToString(), new { @id = "userIdLabel" })
+            </div>
+        </div>
+        <div style="float:right;">
+            <div>
+                @Html.Label("Time Played:")
+                @Html.Label("1000h")
+            </div>
+            <div>
+                @Html.Label("Wins:")
+                @Html.Label("1000")
+            </div>
+            <div>
+                @Html.Label("Loses:")
+                @Html.Label("10")
+            </div>
+            <div>
+                @Html.Label("Ratio")
+                @Html.Label("100")
+            </div>
+        </div>
+    </form>
+

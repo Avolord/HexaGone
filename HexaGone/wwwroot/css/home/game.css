@@ -1,0 +1,251 @@
+﻿
+#hexmap {
+    z-index: -1;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+
+body {
+    background-color: rgb(255, 255, 255);
+    font-family: 'Nunito', sans_serif;
+    overflow: hidden;
+}
+
+footer {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+}
+
+.info_bar {
+    font-size: clamp(5px, 1vw, 20px);
+    float: top;
+    height: auto;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+
+/* @media screen and (min_width: 1200px) {
+	div {
+	   font_size: 36px;
+	}
+  } */
+
+.info_bar_resource_container {
+    display: flex;
+    justify-content: flex-start;
+    width: 80%;
+    min-width: 75%;
+    border-right: 5px solid white;
+}
+
+.info_bar_data {
+    top: 0px;
+    height: auto;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    vertical-align: center;
+    width: 100%;
+    display: flex;
+}
+
+.info_bar_data:hover {
+        background-color: #61656870;
+        cursor: pointer;
+    }
+
+.info_bar_data_value {
+    padding-inline-start: 1em;
+    color: rgb(255, 230, 0);
+    -webkit-user-select: none; /* Chrome all / Safari all */
+    -moz-user-select: none; /* Firefox all */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Likely future */
+    cursor: pointer;
+}
+
+#info_bar_local_resources span.info_bar_data_value {
+    color: orange;
+}
+
+.info_bar_data_name {
+    padding-inline-start: 1em;
+    -webkit-user-select: none; /* Chrome all / Safari all */
+    -moz-user-select: none; /* Firefox all */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Likely future */
+}
+
+#round_end_info {
+    padding-left: 0em;
+    width: 20%;
+    justify-content: center;
+}
+
+#round_end_info span.info_bar_data_name {
+        padding-inline-start: 0em;
+    }
+
+#city_name_info {
+    padding-left: 0em;
+    width: 20%;
+    justify-content: center;
+}
+
+#city_name_info span.info_bar_data_value:hover {
+    color: white;
+    cursor: pointer;
+}
+
+#test_button {
+    position: absolute;
+    width: 100px;
+    height: auto;
+    top: 50%;
+    left: 50%;
+}
+
+.stat_bar {
+    display: none;
+    position: fixed;
+    left: 0px;
+    top: 25%;
+    height: 50%;
+    width: 15%;
+    box-shadow: 2px 3px 3px 1px rgba(0, 0, 0, 0.9);
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+/* Beginning of the menu bar */
+
+.menu_bar {
+    position: relative;
+    max-width: 350px;
+    float: left;
+    width: 25%;
+    /* height: auto; */
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    font-size: clamp(5px, 1vw, 15px);
+}
+
+.menu_bar_section {
+    display: flex;
+    flex-direction: column;
+}
+
+#menu_button_section {
+    max-height: 30vh;
+}
+
+#action_list_section {
+    max-height: 35vh;
+}
+
+.menu_bar_title {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    font-size: clamp(15px, 1.5vw, 25px);
+    /* font-size: 1.5em; */
+    text-align: center;
+    text-decoration: underline;
+}
+
+.menu_bar_title:hover {
+    color: orchid;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.game_ready_button {
+    border: 2px solid white;
+    margin: 1em 0.2em 0em 0.2em;
+    font-size: clamp(15px, 1.5vw, 25px);
+    min-height: 10vh;
+    max-height: 15vh;
+}
+
+.game_ready_button p {
+    /* font-size: 0.5em; */
+    font-size: clamp(5px, 1vw, 15px);
+    float: bottom;
+}
+
+.action_list {
+    max-height: 30vh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    text-align: start;
+}
+
+.action_list_item {
+    position: relative;
+    /* background-color: #343a40; */
+    background-color: #434a52;
+}
+
+.action_list_delete_button {
+    position: absolute;
+    top: 0.2em;
+    bottom: 0.2em;
+    right: 0px;
+    /* padding: -0.2em 0.2em 0px 0.2em; */
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    margin-right: 0.2em;
+    float: right;
+}
+
+.menu_button {
+    font-size: clamp(5px, 1vw, 15px);
+    margin: 0.1em 1em 0.1em 1em;
+}
+
+/* Burger menu */
+.burger_menu_container {
+    position: absolute;
+    top: 0.5em;
+    left: 1em;
+    cursor: pointer;
+}
+
+.burger_menu_bar1,
+.burger_menu_bar2,
+.burger_menu_bar3 {
+    /* width: 35px; */
+    width: 1.8vw;
+    height: 0.2vw;
+    /* height: 5px; */
+    margin: 0.4em 0;
+    transition: 0.4s;
+}
+
+/* Rotate first bar */
+.toggle_burger_menu .burger_menu_bar1 {
+    -webkit-transform: rotate(-45deg) translate(-0.3vw, 0.22vw);
+    transform: rotate(-45deg) translate(-0.0em, 1em);
+}
+
+/* Fade out the second bar */
+.toggle_burger_menu .burger_menu_bar2 {
+    opacity: 0;
+}
+
+/* Rotate last bar */
+.toggle_burger_menu .burger_menu_bar3 {
+    -webkit-transform: rotate(45deg) translate(-8px, -8px);
+    transform: rotate(45deg) translate(-0.0em, -1em);
+}
+
+#quit_button {
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    position: relative;
+    bottom: 0px;
+}
