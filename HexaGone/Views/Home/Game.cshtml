@@ -1,0 +1,89 @@
+﻿@model HexaGone.Models.Hexmap
+@{
+    Layout = "_GameLayout";
+}
+<img id="tilesheet" src="~/images/tilesheet2.png" hidden/>
+<canvas id="hexmap"></canvas>
+
+@section Scripts{
+    <script>
+        var canvas;
+        var ctx;
+        var hexmapStyle;
+
+        var hexInnerRadius;
+
+        var hexOuterRadius,
+            hexRectangleHeight,
+            hexRectangleWidth,
+            sideLength,
+            boardWidth,
+            boardHeight;
+        var offDirections;
+        var textures;
+        var img;
+
+
+        function gameVariables() {
+            @if(Model.isPointy)
+            {
+                <text>hexmapStyle = "pointy";</text>
+            }
+            else
+            {
+                <text>hexmapStyle = "flat";</text>
+            }
+
+            img = document.getElementById("tilesheet");
+        }
+
+        function gameVariables_f() {
+            canvas = document.getElementById('hexmap');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx = canvas.getContext('2d');
+
+            //the length of each side of the hexagon
+            sideLength = @Model.hexSideLength;
+
+            //the amount of columns
+            boardWidth = @Model.width;
+
+            //the amount of rows
+            boardHeight = @Model.height;
+
+            //The offset positions of the neighboring hexagons
+            offDirections = [
+                [[+1, 0], [+1, -1], [0, -1],
+                [-1, -1], [-1, 0], [0, +1]],
+                [[+1, +1], [+1, 0], [0, -1],
+                [-1, 0], [-1, +1], [0, +1]],
+            ];
+
+            //The Inner radius of the hexagon
+            hexInnerRadius = Math.sqrt(3) / 2.0 * sideLength;
+
+            //The outer radius of the hexagon
+            hexOuterRadius = sideLength;
+
+            //The width of the hexagon (corner to corner)
+            hexRectangleWidth = sideLength * 2;
+
+            //The height of the hexagon (edge to edge)
+            hexRectangleHeight = hexInnerRadius * 2;
+
+            //an array with the indexes of the textures
+            textures = [];
+            for (var i = 0; i < boardWidth; i++) {
+                textures[i] = [];
+            }
+            @for(int i = 0; i < Model.width; i++)
+            {
+                for(int j = 0; j < Model.height; j++)
+                {
+                    <text>textures[@i][@j] = @Model.texture_index[i][j];</text>
+                }
+            }
+        }
+    </script>
+}

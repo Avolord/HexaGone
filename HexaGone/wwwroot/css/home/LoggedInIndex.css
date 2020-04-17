@@ -1,0 +1,12 @@
+﻿#pageTitleText {
+    /*display: none;*/
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    font-size: 12vw;
+    color: rgba(255, 255, 255,0.7);
+    z-index: 4;
+    margin: 0;
+    top: 20vw;
+    min-width: 290px;
+}
